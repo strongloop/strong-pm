@@ -16,6 +16,13 @@
     "sld": "./bin/sl-deploy"
   },
   "devDependencies": {
-    "tap": "^0.4.9"
+    "tap": "^0.4.9",
+    "shelljs": "^0.3.0",
+    "async": "^0.9.0"
+  },
+  "dependencies": {
+    "cicada": "^1.1.1",
+    "posix-getopt": "^1.0.0",
+    "debug": "^0.8.1"
   }
 }
