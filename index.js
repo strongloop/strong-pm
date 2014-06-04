@@ -38,8 +38,11 @@ exports.deploy = function deploy(argv, callback) {
   var parser = new Parser([
       ':v(version)',
       'h(help)',
+      'l:(listen)',
     ].join(''),
     argv);
+
+  var listen;
 
   while ((option = parser.getopt()) !== undefined) {
     switch (option.option) {
@@ -49,6 +52,10 @@ exports.deploy = function deploy(argv, callback) {
       case 'h':
         printHelp($0, console.log);
         return callback();
+      case 'l':
+        console.log('l', option);
+        listen = option.optarg;
+        break;
       default:
         console.error('Invalid usage (near option \'%s\'), try `%s --help`.',
           option.optopt, $0);
@@ -60,6 +67,17 @@ exports.deploy = function deploy(argv, callback) {
     console.error('Invalid usage (extra arguments), try `%s --help`.');
     return callback(Error('usage'));
   }
+
+  if (listen) {
+    return require('./lib/listen')(listen, function(er) {
+      if (er) {
+        console.error('$0: listen failed with %s', $0, er.message);
+      }
+      return callback(er);
+    });
+  }
+
+  console.error('TBD');
 
   return callback(Error('TBD'));
 };

@@ -9,6 +9,7 @@
   "author": "engineering@strongloop.com",
   "main": "index.js",
   "scripts": {
+    "build": "echo BUILD SCRIPT",
     "test": "tap --timeout=300 ./test/test-*.js"
   },
   "bin": {
