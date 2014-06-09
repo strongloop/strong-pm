@@ -64,21 +64,22 @@ exports.deploy = function deploy(argv, callback) {
   }
 
   if (parser.optind() !== argv.length) {
-    console.error('Invalid usage (extra arguments), try `%s --help`.');
+    console.error('Invalid usage (extra arguments), try `%s --help`.', $0);
     return callback(Error('usage'));
   }
 
   if (listen) {
-    return require('./lib/listen')(listen, function(er) {
-      if (er) {
+    // Only callback on error, on success, we listen until terminated
+    return require('./lib/receive')(listen)
+      .on('error', function(er) {
         console.error('$0: listen failed with %s', $0, er.message);
-      }
-      return callback(er);
-    }).on('prepare', function(commit) {
-      debug('prepared: %j', commit);
+        return callback(er);
+      })
+      .on('prepare', function(commit) {
+        debug('prepared: %j', commit);
 
-      require('./lib/app').run(commit);
-    });
+        require('./lib/run').run(commit);
+      });
   }
 
   console.error('TBD');
