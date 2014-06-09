@@ -74,6 +74,10 @@ exports.deploy = function deploy(argv, callback) {
         console.error('$0: listen failed with %s', $0, er.message);
       }
       return callback(er);
+    }).on('prepare', function(commit) {
+      debug('prepared: %j', commit);
+
+      require('./lib/app').run(commit);
     });
   }
 
