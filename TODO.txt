@@ -1,0 +1,60 @@
+Integration scenarios to test manually:
+
+- can create job with nf --export: check start/stop/restart/status
+- can run with sl-run options:
+  - clustered?
+  - log to file?
+  - log to syslog?
+  - agent?
+- can run with cservice or forever?
+- can add .env files dynamically at push, and app sees it
+
+Milestone A:
+
+It is "feature complete", can be integrated with logger, and in theory can be
+tested against cservice, or forever, or some other framework
+
+Milestone B:
+
+Can inject strongloop.json or .env (or whatever) into a running app.
+
+Milestone C:
+
+- zero downtime:
+  - For run, I can chdir, or cicada can, but I will set env.PWD to what it
+    should be.
+  - set up symlinks to chdir through
+  - SIGHUP the child to cause it to re-chdir through the symlink, and restart
+    all workers
+  - slc run... it should chdir again on SIGHUP. lets use SIGUSR2 for logrotate
+
+Milestone D:
+
+- git push authentication
+- not being able to re-push is annoying... can I hook a post-push? can I just
+  make ever push cause a re-push by removing the last repo state?
+- should .env be re-evaluated by worker, for zeroconf
+
+Not MVP:
+
+- Could have a next/last pair per config... now we support only one app.
+
+- We could use the control to communicate with sl-run, to avoid being limited
+  to only signals. hard, because the cwd is always changing, unless we allow
+  control messages over a child_process control pipe!
+
+- if prepare fails, rollback commit, so it can be repushed?
+
+- how should deployer respond to SIGHUP, should deployer do something? maybe
+  pass SIGHUP to all children?
+
+- allow stop and restart to be a command... better, because a good command
+  can refuse to exit until process is dead, which will help us avoid restarting
+  when current listener is still alive.
+
+  - slc clusterctl stop would need to delay until actually stopped...
+
+- completely reliable death...
+  - make a control pipe to sl-run
+  - slc run... die if it both detects a control pipe, and that pipe is
+    disconnected
