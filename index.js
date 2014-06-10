@@ -4,6 +4,9 @@ var debug = require('debug')('strong-deploy');
 var path = require('path');
 
 var configForCommit = require('./lib/config').configForCommit;
+var prepare = require('./lib/prepare').prepare;
+var receive = require('./lib/receive').listen;
+var run = require('./lib/run').run;
 
 function printHelp($0, prn) {
   prn('usage: %s [options]', $0);
@@ -90,16 +93,26 @@ exports.deploy = function deploy(argv, callback) {
     // Only callback on error, on success, we listen until terminated
     console.log('%s: listen on %s, work base is `%s` with config `%s`',
       $0, listen,  base, config);
-    var readConfig = configForCommit.bind(null, config);
-    return require('./lib/receive')(listen, base, readConfig)
+    return receive(listen, base)
       .on('error', function(er) {
         console.error('%s: listen failed with %s', $0, er.message);
         return callback(er);
       })
-      .on('prepare', function(commit) {
-        debug('prepared: %j', commit);
+      .on('commit', function(commit) {
+        debug('on commit:', commit);
+        commit.config = configForCommit(config, commit);
 
-        require('./lib/run').run(commit);
+        debug('on config:', commit.config);
+        prepare(commit, function(err) {
+          debug('on prepare:', err);
+          if (err) {
+            // XXX ... can I remove the commit?  not much else to do, would be nice
+            // if git push could be failed, but I think its too late for that.
+            return;
+          }
+
+          run(commit);
+        });
       });
   }
 
