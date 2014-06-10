@@ -1,0 +1,17 @@
+{
+  "name": "test-app",
+  "version": "0.0.0",
+  "description": "test-app for strong-deploy",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "node-syslog": "^1.1.7"
+  },
+  "devDependencies": {
+    "debug": "^1.0.1"
+  }
+}
