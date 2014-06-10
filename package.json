@@ -26,6 +26,8 @@
     "cicada": "^1.1.1",
     "posix-getopt": "^1.0.0",
     "debug": "^0.8.1",
-    "ini": "^1.2.1"
+    "ini": "^1.2.1",
+    "strong-cluster-control": "^0.4.0",
+    "strong-supervisor": "^0.2.2"
   }
 }
