@@ -5,6 +5,8 @@ var path = require('path');
 
 require('shelljs/global');
 
+console.log('working dir for %s is %s', process.argv[1], process.cwd());
+
 var deploy = require('../').deploy;
 
 // Check for node silently exiting with code 0 when tests have not passed.

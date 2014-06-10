@@ -3,12 +3,17 @@ var assert = require('assert');
 var debug = require('debug')('strong-deploy');
 var path = require('path');
 
+var configForCommit = require('./lib/config').configForCommit;
+
 function printHelp($0, prn) {
   prn('usage: %s [options]', $0);
   prn('');
   prn('Options:');
-  prn('  -h,--help       Print this message and exit.');
-  prn('  -v,--version    Print version and exit.');
+  prn('  -h,--help         Print this message and exit.');
+  prn('  -v,--version      Print version and exit.');
+  prn('  -b,--base BASE    Base directory to work in (default .strong-deploy).');
+  prn('  -c,--config       Config file (default BASE/config).');
+  prn('  -l,--listen PORT  Listen on PORT for git pushes (no default).');
 }
 
 function runCommand(cmd, callback) {
@@ -38,10 +43,14 @@ exports.deploy = function deploy(argv, callback) {
   var parser = new Parser([
       ':v(version)',
       'h(help)',
+      'b:(base)',
+      'c:(config)',
       'l:(listen)',
     ].join(''),
     argv);
 
+  var base = '.strong-deploy';
+  var config;
   var listen;
 
   while ((option = parser.getopt()) !== undefined) {
@@ -52,8 +61,13 @@ exports.deploy = function deploy(argv, callback) {
       case 'h':
         printHelp($0, console.log);
         return callback();
+      case 'b':
+        base = option.optarg;
+        break;
+      case 'c':
+        config = option.optarg;
+        break;
       case 'l':
-        console.log('l', option);
         listen = option.optarg;
         break;
       default:
@@ -63,6 +77,10 @@ exports.deploy = function deploy(argv, callback) {
     }
   }
 
+  if (config == null) {
+    config = path.resolve(base, 'config');
+  }
+
   if (parser.optind() !== argv.length) {
     console.error('Invalid usage (extra arguments), try `%s --help`.', $0);
     return callback(Error('usage'));
@@ -70,9 +88,12 @@ exports.deploy = function deploy(argv, callback) {
 
   if (listen) {
     // Only callback on error, on success, we listen until terminated
-    return require('./lib/receive')(listen)
+    console.log('%s: listen on %s, work base is `%s` with config `%s`',
+      $0, listen,  base, config);
+    var readConfig = configForCommit.bind(null, config);
+    return require('./lib/receive')(listen, base, readConfig)
       .on('error', function(er) {
-        console.error('$0: listen failed with %s', $0, er.message);
+        console.error('%s: listen failed with %s', $0, er.message);
         return callback(er);
       })
       .on('prepare', function(commit) {
