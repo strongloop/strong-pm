@@ -1,3 +1,4 @@
 .strong-deploy
 node_modules
+npm-debug.log
 test/receive-base
