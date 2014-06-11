@@ -5,8 +5,9 @@ var server = require('http').createServer().listen(process.env.PORT || 0, functi
 });
 
 function handler(signame) {
-  console.log('die on %s', signame);
-  process.kill(process.pid, signame);
+  var signo = process.binding('constants')[signame];
+  console.log('die on %s (%s)', signame, signo);
+  process.exit(signo);
 }
 
 function exitOn(signame) {

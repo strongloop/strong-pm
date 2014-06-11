@@ -2,11 +2,14 @@ var app = require('./helper');
 var assert = require('assert');
 var async = require('async');
 var path = require('path');
+var util = require('util');
 
 var server = app.listen();
 
 function pushWithConfig(config, callback) {
-  console.log('push config %j', config);
+  console.log('***** test: push config %j', config);
+
+  config = util._extend(app.configForCommit('', {}), config);
 
   var repo = app.push();
 
@@ -30,7 +33,17 @@ function pushWithConfig(config, callback) {
       }, 1000);
 
       app.run(commit).once('exit', function(status) {
-        console.log('Ran app with status:', status);
+        var signame = config.stop[0];
+        var constants = process.binding('constants');
+        var signo = constants[signame];
+
+        console.log('Ran app with status: %s config: %s (%s)',
+          status, signame, signo);
+
+        // expect runner to use SIGTERM on invalid configuration
+        // expect app to exit with signal number
+
+        assert.equal(status, signo || constants.SIGTERM);
         return callback();
       });
     });
@@ -44,7 +57,12 @@ function test(config) {
 
 server.once('listening', function() {
   async.series([
-    test(app.configForCommit('', {})),
+    test({}),
+    test({ stop: ['SIGINT']}),
+    // Test various kinds of valid ini file syntax, with invalid configuration.
+    test({ stop: ['not-a-signal']}), // stop = not-a-signal
+    test({ stop: []}), // stop =
+    test({ stop: ['SIGHUP', 'to be ignored']}), // stop[]=SIGHUP\nstop[]=to ...
   ], function(err) {
     assert.ifError(err);
     app.ok = true;
