@@ -1,4 +1,4 @@
-var app = require('./app');
+var app = require('./helper');
 var assert = require('assert');
 var path = require('path');
 
