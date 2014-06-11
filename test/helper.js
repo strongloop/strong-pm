@@ -6,6 +6,12 @@ var util = require('util');
 
 require('shelljs/global');
 
+exports.configForCommit = require('../lib/config').configForCommit;
+exports.deploy = require('../').deploy;
+exports.prepare = require('../lib/prepare').prepare;
+exports.run = require('../lib/run').run;
+exports.stop = require('../lib/run').stop;
+
 function ex(cmd, async) {
   console.log('exec `%s`', cmd);
   return exec(cmd, async);
@@ -66,10 +72,27 @@ exports.listen = function() {
   return server;
 };
 
-exports.push = function(repo) {
+// Pushes don't work if we have already pushed... so force a new repo name for
+// each push.
+var REPO = 'repo';
+var version = 0;
+
+function repoN() {
+  version += 1;
+  return REPO + version;
+}
+
+exports.push = function(repo, callback) {
+  if (!repo) {
+    repo = repoN();
+  }
   var cmd = util.format('git push http://127.0.0.1:%d/%s', port, repo);
   // Must be async... or we block ourselves from receiving
   ex(cmd, function() {
     console.log('async pushed...');
+    if (callback) {
+      return callback();
+    }
   });
+  return repo;
 };
