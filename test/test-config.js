@@ -43,11 +43,13 @@ function write(lines) {
 
 function expectConfig(expect, config, commit) {
   console.log('--test:');
-  var ini = configForCommit(write(config), commit || {repo: 'REPO'});
+  var configFile = write(config);
+  var ini = configForCommit(configFile, commit || {repo: 'REPO'});
   console.log('commit: %j\ninput: %j\noutput: %j\nexpect: %j',
     commit, config, ini, expect);
   if (expect) {
     expect = merge(configDefaults, expect);
+    expect.configFile = configFile;
     assert.deepEqual(ini, expect);
   }
 }
@@ -74,5 +76,35 @@ expectConfig(
   {prepare: ['cmd'], stop: ['SIGKILL']},
   ['[some-name]', 'prepare=cmd', 'stop=SIGKILL'],
   {repo: 'some-name'});
+expectConfig(
+  {prepare: ['cmd']},
+  [
+    'prepare[]=to be replaced',
+    '[main]',
+    'prepare[]=cmd'
+  ],
+  {repo: 'main'});
+
+expectConfig(
+  {files: {'to/that': 'from/this', 'other': 'other', '.env': '.env'}},
+  [
+    '[files]',
+    'to/that = from/this',
+    'other',
+    '.env=',
+    '[a-repo.files]',
+    'XX',
+  ]);
+expectConfig(
+  {files: {'to/that': 'from/this', 'other': 'other', '.env': '.env'}},
+  [
+    '[files]',
+    'XX',
+    '[a-repo.files]',
+    'to/that = from/this',
+    'other',
+    '.env=',
+  ],
+  {repo: 'a-repo'});
 
 ok = true;

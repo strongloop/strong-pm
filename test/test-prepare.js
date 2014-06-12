@@ -20,6 +20,7 @@ function test(config) {
     console.log('test config: %j', config);
     var commit = {
       config: {
+        files: {},
         prepare: config,
       },
       hash: 'HASH',
