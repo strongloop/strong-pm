@@ -7,6 +7,7 @@ var configForCommit = require('./lib/config').configForCommit;
 var prepare = require('./lib/prepare').prepare;
 var receive = require('./lib/receive').listen;
 var run = require('./lib/run').run;
+var stop = require('./lib/run').stop;
 
 function printHelp($0, prn) {
   prn('usage: %s [options]', $0);
@@ -90,12 +91,12 @@ exports.deploy = function deploy(argv, callback) {
   }
 
   if (listen) {
+    stopWhenDone($0);
+
     // Only callback on error, on success, we listen until terminated
-    console.log('%s: listen on %s, work base is `%s` with config `%s`',
-      $0, listen,  base, config);
     return receive(listen, base)
       .on('error', function(er) {
-        console.error('%s: listen failed with %s', $0, er.message);
+        console.error('Listen on %s failed with: %s', listen, er.message);
         return callback(er);
       })
       .on('commit', function(commit) {
@@ -113,6 +114,10 @@ exports.deploy = function deploy(argv, callback) {
 
           run(commit);
         });
+      })
+      .on('listening', function() {
+        console.log('%s: listen on %s, work base is `%s` with config `%s`',
+          $0, this.address().port,  base, config);
       });
   }
 
@@ -120,3 +125,25 @@ exports.deploy = function deploy(argv, callback) {
 
   return callback(Error('TBD'));
 };
+
+function stopWhenDone($0) {
+  function dieBy(signal) {
+    console.log('%s: stopped with %s', $0, signal);
+    stop();
+
+    // re-kill ourself, so our exit status is signaled
+    process.kill(process.pid, signal);
+  }
+
+  function dieOn(signal) {
+    process.once(signal, dieBy.bind(null, signal));
+  }
+
+  dieOn('SIGHUP');
+  dieOn('SIGINT');
+  dieOn('SIGTERM');
+
+  process.on('exit', function() {
+    stop();
+  });
+}
