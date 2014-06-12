@@ -6,8 +6,8 @@ var util = require('util');
 
 var server = app.listen();
 
-function pushWithConfig(config, callback) {
-  console.log('***** test: push config %j', config);
+function pushWithConfig(config, failStatus, callback) {
+  console.log('***** test: push config %j expect fail? %s', config, failStatus);
 
   config = util._extend(app.configForCommit('', {}), config);
 
@@ -33,6 +33,12 @@ function pushWithConfig(config, callback) {
       }, 1000);
 
       app.run(commit).once('exit', function(status) {
+        if (failStatus != null) {
+          assert.equal(failStatus, status);
+          app.stop();
+          return callback();
+        }
+
         var signame = config.stop[0];
         var constants = process.binding('constants');
         var signo = constants[signame];
@@ -51,22 +57,32 @@ function pushWithConfig(config, callback) {
   });
 }
 
-function test(config) {
-  return pushWithConfig.bind(null, config);
+function test(config, failStatus) {
+  return pushWithConfig.bind(null, config, failStatus);
 }
 
 server.once('listening', function() {
   async.series([
     test({}),
-    test({ stop: ['SIGINT']}),
+    test({start: ['node .']}),
+    test({start: ['node .'], stop: ['SIGINT']}),
+    test({start: ['sl-run'], stop: ['SIGHUP']}),
     // Test various kinds of valid ini file syntax, with invalid configuration.
-    test({ stop: ['not-a-signal']}), // stop = not-a-signal
-    test({ stop: []}), // stop =
-    test({ stop: ['SIGHUP', 'to be ignored']}), // stop[]=SIGHUP\nstop[]=to ...
+    test({start: ['node no-such-file']}, 8 /*node status for no file*/),
+    test({start: ['sl-run no-such-file']}, 1 /*slr status for no file*/),
+    test({start: ['no-runner whatever']}, 127 /*shell status for no file*/),
+    test({start: ['sl-run', 'ignored']}),
+    test({start: []}),
+    test({start: ['']}),
+    test({stop: ['SIGINT']}),
+    test({stop: ['not-a-signal']}), // stop = not-a-signal
+    test({stop: []}), // stop =
+    test({stop: ['SIGHUP', 'ignored']}), // stop[]=SIGHUP\nstop[]=ignored
   ], function(err) {
     assert.ifError(err);
     app.ok = true;
     server.close();
     app.stop();
+    console.log('PASS');
   });
 });
