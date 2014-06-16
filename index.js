@@ -90,40 +90,40 @@ exports.deploy = function deploy(argv, callback) {
     return callback(Error('usage'));
   }
 
-  if (listen) {
-    stopWhenDone($0);
+  if (listen == null) {
+    console.error('Listen port was not specified, try `%s --help`.', $0);
 
-    // Only callback on error, on success, we listen until terminated
-    return receive(listen, base)
-      .on('error', function(er) {
-        console.error('Listen on %s failed with: %s', listen, er.message);
-        return callback(er);
-      })
-      .on('commit', function(commit) {
-        debug('on commit:', commit);
-        commit.config = configForCommit(config, commit);
-
-        debug('on config:', commit.config);
-        prepare(commit, function(err) {
-          debug('on prepare:', err);
-          if (err) {
-            // XXX ... can I remove the commit?  not much else to do, would be nice
-            // if git push could be failed, but I think its too late for that.
-            return;
-          }
-
-          run(commit);
-        });
-      })
-      .on('listening', function() {
-        console.log('%s: listen on %s, work base is `%s` with config `%s`',
-          $0, this.address().port,  base, config);
-      });
+    return callback(true);
   }
 
-  console.error('TBD');
+  stopWhenDone($0);
 
-  return callback(Error('TBD'));
+  // Only callback on error, on success, we listen until terminated
+  return receive(listen, base)
+    .on('error', function(er) {
+      console.error('Listen on %s failed with: %s', listen, er.message);
+      return callback(er);
+    })
+    .on('commit', function(commit) {
+      debug('on commit:', commit);
+      commit.config = configForCommit(config, commit);
+
+      debug('on config:', commit.config);
+      prepare(commit, function(err) {
+        debug('on prepare:', err);
+        if (err) {
+          // XXX ... can I remove the commit?  not much else to do, would be nice
+          // if git push could be failed, but I think its too late for that.
+          return;
+        }
+
+        run(commit);
+      });
+    })
+    .on('listening', function() {
+      console.log('%s: listen on %s, work base is `%s` with config `%s`',
+                  $0, this.address().port,  base, config);
+    });
 };
 
 function stopWhenDone($0) {
