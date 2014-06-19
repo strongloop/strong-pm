@@ -26,7 +26,7 @@ function pushWithConfig(config, failStatus, callback) {
       }
 
       setTimeout(function() {
-        // Chould poll to ensure app's http port is reachable... but we don't
+        // Should poll to ensure app's http port is reachable... but we don't
         // know what port its running on, and don't have its stdio output!
         console.log('on timeout, stopping app');
         app.stop();
