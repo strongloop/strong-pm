@@ -28,7 +28,7 @@ exports.ok = false;
 
 process.on('exit', function(code) {
   if (code === 0) {
-    assert(exports.ok);
+    assert(exports.ok, 'test did not set OK before exit');
   }
 });
 
