@@ -32,7 +32,7 @@ function expectError(er) {
 
 function write(lines) {
   if (!lines) {
-    return '/no/config/file';
+    return '';
   }
 
   var content = lines.join('\n');
@@ -106,5 +106,21 @@ expectConfig(
     '.env=',
   ],
   {repo: 'a-repo'});
+expectConfig(
+  {replace: ['SIGHUP']}
+);
+expectConfig(
+  {replace: ['SIGTERM']},
+  ['replace=SIGTERM']);
+expectConfig(
+  {replace: []},
+  ['replace=']);
+expectConfig(
+  {replace: ['no']},
+  ['replace=no']);
+expectConfig(
+  {replace: ['-']},
+  ['replace=-']);
 
 ok = true;
+console.log('PASS')
