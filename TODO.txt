@@ -1,0 +1,146 @@
+Integration scenarios to test manually:
+
+- can create job with nf --export: check start/stop/restart/status
+- can run with sl-run options:
+  - clustered?
+  - log to file?
+  - log to syslog?
+  - agent?
+- can run with cservice or forever?
+- can add .env files dynamically at push, and app sees it
+
+x Milestone A:
+
+It is "feature complete", can be integrated with logger, and in theory can be
+tested against cservice, or forever, or some other framework
+
+x Milestone B:
+
+Can inject strongloop.json or .env (or whatever) into a running app.
+
+Milestone C:
+
+- zero downtime:
+  x SIGHUP the child to cause it to re-chdir through the symlink, and restart
+    all workers
+  x For run, I can chdir, or cicada can, but I will set env.PWD to what it
+    should be.
+  x set up symlinks to chdir through
+  x zero: start..., then stop!
+  x .env should be re-evaluated by worker, for zeroconf
+  x manual test of deploy
+  x test SIGHUP used without clustering... since that is kindof the default
+  - test failures
+
+
+app version should be reported by agent!
+
+mini-demos in retro!
+
+gather requirements and notes... personal wiki? supervisor? https://github.com/strongloop/strong-cluster-control/wiki, move to supervisor
+
+  https://github.com/andrewrk/naught/issues/25
+  http://clarkdave.net/2013/02/node-js-and-cluster-cwd-dirname-shenanigans/
+  https://github.com/joyent/node/issues/6264
+  https://github.com/freezy/node-vpdb/blob/master/INSTALL.md
+  https://github.com/indabamusic/rodent
+  https://github.com/andrewrk/naught
+
+
+- at start-up, MUST run current app!
+
+
+- control channel:
+  - need control channel from strong-cluster-control...
+  - list app status
+  - restart
+  - stop
+  - start
+  - list app versions by SHA1 and package.version/package.name
+  - dump config, .env, any files
+  - dump statistics: number of restarts, number of unexpected deaths,
+
+Milestone D:
+
+- git push authentication
+- not being able to re-push is annoying... can I hook a post-push? can I just
+  make ever push cause a re-push by removing the last repo state?
+
+Not MVP:
+
+- Could have a next/last pair per config... now we support only one app.
+
+- We could use the control to communicate with sl-run, to avoid being limited
+  to only signals. hard, because the cwd is always changing, unless we allow
+  control messages over a child_process control pipe!
+
+- if prepare fails, rollback commit, so it can be repushed?
+
+- how should deployer respond to SIGHUP, should deployer do something? maybe
+  pass SIGHUP to all children?
+
+- allow stop and restart to be a command... better, because a good command
+  can refuse to exit until process is dead, which will help us avoid restarting
+  when current listener is still alive.
+
+  - slc clusterctl stop would need to delay until actually stopped...
+
+- completely reliable death...
+  - make a control pipe to sl-run
+  - slc run... die if it both detects a control pipe, and that pipe is
+    disconnected
+
+- allow transport, and .use()
+
+/*
+strong-agent[6681] started metrics reporting
+supervisor running without clustering (unsupervised)
+2014-06-27T22:13:40.726Z pid:6681 worker:supervisor INFO supervisor reporting metrics to statsd:///%w.%p
+module-app listening on http://localhost:3000
+argv:  [ 'node', '.' ]
+env VAR="this var"
+*/
+
+/*
+sam@samtu:~/w/sn/strong-supervisor (feature/re-chdir-on-restart *$%) % DEBUG=* slc run --cluster=1 test/x-app
+slc slc.run: +0ms argv [ 'run', '--cluster=1', 'test/x-app' ] options { _: [ 'run', 'test/x-app' ],
+'$0': '/usr/local/bin/slc',
+cluster: 1 }
+slc loadCommand +9ms name run run? function usage? object
+initial PWD: /home/sam/w/sn/strong-supervisor
+2014-06-19T01:50:37.072Z pid:17818 worker:supervisor INFO strong-agent not profiling, configuration not found.
+2014-06-19T01:50:37.074Z pid:17818 worker:supervisor Generate configuration with:
+2014-06-19T01:50:37.075Z pid:17818 worker:supervisor     npm install -g strong-cli
+2014-06-19T01:50:37.075Z pid:17818 worker:supervisor     slc strongops
+2014-06-19T01:50:37.075Z pid:17818 worker:supervisor See http://docs.strongloop.com/strong-agent for more information.
+2014-06-19T01:50:37.076Z pid:17818 worker:supervisor INFO supervisor starting (pid 17818)
+2014-06-19T01:50:37.076Z pid:17818 worker:supervisor INFO supervisor size set to 1
+2014-06-19T01:50:37.083Z pid:17818 worker:supervisor INFO supervisor listening on 'clusterctl'
+2014-06-19T01:50:37.105Z pid:17818 worker:supervisor INFO supervisor started worker 1 (pid 17820)
+2014-06-19T01:50:37.106Z pid:17818 worker:supervisor INFO supervisor resized to 1
+2014-06-19T01:50:37.117Z pid:17820 worker:1 initial PWD: /home/sam/w/sn/strong-supervisor/test/x-app
+2014-06-19T01:50:37.233Z pid:17820 worker:1 Thu, 19 Jun 2014 01:50:37 GMT express:application booting in development mode
+2014-06-19T01:50:37.235Z pid:17820 worker:1 Thu, 19 Jun 2014 01:50:37 GMT connect:dispatcher use / query
+2014-06-19T01:50:37.236Z pid:17820 worker:1 Thu, 19 Jun 2014 01:50:37 GMT connect:dispatcher use / expressInit
+2014-06-19T01:50:37.236Z pid:17820 worker:1 Thu, 19 Jun 2014 01:50:37 GMT connect:dispatcher use / router
+2014-06-19T01:50:37.236Z pid:17820 worker:1 Thu, 19 Jun 2014 01:50:37 GMT express:router defined get /
+2014-06-19T01:50:37.241Z pid:17820 worker:1 module-app listening on http://localhost:3000
+2014-06-19T01:50:37.242Z pid:17820 worker:1 argv:  [ '/usr/local/stow/node/bin/node', '.' ]
+2014-06-19T01:50:37.242Z pid:17820 worker:1 env PWD='/home/sam/w/sn/strong-supervisor/test/x-app'
+2014-06-19T01:50:37.243Z pid:17820 worker:1 process CWD='/home/sam/w/sn/strong-supervisor/test/v1-app'
+2014-06-19T01:50:37.243Z pid:17820 worker:1 package version='0.0.0'
+2014-06-19T01:55:35.481Z pid:17818 worker:supervisor WARN received SIGHUP, restarting workers
+2014-06-19T01:55:35.506Z pid:17818 worker:supervisor ERROR supervisor worker id 1 (pid 17820) expected exit with 0
+2014-06-19T01:55:35.547Z pid:17818 worker:supervisor INFO supervisor started worker 2 (pid 18888)
+2014-06-19T01:55:35.547Z pid:17818 worker:supervisor INFO supervisor resized to 1
+2014-06-19T01:55:35.671Z pid:18888 worker:2 Thu, 19 Jun 2014 01:55:35 GMT express:application booting in development mode
+2014-06-19T01:55:35.674Z pid:18888 worker:2 Thu, 19 Jun 2014 01:55:35 GMT connect:dispatcher use / query
+2014-06-19T01:55:35.674Z pid:18888 worker:2 Thu, 19 Jun 2014 01:55:35 GMT connect:dispatcher use / expressInit
+2014-06-19T01:55:35.675Z pid:18888 worker:2 Thu, 19 Jun 2014 01:55:35 GMT connect:dispatcher use / router
+2014-06-19T01:55:35.675Z pid:18888 worker:2 Thu, 19 Jun 2014 01:55:35 GMT express:router defined get /
+2014-06-19T01:55:35.679Z pid:18888 worker:2 module-app listening on http://localhost:3000
+2014-06-19T01:55:35.680Z pid:18888 worker:2 argv:  [ '/usr/local/stow/node/bin/node', '.' ]
+2014-06-19T01:55:35.680Z pid:18888 worker:2 env PWD='/home/sam/w/sn/strong-supervisor/test/x-app'
+2014-06-19T01:55:35.683Z pid:18888 worker:2 process CWD='/home/sam/w/sn/strong-supervisor/test/v2-app'
+2014-06-19T01:55:35.684Z pid:18888 worker:2 package version='1.0.0'
+*/
