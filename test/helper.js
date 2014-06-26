@@ -89,7 +89,6 @@ exports.push = function(repo, callback) {
   var cmd = util.format('git push http://127.0.0.1:%d/%s', port, repo);
   // Must be async... or we block ourselves from receiving
   ex(cmd, function() {
-    console.log('async pushed...');
     if (callback) {
       return callback();
     }

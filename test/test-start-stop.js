@@ -7,6 +7,7 @@ var util = require('util');
 var server = app.listen();
 
 function pushWithConfig(config, failStatus, callback) {
+  console.log('\n\n');
   console.log('TEST: push config %j expect fail? %s', config, failStatus);
 
   config = util._extend(app.configForCommit('', {}), config);
