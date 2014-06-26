@@ -7,7 +7,7 @@ var util = require('util');
 var server = app.listen();
 
 function pushWithConfig(config, failStatus, callback) {
-  console.log('***** test: push config %j expect fail? %s', config, failStatus);
+  console.log('TEST: push config %j expect fail? %s', config, failStatus);
 
   config = util._extend(app.configForCommit('', {}), config);
 
@@ -68,9 +68,9 @@ server.once('listening', function() {
     test({start: ['node .'], stop: ['SIGINT']}),
     test({start: ['sl-run'], stop: ['SIGHUP']}),
     // Test various kinds of valid ini file syntax, with invalid configuration.
-    test({start: ['node no-such-file']}, 8 /*node status for no file*/),
-    test({start: ['sl-run no-such-file']}, 1 /*slr status for no file*/),
-    test({start: ['no-runner whatever']}, 127 /*shell status for no file*/),
+    test({start: ['node no-such-file']}, 8), // node status for no file
+    test({start: ['sl-run no-such-file']}, 1), // slr status for no file
+    test({start: ['no-runner whatever']}, 127), // shell status for no file
     test({start: ['sl-run', 'ignored']}),
     test({start: []}),
     test({start: ['']}),
