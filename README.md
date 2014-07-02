@@ -1,6 +1,26 @@
 # strong-deploy
 
-Config notes.
+## Quick Start
+
+Install and run strong-deploy server:
+
+    npm install -g strong-deploy
+    sl-deploy -l 7777
+
+Clone and push an app:
+
+    git clone git@github.com:strongloop/sls-sample-app.git
+    cd sls-sample-app
+    git push http://localhost:7777/repo HEAD
+
+That was a non-production push, it installed all your dependencies on the
+server. You should always built your app so the dependencies are built-in, and
+not installed dynamically at run-time:
+
+    slb --install --commit
+    git push http://localhost:7777/repo HEAD
+
+## Config notes
 
 Config is an .ini file. Configurable are:
 
