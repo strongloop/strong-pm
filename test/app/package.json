@@ -8,6 +8,7 @@
   },
   "author": "",
   "license": "MIT",
+  "repository": "http://github.com/strongloop/strong-deploy",
   "dependencies": {
     "node-syslog": "^1.1.7"
   },
