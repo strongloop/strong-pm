@@ -63,6 +63,11 @@ function test(config, failStatus) {
   return pushWithConfig.bind(null, config, failStatus);
 }
 
+// XXX(sam) remove once strong-supervisor#34 is fixed
+// This hack reverts to non-clustered mode, until supervisor ensures its exit
+// status reflects the signal it was killed with
+require('../lib/config').configDefaults.start = ['sl-run'];
+
 server.once('listening', function() {
   async.series([
     test({}),
