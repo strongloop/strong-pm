@@ -13,8 +13,8 @@
     "test": "tap --timeout=300 ./test/test-*.js"
   },
   "bin": {
-    "sl-deploy": "./bin/sl-deploy",
-    "sld": "./bin/sl-deploy"
+    "sl-deploy": "./bin/sl-deploy.js",
+    "sld": "./bin/sl-deploy.js"
   },
   "devDependencies": {
     "async": "^0.9.0",
