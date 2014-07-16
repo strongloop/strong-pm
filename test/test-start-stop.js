@@ -49,9 +49,9 @@ function pushWithConfig(config, failStatus, callback) {
           status, signame, signo);
 
         // expect runner to use SIGTERM on invalid configuration
-        // expect app to exit with signal number
+        // if signame is valid, it will have a signo > 0
 
-        assert.equal(status, signo || constants.SIGTERM);
+        assert.equal(status, signo ? signame : 'SIGTERM');
         return callback();
       });
     });

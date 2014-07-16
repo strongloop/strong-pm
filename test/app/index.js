@@ -27,7 +27,7 @@ var server = http.createServer().listen(process.env.PORT || 0, function() {
 function handler(signame) {
   var signo = process.binding('constants')[signame];
   console.log('die on %s (%s)', signame, signo);
-  process.exit(signo);
+  process.kill(process.pid, signame);
 }
 
 function exitOn(signame) {
