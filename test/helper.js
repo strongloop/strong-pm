@@ -58,7 +58,6 @@ ex('sl-build --install --commit');
 assert(!test('-e', 'node_modules/debug'), 'dev dep not installed');
 assert(test('-e', 'node_modules/node-syslog'), 'prod dep installed');
 assert(!test('-e', 'node_modules/node-syslog/build'), 'addons not built');
-assert(which('sl-pm'), 'sl-pm not in path');
 assert(which('sl-build'), 'sl-build not in path');
 
 console.log('test/app built succesfully');
