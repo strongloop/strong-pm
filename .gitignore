@@ -1,4 +1,4 @@
-.strong-deploy
+.strong-pm
 node_modules
 npm-debug.log
 test/copy.out

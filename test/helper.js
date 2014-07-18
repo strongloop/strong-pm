@@ -1,6 +1,6 @@
 var assert = require('assert');
 var async = require('async');
-var debug = require('debug')('strong-deploy:test');
+var debug = require('debug')('strong-pm:test');
 var path = require('path');
 var util = require('util');
 
@@ -58,7 +58,7 @@ ex('sl-build --install --commit');
 assert(!test('-e', 'node_modules/debug'), 'dev dep not installed');
 assert(test('-e', 'node_modules/node-syslog'), 'prod dep installed');
 assert(!test('-e', 'node_modules/node-syslog/build'), 'addons not built');
-assert(which('sl-deploy'), 'sl-deploy not in path');
+assert(which('sl-pm'), 'sl-pm not in path');
 assert(which('sl-build'), 'sl-build not in path');
 
 console.log('test/app built succesfully');

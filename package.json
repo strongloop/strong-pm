@@ -1,10 +1,10 @@
 {
-  "name": "strong-deploy",
+  "name": "strong-pm",
   "description": "deploy a node package using git",
   "version": "0.0.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com/strongloop/strong-deploy.git"
+    "url": "git://github.com/strongloop/strong-pm.git"
   },
   "author": "engineering@strongloop.com",
   "main": "index.js",
@@ -13,8 +13,8 @@
     "test": "tap --timeout=300 ./test/test-*.js"
   },
   "bin": {
-    "sl-deploy": "./bin/sl-deploy.js",
-    "sld": "./bin/sl-deploy.js"
+    "sl-pm": "./bin/sl-pm.js",
+    "slpm": "./bin/sl-pm.js"
   },
   "devDependencies": {
     "shelljs": "^0.3.0",

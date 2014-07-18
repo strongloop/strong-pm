@@ -1,6 +1,6 @@
 var Parser = require('posix-getopt').BasicParser;
 var assert = require('assert');
-var debug = require('debug')('strong-deploy');
+var debug = require('debug')('strong-pm');
 var path = require('path');
 var fs = require('fs');
 
@@ -17,7 +17,7 @@ function printHelp($0, prn) {
   prn('Options:');
   prn('  -h,--help         Print this message and exit.');
   prn('  -v,--version      Print version and exit.');
-  prn('  -b,--base BASE    Base directory to work in (default .strong-deploy).');
+  prn('  -b,--base BASE    Base directory to work in (default .strong-pm).');
   prn('  -c,--config       Config file (default BASE/config).');
   prn('  -l,--listen PORT  Listen on PORT for git pushes (no default).');
 }
@@ -55,7 +55,7 @@ exports.deploy = function deploy(argv, callback) {
     ].join(''),
     argv);
 
-  var base = '.strong-deploy';
+  var base = '.strong-pm';
   var config;
   var listen;
 

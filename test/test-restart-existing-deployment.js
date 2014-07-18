@@ -4,7 +4,7 @@ var child_process = require('child_process');
 var fs = require('fs');
 var path = require('path');
 var run = require('../lib/run');
-var slDeploy = require('../index.js');
+var slPM = require('../index.js');
 var util = require('util');
 
 require('shelljs/global');
@@ -81,9 +81,9 @@ function attemptRestart() {
   var appPidFile = path.normalize('../receive-base/work/current/app.pid');
   rm(appPidFile);
 
-  console.log('Restart using sl-deploy');
+  console.log('Restart using sl-pm');
   var deploy = child_process.fork(
-    require.resolve('../bin/sl-deploy'),
+    require.resolve('../bin/sl-pm'),
     ['-l', listeningPort, '-b', '../receive-base']
   );;
 
@@ -103,7 +103,7 @@ function attemptRestart() {
     console.log('Verify existence of app.pid: %s', pid);
     try {
       process.kill(pid, 0);
-      console.log('Killing sl-deploy pid %d, should exit and pass', deploy.pid);
+      console.log('Killing sl-pm pid %d, should exit and pass', deploy.pid);
       deploy.kill();
       app.ok = true;
     } catch (er) {
