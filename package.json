@@ -14,7 +14,7 @@
   "main": "index.js",
   "scripts": {
     "build": "echo BUILD SCRIPT",
-    "test": "tap --timeout=300 ./test/test-*.js"
+    "test": "tap --timeout=300 ./test/test-*"
   },
   "bin": {
     "sl-pm": "./bin/sl-pm.js",
@@ -23,7 +23,7 @@
   "devDependencies": {
     "shelljs": "^0.3.0",
     "strong-build": "^0.1.0",
-    "tap": "^0.4.9",
+    "tap": "git://github.com/strongloop-forks/node-tap#production",
     "temporary": "0.0.8"
   },
   "dependencies": {
