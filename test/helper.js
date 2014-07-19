@@ -52,7 +52,7 @@ ex('git clean -f -d -x .');
 assert(!test('-e', 'node_modules'));
 ex('git init');
 ex('git add .');
-ex('git commit -m initial');
+ex('git commit --author="sl-pm-test <nobody@strongloop.com>" -m initial');
 ex('sl-build --install --commit');
 
 assert(!test('-e', 'node_modules/debug'), 'dev dep not installed');
