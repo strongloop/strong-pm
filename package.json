@@ -7,6 +7,10 @@
     "url": "git://github.com/strongloop/strong-pm.git"
   },
   "author": "engineering@strongloop.com",
+  "license": {
+    "name": "Dual Artistic/StrongLoop",
+    "url": "https://github.com/strongloop/strong-build/blob/master/LICENSE.md"
+  },
   "main": "index.js",
   "scripts": {
     "build": "echo BUILD SCRIPT",
