@@ -1,34 +1,42 @@
 {
-  "name": "strong-deploy",
+  "name": "strong-pm",
   "description": "deploy a node package using git",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com/strongloop/strong-deploy.git"
+    "url": "git://github.com/strongloop/strong-pm.git"
   },
   "author": "engineering@strongloop.com",
+  "license": {
+    "name": "Dual Artistic/StrongLoop",
+    "url": "https://github.com/strongloop/strong-build/blob/master/LICENSE.md"
+  },
   "main": "index.js",
   "scripts": {
     "build": "echo BUILD SCRIPT",
-    "test": "tap --timeout=300 ./test/test-*.js"
+    "test": "tap --timeout=300 ./test/test-*"
   },
   "bin": {
-    "sl-deploy": "./bin/sl-deploy.js",
-    "sld": "./bin/sl-deploy.js"
+    "sl-pm": "./bin/sl-pm.js",
+    "slpm": "./bin/sl-pm.js",
+    "sl-pm-install": "./bin/sl-pm-install.js"
   },
   "devDependencies": {
-    "async": "^0.9.0",
     "shelljs": "^0.3.0",
     "strong-build": "^0.1.0",
-    "tap": "^0.4.9",
+    "tap": "git://github.com/strongloop-forks/node-tap#production",
     "temporary": "0.0.8"
   },
   "dependencies": {
+    "async": "^0.9.0",
     "cicada": "^1.1.1",
-    "posix-getopt": "^1.0.0",
     "debug": "^0.8.1",
     "ini": "^1.2.1",
-    "strong-cluster-control": "^0.4.0",
-    "strong-supervisor": "^0.2.2"
+    "mkdirp": "^0.5.0",
+    "passwd-user": "git://github.com/strongloop-forks/passwd-user",
+    "posix-getopt": "^1.0.0",
+    "strong-service-install": "^0.1.0",
+    "strong-supervisor": "^0.2.2",
+    "uid-number": "0.0.5"
   }
 }

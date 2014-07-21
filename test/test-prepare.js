@@ -1,6 +1,6 @@
 var assert = require('assert');
 var async = require('async');
-var debug = require('debug')('strong-deploy:test');
+var debug = require('debug')('strong-pm:test');
 
 console.log('working dir for %s is %s', process.argv[1], process.cwd());
 

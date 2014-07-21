@@ -1,6 +1,6 @@
 var assert = require('assert');
 var async = require('async');
-var debug = require('debug')('strong-deploy:test');
+var debug = require('debug')('strong-pm:test');
 var path = require('path');
 var util = require('util');
 
@@ -52,12 +52,13 @@ ex('git clean -f -d -x .');
 assert(!test('-e', 'node_modules'));
 ex('git init');
 ex('git add .');
-ex('git commit -m initial');
+ex('git commit --author="sl-pm-test <nobody@strongloop.com>" -m initial');
 ex('sl-build --install --commit');
 
 assert(!test('-e', 'node_modules/debug'), 'dev dep not installed');
 assert(test('-e', 'node_modules/node-syslog'), 'prod dep installed');
 assert(!test('-e', 'node_modules/node-syslog/build'), 'addons not built');
+assert(which('sl-build'), 'sl-build not in path');
 
 console.log('test/app built succesfully');
 
@@ -87,7 +88,7 @@ exports.push = function(repo, callback) {
   if (!repo) {
     repo = repoN();
   }
-  var cmd = util.format('git push http://127.0.0.1:%d/%s', port, repo);
+  var cmd = util.format('git push http://127.0.0.1:%d/%s master:master', port, repo);
   // Must be async... or we block ourselves from receiving
   ex(cmd, function() {
     if (callback) {

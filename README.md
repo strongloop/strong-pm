@@ -1,11 +1,11 @@
-# strong-deploy
+# strong-pm
 
 ## Quick Start
 
-Install and run strong-deploy server:
+Install and run strong-pm server:
 
-    npm install -g strong-deploy
-    sl-deploy -l 7777
+    npm install -g strong-pm
+    sl-pm -l 7777
 
 Clone and push an app:
 
@@ -66,7 +66,7 @@ Architecture:
         
            XXX the control channel/pipe should not be in cluster-control!
         ---------------------------------
-            upstart      |     strong-deploy    
+            upstart      |     strong-pm    
         how to restart   |   git receives, and SIGHUPs to trigger chdir/and
         becomes your     |   worker restart
         problem, but not |

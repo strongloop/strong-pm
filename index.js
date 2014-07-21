@@ -1,13 +1,15 @@
 var Parser = require('posix-getopt').BasicParser;
 var assert = require('assert');
-var debug = require('debug')('strong-deploy');
+var debug = require('debug')('strong-pm');
 var path = require('path');
+var fs = require('fs');
 
 var configForCommit = require('./lib/config').configForCommit;
 var prepare = require('./lib/prepare').prepare;
 var receive = require('./lib/receive').listen;
 var run = require('./lib/run').run;
 var stop = require('./lib/run').stop;
+var cicadaCommit = require('cicada/lib/commit');
 
 function printHelp($0, prn) {
   prn('usage: %s [options]', $0);
@@ -15,7 +17,7 @@ function printHelp($0, prn) {
   prn('Options:');
   prn('  -h,--help         Print this message and exit.');
   prn('  -v,--version      Print version and exit.');
-  prn('  -b,--base BASE    Base directory to work in (default .strong-deploy).');
+  prn('  -b,--base BASE    Base directory to work in (default .strong-pm).');
   prn('  -c,--config       Config file (default BASE/config).');
   prn('  -l,--listen PORT  Listen on PORT for git pushes (no default).');
 }
@@ -53,7 +55,7 @@ exports.deploy = function deploy(argv, callback) {
     ].join(''),
     argv);
 
-  var base = '.strong-deploy';
+  var base = '.strong-pm';
   var config;
   var listen;
 
@@ -122,7 +124,20 @@ exports.deploy = function deploy(argv, callback) {
     })
     .on('listening', function() {
       console.log('%s: listen on %s, work base is `%s` with config `%s`',
-                  $0, this.address().port,  base, config);
+                  $0, this.address().port, base, config);
+
+      var currentSymlink = this.git.workdir({id: 'current'});
+      var self = this;
+
+      fs.readlink(currentSymlink, function(err, id) {
+        if (err) return;
+
+        var dir = self.git.workdir({id: id});
+        var hash = id.split('.')[0];
+        var commit = cicadaCommit({hash: hash, id: id, dir: dir});
+        commit.config = configForCommit(config, commit);
+        run(commit);
+      });
     });
 };
 

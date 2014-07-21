@@ -1,6 +1,6 @@
 var assert = require('assert');
 var async = require('async');
-var debug = require('debug')('strong-deploy:test');
+var debug = require('debug')('strong-pm:test');
 var path = require('path');
 var tmp = require('temporary');
 var util = require('util');

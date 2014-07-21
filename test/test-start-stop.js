@@ -49,9 +49,9 @@ function pushWithConfig(config, failStatus, callback) {
           status, signame, signo);
 
         // expect runner to use SIGTERM on invalid configuration
-        // expect app to exit with signal number
+        // if signame is valid, it will have a signo > 0
 
-        assert.equal(status, signo || constants.SIGTERM);
+        assert.equal(status, signo ? signame : 'SIGTERM');
         return callback();
       });
     });
@@ -62,6 +62,11 @@ function pushWithConfig(config, failStatus, callback) {
 function test(config, failStatus) {
   return pushWithConfig.bind(null, config, failStatus);
 }
+
+// XXX(sam) remove once strong-supervisor#34 is fixed
+// This hack reverts to non-clustered mode, until supervisor ensures its exit
+// status reflects the signal it was killed with
+require('../lib/config').configDefaults.start = ['sl-run'];
 
 server.once('listening', function() {
   async.series([

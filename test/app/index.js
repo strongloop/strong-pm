@@ -16,7 +16,8 @@ assert.equal(fs.realpathSync(env.PWD), process.cwd());
 // Check binary dependencies were compiled
 require('node-syslog');
 
-var server = http.createServer().listen(process.env.PORT || 0, function() {
+http.createServer(echo)
+    .listen(process.env.PORT || 0, function() {
   console.log('pid %d listening on %s', process.pid, this.address().port);
 
   // Used to verify process existence/health
@@ -24,10 +25,14 @@ var server = http.createServer().listen(process.env.PORT || 0, function() {
   fs.writeFileSync('app.port', this.address().port);
 });
 
+function echo(req, res) {
+  res.end(req.method + ' ' + req.url + '\n\n');
+}
+
 function handler(signame) {
   var signo = process.binding('constants')[signame];
   console.log('die on %s (%s)', signame, signo);
-  process.exit(signo);
+  process.kill(process.pid, signame);
 }
 
 function exitOn(signame) {

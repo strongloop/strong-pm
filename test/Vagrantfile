@@ -1,0 +1,69 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+
+$pkg_name = ENV['PKG_NAME']
+$node_tgz = ENV['NODE_TGZ']
+
+$bootstrap = <<SCRIPT
+  test -f bootstrapped.txt && exit
+  # apt-get update -y -qq
+  apt-get install -y -qq build-essential git curl vim
+  mkdir -p ~/.ssh; ssh-keyscan github.com >> ~/.ssh/known_hosts
+  touch bootstrapped.txt
+SCRIPT
+
+$setup = <<SCRIPT
+  rm -rf /usr/local/lib/node_modules
+  tar -C /usr/local --strip-components 1 -xzf node-linux-x64.tar.gz
+  chown -R vagrant /usr/local
+SCRIPT
+
+$test = <<SCRIPT
+  mkdir -p ~/.ssh; ssh-keyscan github.com >> ~/.ssh/known_hosts
+  npm install -g node-gyp > /dev/null
+  node-gyp install &> /dev/null
+  function report() {
+    echo "# $*..."
+    ($* && echo "ok # $*") || (echo "not ok # $*" >&2)
+    ## ($* > /dev/null && echo "ok # $*") || (echo "not ok # $*" >&2)
+  }
+  report npm install -g strong-pm.tgz
+  report sudo sl-pm-install --port 7777
+  report test -f /etc/init/strong-pm.conf
+  report sudo start strong-pm
+  report sudo status strong-pm
+  sleep 1
+  sudo tail -20 /var/log/upstart/strong-pm.log
+SCRIPT
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  # Ubuntu 12.04 is a reasonable starting point
+  config.vm.box = "ubuntu/precise64"
+
+  # used for installing npm packages from private repos
+  config.ssh.forward_agent = true
+
+  # Version of nodejs tests are run against
+  config.vm.provision "file", source: $node_tgz, destination: "node-linux-x64.tar.gz"
+
+  # Ideally this part would be cached
+  config.vm.provision "shell", inline: $bootstrap, privileged: true
+
+  # Clear the environment and reset the state of Node
+  config.vm.provision "shell", inline: $setup, privileged: true
+
+  # The module under test
+  config.vm.provision "file", source: $pkg_name, destination: "strong-pm.tgz"
+
+  # Install modules for tests
+  config.vm.provision "shell", inline: $test, privileged: false
+
+  # expose strong-deploy's port
+  config.vm.network "forwarded_port", guest: 7777, host: 7777
+  # expose sample app's port
+  config.vm.network "forwarded_port", guest: 8888, host: 8888
+
+end

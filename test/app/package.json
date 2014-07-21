@@ -1,14 +1,14 @@
 {
   "name": "test-app",
   "version": "0.0.0",
-  "description": "test-app for strong-deploy",
+  "description": "test-app for strong-pm",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "MIT",
-  "repository": "http://github.com/strongloop/strong-deploy",
+  "repository": "http://github.com/strongloop/strong-pm",
   "dependencies": {
     "node-syslog": "^1.1.7"
   },
