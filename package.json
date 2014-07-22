@@ -1,7 +1,7 @@
 {
   "name": "strong-pm",
   "description": "deploy a node package using git",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "repository": {
     "type": "git",
     "url": "git://github.com/strongloop/strong-pm.git"
