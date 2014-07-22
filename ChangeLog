@@ -1,3 +1,12 @@
+2014-07-21, Version 0.1.2
+
+* install: Improve --help output (Ryan Graham)
+
+* install: Add support for Upstart 0.6 (Ryan Graham)
+
+* Update strong-supervisor dependency to 0.3.0 (Sam Roberts)
+
+
 2014-07-21, Version 0.1.0
 
 * Add sl-pm-install command (Ryan Graham)
