@@ -1,7 +1,7 @@
 {
   "name": "strong-pm",
   "description": "deploy a node package using git",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "repository": {
     "type": "git",
     "url": "git://github.com/strongloop/strong-pm.git"
@@ -38,5 +38,8 @@
     "strong-service-install": "^0.1.0",
     "strong-supervisor": "^0.3.0",
     "uid-number": "0.0.5"
-  }
+  },
+  "bundleDependencies": [
+    "passwd-user"
+  ]
 }
