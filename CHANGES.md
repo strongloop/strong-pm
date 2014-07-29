@@ -1,4 +1,11 @@
+2014-07-29, Version 0.1.5
+=========================
+
+* bundle forked dependency: passwd-user (Ryan Graham)
+
+
 2014-07-21, Version 0.1.4
+=========================
 
 * Update README (Sam Roberts)
 
@@ -6,11 +13,13 @@
 
 
 2014-07-21, Version 0.1.3
+=========================
 
-* Npm ignore .strong* temporary files (Sam Roberts)
+* Npm ignore `.strong*` temporary files (Sam Roberts)
 
 
 2014-07-21, Version 0.1.2
+=========================
 
 * install: Improve --help output (Ryan Graham)
 
@@ -20,6 +29,7 @@
 
 
 2014-07-21, Version 0.1.0
+=========================
 
 * Add sl-pm-install command (Ryan Graham)
 
@@ -124,4 +134,3 @@
 * package: basic npm package structure (Sam Roberts)
 
 * Initial commit (Sam Roberts)
-
