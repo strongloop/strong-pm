@@ -1,3 +1,13 @@
+2014-08-04, Version 0.1.7
+=========================
+
+* Rename strong-cli to strongloop (Krishna Raman)
+
+* Add strong-pm's dependencies' bins to PATH (Ryan Graham)
+
+* test: Allow standalone Vagrantfile usage (Ryan Graham)
+
+
 2014-07-29, Version 0.1.5
 =========================
 
