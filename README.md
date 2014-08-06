@@ -2,7 +2,7 @@
 
 ## Installation
 
-    npm install -g strong-cli
+    npm install -g strongloop
 
 ## Quick Start
 

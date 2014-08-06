@@ -1,7 +1,7 @@
 {
   "name": "strong-pm",
   "description": "deploy a node package using git",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "repository": {
     "type": "git",
     "url": "git://github.com/strongloop/strong-pm.git"
@@ -33,6 +33,7 @@
     "debug": "^0.8.1",
     "ini": "^1.2.1",
     "mkdirp": "^0.5.0",
+    "npm-path": "^1.0.1",
     "passwd-user": "git://github.com/strongloop-forks/passwd-user",
     "posix-getopt": "^1.0.0",
     "strong-service-install": "^0.1.0",

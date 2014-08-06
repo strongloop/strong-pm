@@ -3,8 +3,8 @@
 
 VAGRANTFILE_API_VERSION = "2"
 
-$pkg_name = ENV['PKG_NAME']
-$node_tgz = ENV['NODE_TGZ']
+$pkg_name = ENV['PKG_NAME'] || Dir["../strong-pm-*.tgz"].last
+$node_tgz = ENV['NODE_TGZ'] || "node-v0.10.29-linux-x64.tar.gz"
 
 $bootstrap = <<SCRIPT
   test -f bootstrapped.txt && exit
