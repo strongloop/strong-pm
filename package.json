@@ -38,6 +38,7 @@
     "posix-getopt": "^1.0.0",
     "strong-service-install": "^0.1.0",
     "strong-supervisor": "^0.3.0",
+    "tar": "^1.0.0",
     "uid-number": "0.0.5"
   },
   "bundleDependencies": [

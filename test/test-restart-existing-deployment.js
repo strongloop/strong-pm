@@ -41,7 +41,7 @@ server.on('commit', function(commit) {
     }
   };
 
-  console.log('Commit recieved. Preparing and running app');
+  console.log('Commit received. Preparing and running app');
   app.prepare(commit, function(err) {
     console.log('on prepare:', err || 'success');
 
