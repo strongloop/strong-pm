@@ -18,10 +18,13 @@
   },
   "bin": {
     "sl-pm": "./bin/sl-pm.js",
+    "sl-pmctl": "./bin/sl-pmctl.js",
     "slpm": "./bin/sl-pm.js",
+    "slpmctl": "./bin/sl-pmctl.js",
     "sl-pm-install": "./bin/sl-pm-install.js"
   },
   "devDependencies": {
+    "semver": "^3.0.1",
     "shelljs": "^0.3.0",
     "strong-build": "^0.1.0",
     "tap": "git://github.com/strongloop-forks/node-tap#production",
@@ -31,11 +34,13 @@
     "async": "^0.9.0",
     "cicada": "^1.1.1",
     "debug": "^0.8.1",
+    "extsprintf": "^1.2.0",
     "ini": "^1.2.1",
     "mkdirp": "^0.5.0",
     "npm-path": "^1.0.1",
     "passwd-user": "git://github.com/strongloop-forks/passwd-user",
     "posix-getopt": "^1.0.0",
+    "strong-control-channel": "^0.2.2",
     "strong-service-install": "^0.1.0",
     "strong-supervisor": "^0.3.0",
     "tar": "^1.0.0",
