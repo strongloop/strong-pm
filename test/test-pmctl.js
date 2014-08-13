@@ -1,0 +1,159 @@
+var assert = require('assert');
+var cp = require('child_process');
+var debug = require('debug')('strong-pm:test');
+var fs = require('fs');
+var helper = require('./helper');
+var path = require('path');
+var util = require('util');
+
+require('shelljs/global');
+
+process.env.cluster_size = 0;
+
+console.log('Done setup, run process manager');
+
+helper.manager = function manager(callback) {
+  var pmcli = require.resolve('../bin/sl-pm.js');
+  var args = [
+    '--listen=0',
+  ];
+  console.log('pmcli:', pmcli, args);
+  var pm = cp.spawn(pmcli, args, {
+    stdio: ['ignore', 'pipe', 'pipe', 'ipc'],
+  });
+  pm.on('error', function(er) {
+    assert.ifError(er);
+  });
+  pm.stderr.pipe(process.stderr);
+  pm.stdout.pipe(process.stdout);
+
+  // Listened on zero to avoid port conflicts, search for actual port.
+  var pmurl;
+  pm.stdout.on('data', function(line) {
+    var match = /: listen on (\d+),/.exec(line);
+    if (!match) return;
+    var port = match[1];
+    console.log('Listening port: %s', port);
+
+    callback(port);
+  });
+
+  return pm;
+};
+
+helper.pmctl = {};
+
+// Wait on cmd to write specific output
+helper.pmctl.waiton = waiton;
+function waiton(cmd, output) {
+  while (true) {
+    try {
+      expect(cmd, output);
+      return;
+    } catch(er) {
+      pause();
+    }
+  }
+}
+
+// Expect cmd to succeed and write specific output
+helper.pmctl.expect = expect;
+function expect(cmd, output) {
+  var out = pmctl(cmd);
+
+  assert.equal(out.code, 0);
+  checkOutput(out, output);
+}
+
+// Expect cmd to fail and write specific output
+helper.pmctl.failon = failon;
+function failon(cmd, output) {
+  var out = pmctl(cmd);
+
+  assert.notEqual(out.code, 0);
+}
+
+function checkOutput(out, output) {
+  if (output) {
+    if (typeof output === 'string')
+      output = RegExp(output);
+    //console.log('Test <%s> against %s', out.output, output);
+    assert(output.test(out.output), out.output);
+  }
+}
+
+helper.pmctl.run = pmctl;
+function pmctl(/* cmd, arguments...*/) {
+  var cli = require.resolve('../bin/sl-pmctl.js');
+  var cmd = cli + ' ' + util.format.apply(util, arguments);
+  var out = exec(cmd, {silent: true});
+  out.output = out.output.trim();
+  console.log('Run: %s => %s <%s>', cmd, out.code, out.output.replace(/\n/g,'$\n'));
+  return out;
+}
+
+helper.pause = pause;
+function pause(secs) {
+  var secs = secs || 1;
+  var start = process.hrtime();
+  while (true) {
+    var ts = process.hrtime(start);
+    if (ts[0] >= secs)
+      return;
+  }
+}
+
+var pm = helper.manager(function(port) {
+  var pmurl = util.format('http://127.0.0.1:%d/default', port);
+  console.log('pmurl: %s', pmurl);
+
+  var out = exec(util.format('git push %s master:master', pmurl));
+  console.log('out:', out.code, out.code !== 0 ? out.output : '');
+  assert.equal(out.code, 0);
+
+  test(port);
+});
+
+function test(port) {
+  console.log('Begin test:');
+  waiton('status', /current:$/m);
+  expect('--version', require('../package.json').version);
+  expect('-v', require('../package.json').version);
+  expect('--help', 'usage: ');
+  expect('-h', 'usage: ');
+  expect('', util.format('pid: *%d', pm.pid));
+  expect('status', util.format('port: *%d', port));
+  failon('start', 'running, so cannot be started');
+  expect('stop', 'stopped with status SIGTERM');
+  waiton('status', /status: *stopped/);
+  failon('stop', 'not running, so cannot be stopped');
+  expect('start', 'starting');
+  waiton('status', /status: *started/);
+  expect('restart', 'stopped with status SIGTERM, restarting');
+  waiton('status', /status: *started/);
+  waiton('status', /worker count: *0/);
+  expect('set-size 3');
+  waiton('status', /worker count: *3/);
+  expect('soft-restart', 'stopped with status 0, restarting');
+  waiton('status', /worker count: *0/);
+
+  expect('set-size 1');
+  waiton('status', /worker count: *1/);
+  if (require('semver').gt(process.version, '0.11.0')) {
+    expect('cpu-start 0', /Profiler started/);
+  } else {
+    failon('cpu-start 0', /CPU profiler unavailable/);
+  }
+  expect('objects-start 1');
+  expect('objects-stop 1');
+  expect('heap-snapshot 1 _heap');
+
+  expect('shutdown');
+
+  pm.on('exit', done);
+}
+
+function done(code) {
+  assert.equal(code, 0);
+  helper.ok = true;
+}

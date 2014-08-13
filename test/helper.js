@@ -39,7 +39,7 @@ function package() {
 
 exports.package = package;
 
-cd('./app'); // tap runs tests from ./test/, you should do likewise
+cd(path.resolve(__dirname, 'app'));
 
 var APPNAME = 'test-app';
 exports.APPNAME = APPNAME;
