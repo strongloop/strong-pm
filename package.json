@@ -1,6 +1,6 @@
 {
   "name": "strong-pm",
-  "description": "deploy a node package using git",
+  "description": "StrongLoop Process Manager",
   "version": "0.1.8",
   "repository": {
     "type": "git",
