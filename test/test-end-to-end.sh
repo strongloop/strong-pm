@@ -33,7 +33,7 @@ git commit --author="sl-pm-test <nobody@strongloop.com>" -m "initial"
 sl-build --install --commit
 git push --quiet http://localhost:7777/repo HEAD
 
-echo "# waiting for strong-deploy to deploy our app..."
+echo "# waiting for manager to deploy our app..."
 sleep 5
 echo "# polling...."
 while ! curl -sI http://localhost:8888/this/is/a/test; do

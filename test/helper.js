@@ -97,3 +97,22 @@ exports.push = function(repo, callback) {
   });
   return repo;
 };
+
+exports.pushTarball = function(repo, callback) {
+  if (!repo) {
+    repo = repoN();
+  }
+
+  var cmd = "npm pack";
+  ex(cmd, function() {
+    cmd = util.format('curl -X PUT --data-binary @test-app-0.0.0.tgz http://127.0.0.1:%d/%s ', port, repo);
+
+    ex(cmd, function() {
+      if (callback) {
+        return callback();
+      }
+    });
+  });
+
+  return repo;
+};

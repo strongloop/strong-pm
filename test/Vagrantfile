@@ -61,7 +61,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Install modules for tests
   config.vm.provision "shell", inline: $test, privileged: false
 
-  # expose strong-deploy's port
+  # expose manager's port
   config.vm.network "forwarded_port", guest: 7777, host: 7777
   # expose sample app's port
   config.vm.network "forwarded_port", guest: 8888, host: 8888
