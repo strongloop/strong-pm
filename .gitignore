@@ -1,11 +1,9 @@
-*.cpuprofile
-*.heapsnapshot
-*.tar.gz
-*.tgz
-.env
 .strong*
 node_modules
 npm-debug.log
-test/.vagrant/
 test/copy.out
 test/receive-base
+test/.vagrant/
+*.tgz
+*.tar.gz
+.env

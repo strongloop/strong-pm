@@ -1,14 +1,14 @@
 var Parser = require('posix-getopt').BasicParser;
 var assert = require('assert');
 var debug = require('debug')('strong-pm');
-var ipcctl = require('./lib/ipcctl');
 var path = require('path');
 var fs = require('fs');
 
 var configForCommit = require('./lib/config').configForCommit;
 var prepare = require('./lib/prepare').prepare;
 var receive = require('./lib/receive').listen;
-var runner = require('./lib/run');
+var run = require('./lib/run').run;
+var stop = require('./lib/run').stop;
 var cicadaCommit = require('cicada/lib/commit');
 
 function printHelp($0, prn) {
@@ -20,8 +20,6 @@ function printHelp($0, prn) {
   prn('  -b,--base BASE    Base directory to work in (default .strong-pm).');
   prn('  -c,--config       Config file (default BASE/config).');
   prn('  -l,--listen PORT  Listen on PORT for git pushes (no default).');
-  prn('  -C,--control CTL  Listen for control messages on CTL (default pmctl).');
-  prn('  --no-control      Do not listen for control messages.');
 }
 
 function runCommand(cmd, callback) {
@@ -54,15 +52,12 @@ exports.deploy = function deploy(argv, callback) {
       'b:(base)',
       'c:(config)',
       'l:(listen)',
-      'C:(control)',
-      'N:(no-control)',
     ].join(''),
     argv);
 
   var base = '.strong-pm';
   var config;
   var listen;
-  var control = 'pmctl';
 
   while ((option = parser.getopt()) !== undefined) {
     switch (option.option) {
@@ -80,12 +75,6 @@ exports.deploy = function deploy(argv, callback) {
         break;
       case 'l':
         listen = option.optarg;
-        break;
-      case 'C':
-        control = option.optarg;
-        break;
-      case 'N':
-        control = undefined;
         break;
       default:
         console.error('Invalid usage (near option \'%s\'), try `%s --help`.',
@@ -130,31 +119,12 @@ exports.deploy = function deploy(argv, callback) {
           return;
         }
 
-        runner.run(commit);
+        run(commit);
       });
     })
     .on('listening', function() {
       console.log('%s: listen on %s, work base is `%s` with config `%s`',
                   $0, this.address().port, base, config);
-
-      if (control) {
-        debug('start ipcctl on `%s`', control);
-        ipcControl = ipcctl.start({
-          control: control,
-          http: this,
-          runner: runner,
-          config: config,
-          base: base,
-        }).on('listening', function() {
-          var address = this.address();
-
-          if (address.port) {
-            console.log('%s: control listening on port `%s`', $0, address.port);
-          } else {
-            console.log('%s: control listening on path `%s`', $0, address.path);
-          }
-        });
-      }
 
       var currentSymlink = this.git.workdir({id: 'current'});
       var self = this;
@@ -164,25 +134,14 @@ exports.deploy = function deploy(argv, callback) {
 
         var dir = self.git.workdir({id: id});
         var hash = id.split('.')[0];
-        // XXX(sam) repo not passed? config won't be correct!
         var commit = cicadaCommit({hash: hash, id: id, dir: dir});
         commit.config = configForCommit(config, commit);
-        runner.run(commit);
+        run(commit);
       });
     });
 };
 
-var ipcControl;
-
 function stopWhenDone($0) {
-  function stop() {
-    if (ipcControl) {
-      ipcControl.close();
-      ipcControl = null;
-    }
-    runner.stop();
-  }
-
   function dieBy(signal) {
     console.log('%s: stopped with %s', $0, signal);
     stop();
@@ -195,7 +154,7 @@ function stopWhenDone($0) {
     process.once(signal, dieBy.bind(null, signal));
   }
 
-  dieOn('SIGHUP'); // XXX(sam) should this do a restart?
+  dieOn('SIGHUP');
   dieOn('SIGINT');
   dieOn('SIGTERM');
 
