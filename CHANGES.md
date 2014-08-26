@@ -1,150 +1,176 @@
-2014-08-12, Version 0.1.8
-=========================
+2014-08-26, Version v0.1.9
+==========================
 
+ * Use upstream passwd-user (Ryan Graham)
 
-2014-08-04, Version 0.1.7
-=========================
+ * pm: exit on loss of parent IPC channel (Sam Roberts)
 
-* Rename strong-cli to strongloop (Krishna Raman)
+ * package: sync package name with README (Sam Roberts)
 
-* Add strong-pm's dependencies' bins to PATH (Ryan Graham)
+ * test: rewrite comments referring to strong-deploy (Sam Roberts)
 
-* test: Allow standalone Vagrantfile usage (Ryan Graham)
+ * pm-install: strong-deploy is now called strong-pm (Sam Roberts)
 
+ * deploy: Add tarball over HTTP deploy support (Krishna Raman)
 
-2014-07-29, Version 0.1.5
-=========================
 
-* bundle forked dependency: passwd-user (Ryan Graham)
+2014-08-12, Version v0.1.8
+==========================
 
 
-2014-07-21, Version 0.1.4
-=========================
 
-* Update README (Sam Roberts)
+2014-08-06, Version v0.1.7
+==========================
 
-* Use .gitignore, not .npmignore (Sam Roberts)
+ * Rename strong-cli to strongloop (Krishna Raman)
 
+ * Add strong-pm's dependencies' bins to PATH (Ryan Graham)
 
-2014-07-21, Version 0.1.3
-=========================
+ * test: Allow standalone Vagrantfile usage (Ryan Graham)
 
-* Npm ignore `.strong*` temporary files (Sam Roberts)
 
+2014-07-29, Version v0.1.6
+==========================
 
-2014-07-21, Version 0.1.2
-=========================
 
-* install: Improve --help output (Ryan Graham)
 
-* install: Add support for Upstart 0.6 (Ryan Graham)
+2014-07-29, Version v0.1.5
+==========================
 
-* Update strong-supervisor dependency to 0.3.0 (Sam Roberts)
+ * bundle forked dependency: passwd-user (Ryan Graham)
 
 
-2014-07-21, Version 0.1.0
-=========================
+2014-07-21, Version v0.1.4
+==========================
 
-* Add sl-pm-install command (Ryan Graham)
+ * Update README (Sam Roberts)
 
-* test: Turn test app into echo server (Ryan Graham)
+ * Use .gitignore, not .npmignore (Sam Roberts)
 
-* test: Allow mix of js and sh based tests (Ryan Graham)
 
-* test: Specify git author (Ryan Graham)
+2014-07-21, Version v0.1.3
+==========================
 
-* test: Don't require sl-pm in path (Ryan Graham)
+ * Npm ignore .strong* temporary files (Sam Roberts)
 
-* Apply dual Artistic/StrongLoop license (Sam Roberts)
 
-* Rename strong-deploy to strong-pm (Krishna Raman)
+2014-07-21, Version v0.1.2
+==========================
 
-* package: sort and remove unused cluster-control (Sam Roberts)
+ * install: Improve --help output (Ryan Graham)
 
-* Restart current deployment when strong-pm starts (Krishna Raman)
+ * install: Add support for Upstart 0.6 (Ryan Graham)
 
-* Add branch names to git push command (Krishna Raman)
+ * Update strong-supervisor dependency to 0.3.0 (Sam Roberts)
 
-* Move async to dependency instead of dev-dependency (Krishna Raman)
 
-* test: temporary test fix while waiting for sl-run (Sam Roberts)
+2014-07-21, Version v0.1.0
+==========================
 
-* test: align app exit status with strong-supervisor (Sam Roberts)
+ * Add sl-pm-install command (Ryan Graham)
 
-* run: default to using clustering, so reload works (Sam Roberts)
+ * test: Turn test app into echo server (Ryan Graham)
 
-* test: note that tests can run much faster than they are (Sam Roberts)
+ * test: Allow mix of js and sh based tests (Ryan Graham)
 
-* bin: rename sl-deploy to sl-deploy.js (Sam Roberts)
+ * test: Specify git author (Ryan Graham)
 
-* test: use git commit, git ci is my local alias (Sam Roberts)
+ * test: Don't require sl-pm in path (Ryan Graham)
 
-* package: depends on sl-build for tests (Sam Roberts)
+ * Apply dual Artistic/StrongLoop license (Sam Roberts)
 
-* run: implement restart-in-place (Sam Roberts)
+ * Rename strong-deploy to strong-pm (Krishna Raman)
 
-* test: add registry to test app package (Sam Roberts)
+ * package: sort and remove unused cluster-control (Sam Roberts)
 
-* run: refactor linking into a runner method (Sam Roberts)
+ * Restart current deployment when strong-pm starts (Krishna Raman)
 
-* run: refactor in preparation for restart in place (Sam Roberts)
+ * Add branch names to git push command (Krishna Raman)
 
-* test: test start, restart, stop behaviour (Sam Roberts)
+ * Move async to dependency instead of dev-dependency (Krishna Raman)
 
-* config: don't console.error when config file is "" (Sam Roberts)
+ * test: temporary test fix while waiting for sl-run (Sam Roberts)
 
-* run: expose current runner, and callback on stop (Sam Roberts)
+ * test: align app exit status with strong-supervisor (Sam Roberts)
 
-* test: style change of comments and logs messages (Sam Roberts)
+ * run: default to using clustering, so reload works (Sam Roberts)
 
-* test: describe failure reason on premature exit (Sam Roberts)
+ * test: note that tests can run much faster than they are (Sam Roberts)
 
-* run: symlink to the working dir, and set PWD (Sam Roberts)
+ * bin: rename sl-deploy to sl-deploy.js (Sam Roberts)
 
-* readme: add quick-start section (Sam Roberts)
+ * test: use git commit, git ci is my local alias (Sam Roberts)
 
-* Refactor index.js reflecting mandatory listen port (Sam Roberts)
+ * package: depends on sl-build for tests (Sam Roberts)
 
-* config: support adding files during prepare (Sam Roberts)
+ * run: implement restart-in-place (Sam Roberts)
 
-* readme: start of docs for config file syntax (Sam Roberts)
+ * test: add registry to test app package (Sam Roberts)
 
-* main: stop children when signalled (Sam Roberts)
+ * run: refactor linking into a runner method (Sam Roberts)
 
-* run: configurable start command (Sam Roberts)
+ * run: refactor in preparation for restart in place (Sam Roberts)
 
-* run: configurable stop signal (Sam Roberts)
+ * test: test start, restart, stop behaviour (Sam Roberts)
 
-* test: start and stop tests (Sam Roberts)
+ * config: don't console.error when config file is "" (Sam Roberts)
 
-* test: app reports SIGINT/TERM/HUP (Sam Roberts)
+ * run: expose current runner, and callback on stop (Sam Roberts)
 
-* test: avoid node confusion over entrypoint (Sam Roberts)
+ * test: style change of comments and logs messages (Sam Roberts)
 
-* gitignore npm-debug.log (Sam Roberts)
+ * test: describe failure reason on premature exit (Sam Roberts)
 
-* package: deployer uses strong-supervisor internally (Sam Roberts)
+ * run: symlink to the working dir, and set PWD (Sam Roberts)
 
-* receive: test git receive against test/app (Sam Roberts)
+ * readme: add quick-start section (Sam Roberts)
 
-* test: simple http server test application (Sam Roberts)
+ * Refactor index.js reflecting mandatory listen port (Sam Roberts)
 
-* prepare: configurable commands to prepare app (Sam Roberts)
+ * config: support adding files during prepare (Sam Roberts)
 
-* refactor: split receive into receive,prepare (Sam Roberts)
+ * readme: start of docs for config file syntax (Sam Roberts)
 
-* config: support configuration from file and argv (Sam Roberts)
+ * main: stop children when signalled (Sam Roberts)
 
-* refactor: listen, app renamed to receive, run (Sam Roberts)
+ * run: configurable start command (Sam Roberts)
 
-* run: start and stop a pushed app after prepare (Sam Roberts)
+ * run: configurable stop signal (Sam Roberts)
 
-* readme: architecture diagram (Sam Roberts)
+ * test: start and stop tests (Sam Roberts)
 
-* listen: receive git push, and prepare to run (Sam Roberts)
+ * test: app reports SIGINT/TERM/HUP (Sam Roberts)
 
-* usage: help and version commands (Sam Roberts)
+ * test: avoid node confusion over entrypoint (Sam Roberts)
 
-* package: basic npm package structure (Sam Roberts)
+ * gitignore npm-debug.log (Sam Roberts)
 
-* Initial commit (Sam Roberts)
+ * package: deployer uses strong-supervisor internally (Sam Roberts)
+
+ * receive: test git receive against test/app (Sam Roberts)
+
+ * test: simple http server test application (Sam Roberts)
+
+ * prepare: configurable commands to prepare app (Sam Roberts)
+
+ * refactor: split receive into receive,prepare (Sam Roberts)
+
+ * config: support configuration from file and argv (Sam Roberts)
+
+ * refactor: listen, app renamed to receive, run (Sam Roberts)
+
+ * run: start and stop a pushed app after prepare (Sam Roberts)
+
+ * readme: architecture diagram (Sam Roberts)
+
+ * listen: receive git push, and prepare to run (Sam Roberts)
+
+ * usage: help and version commands (Sam Roberts)
+
+ * package: basic npm package structure (Sam Roberts)
+
+
+2014-06-03, Version INITIAL
+===========================
+
+ * First release!
