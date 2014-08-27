@@ -42,7 +42,7 @@
     "posix-getopt": "^1.0.0",
     "strong-control-channel": "^0.2.2",
     "strong-service-install": "^0.1.0",
-    "strong-supervisor": "^0.3.0",
+    "strong-supervisor": "^0.3.3",
     "tar": "^1.0.0",
     "uid-number": "0.0.5"
   }
