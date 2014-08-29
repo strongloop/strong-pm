@@ -1,50 +1,101 @@
-# StrongLoop Process Manager
+# strong-pm
+
+StrongLoop process manager.
 
 ## Installation
 
-    npm install -g strongloop
+    npm install -g strong-pm
 
 ## Quick Start
 
-Run strong-pm server:
+It is recommend to install the process manager as a system service, see below,
+but if you are just trying the manager out to try it, it can be run directly
+from the command line.
+
+Run strong-pm server on a free port, `7777` in this example:
 
     slc pm -l 7777
 
-Clone and push an app:
+Clone and push an app, the loopback example app in this example, but
+any node application can be managed:
 
     git clone git@github.com:strongloop/loopback-example-app.git
     cd loopback-example-app
-    slc deploy http://localhost:7777/repo
+    slc deploy http://localhost:7777
 
 That was a non-production push, it installed all your dependencies on the
 server. You should always build your app so the dependencies are built-in, and
 not installed dynamically at run-time:
 
-    slc build --install --commit
-    slc deploy http://localhost:7777/repo
+    git clone git@github.com:strongloop/loopback-example-app.git
+    cd loopback-example-app
+    slc build
+    slc deploy http://localhost:7777
 
 See [strong-build](https://github.com/strongloop/strong-build) and
 [strong-deploy](https://github.com/strongloop/strong-deploy) for more
 information.
 
-## Config notes
+## Options
 
-The config file is ini format. It defaults to being the file `config`
-in the `base` directory (but see `--config` option).
+The following options are supported:
 
-Configurable are:
+- `--listen PORT`: the port to listen to for deployments, mandatory
+  (unfortunately, there are no reasonable defaults).
 
-- prepare command: defaults to `npm rebuild; npm install --production`
-- start command: defaults to `sl-run --cluster=cpus`
-- stop signal: defaults to `SIGTERM`
-- restart signal: defaults to `SIGHUP`
+- `--base BASE`: the base is the directory that strong-pm will use to save
+  applications deployed to it, both the git repos and npm packages, as
+  well as the working directories, and any other files it needs to create.
+  It defaults to `.strong-pm` in the current working directory when
+  run from the command line, but see `pm-install`.
 
-Configuration can be global, or per repo pushed to.
+- `--config CFG`: the config file can be use to customize the behaviour of the
+  manager, if necessary, see below. It defaults to a file called `config` in the
+  `<BASE>` directory.
 
-Push from git with a command like `git push http://localhost:PORT/REPO`, or
-use slc as `slc deploy http://HOST:PORT/REPO`.
+## Life-cycle
 
-PORT is arg to --listen, REPO you decide but is not optional.
+When applications are deployed to the manager, it first prepares them. The
+prepare commands default to `npm rebuild; npm install --production`. Since
+`npm install` is called, the preparation may be customized using npm scripts,
+if necessary.
+
+After preparation, the application is run. The run command defaults to `sl-run
+--cluster=cpus`.  The start command is the only thing likely to need
+configuration.
+
+A hard stop is performed by killing the supervisor with `SIGTERM`. The signal
+is configurable, but we do not recommend changing it.
+
+A soft restart is performed by killing the supervisor with `SIGHUP`. The signal
+is configurable, and may be set to `"no"` to disable soft restart, but we do not
+recommend changing it.
+
+
+## Configuration
+
+The start command may be customized if necessary, see
+[strong-supervisor](http://github.com/strongloop/strong-supervisor) for
+supported options. Useful configuration options are those where the defaults may
+not reasonably work for all deployments: `--metrics`, timestamping, and perhaps
+cluster size.
+
+The config file is in [ini](https://www.npmjs.org/package/ini) format.
+
+Configurable items are:
+
+- prepare command: an array of commands, shell syntax is *not* supported
+- start command: a single command, shell syntax is *not* supported
+- stop signal
+- restart signal
+
+The configuration for each item is the last found of:
+
+1. the builtin defaults
+2. the global configuration section
+3. the specific configuration matching the `--config` option of
+   [slc deploy](http://github.com/strongloop/strong-deploy)
+
 
 Example:
 
@@ -56,7 +107,10 @@ Example:
     restart = SIGHUP
 
     ; these are overrides for a particular repo, deploy to it like:
-    ;   slc deploy http://host:port/config-one
+    ;   slc deploy --config config-one http://example.com:7777
+    ; this configuration is valid, but probably not useful (pmctl, for
+    ; example, will not support many commands if the supervisor is not
+    ; used)
     [config-one]
     ; no prepare
     prepare =
@@ -64,6 +118,10 @@ Example:
     start = node .
     ; single instance node doesn't support restart
     restart = no
+
+## Installation as a Service
+
+.. TODO ..
 
 ## Usage
 
