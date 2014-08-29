@@ -18,7 +18,7 @@ function printHelp($0, prn) {
   prn('  -h,--help         Print this message and exit.');
   prn('  -v,--version      Print version and exit.');
   prn('  -b,--base BASE    Base directory to work in (default .strong-pm).');
-  prn('  -c,--config       Config file (default BASE/config).');
+  prn('  -c,--config CFG   Config file (default BASE/config).');
   prn('  -l,--listen PORT  Listen on PORT for git pushes (no default).');
   prn('  -C,--control CTL  Listen for control messages on CTL (default pmctl).');
   prn('  --no-control      Do not listen for control messages.');

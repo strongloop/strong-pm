@@ -71,14 +71,16 @@ Example:
 
 ```
 usage: slc pm [options]
-usage: slpm [options]
+usage: sl-pm [options]
 
 Options:
   -h,--help         Print this message and exit.
   -v,--version      Print version and exit.
   -b,--base BASE    Base directory to work in (default .strong-pm).
-  -c,--config       Config file (default BASE/config).
+  -c,--config CFG   Config file (default BASE/config).
   -l,--listen PORT  Listen on PORT for git pushes (no default).
+  -C,--control CTL  Listen for control messages on CTL (default pmctl).
+  --no-control      Do not listen for control messages.
 ```
 
 ### slc pm-install
