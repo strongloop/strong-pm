@@ -19,13 +19,11 @@ helper.manager = function manager(callback) {
   ];
   console.log('pmcli:', pmcli, args);
   var pm = cp.spawn(pmcli, args, {
-    stdio: ['ignore', 'pipe', 'pipe', 'ipc'],
+    stdio: ['ignore', 'pipe', process.stderr, 'ipc'],
   });
   pm.on('error', function(er) {
     assert.ifError(er);
   });
-  pm.stderr.pipe(process.stderr);
-  pm.stdout.pipe(process.stdout);
 
   // Listened on zero to avoid port conflicts, search for actual port.
   var pmurl;
