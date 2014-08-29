@@ -26,7 +26,7 @@
   "devDependencies": {
     "semver": "^3.0.1",
     "shelljs": "^0.3.0",
-    "strong-build": "^0.1.0",
+    "strong-build": "^0.2.0",
     "tap": "git://github.com/strongloop-forks/node-tap#production",
     "temporary": "0.0.8"
   },
