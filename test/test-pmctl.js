@@ -142,8 +142,14 @@ function test(port) {
   } else {
     failon('cpu-start 0', /CPU profiler unavailable/);
   }
-  expect('objects-start 1');
-  expect('objects-stop 1');
+
+  if (process.env.STRONGLOOP_LICENSE) {
+    expect('objects-start 1');
+    expect('objects-stop 1');
+  } else {
+    console.error('SKIP objects-start/stop, no license');
+  }
+
   expect('heap-snapshot 1 _heap');
 
   expect('shutdown');
