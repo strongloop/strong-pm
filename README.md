@@ -12,16 +12,16 @@ It is recommend to install the process manager as a system service, see below,
 but if you are just trying the manager out to try it, it can be run directly
 from the command line.
 
-Run strong-pm server on a free port, `7777` in this example:
+Run process manager on a free port, `7777` in this example:
 
-    slc pm -l 7777
+    sl-pm -l 7777
 
 Clone and push an app, the loopback example app in this example, but
 any node application can be managed:
 
     git clone git@github.com:strongloop/loopback-example-app.git
     cd loopback-example-app
-    slc deploy http://localhost:7777
+    sl-deploy http://localhost:7777
 
 That was a non-production push, it installed all your dependencies on the
 server. You should always build your app so the dependencies are built-in, and
@@ -29,8 +29,8 @@ not installed dynamically at run-time:
 
     git clone git@github.com:strongloop/loopback-example-app.git
     cd loopback-example-app
-    slc build
-    slc deploy http://localhost:7777
+    sl-build
+    sl-deploy http://localhost:7777
 
 See [strong-build](https://github.com/strongloop/strong-build) and
 [strong-deploy](https://github.com/strongloop/strong-deploy) for more
@@ -121,7 +121,21 @@ Example:
 
 ## Installation as a Service
 
-.. TODO ..
+The process manager should be installed as a service, so it gets integration
+with the system process manager. This will ensure it is started on machine boot,
+logs are correctly aggregated, permissions are set correctly, etc.
+
+The pm-install tool does this installation.
+
+In it's typical usage, you would install strongloop globally on the deployment
+system (`npm install -g strongloop`), and then call `slc pm-install` with
+`--port` to set the deployment port to listen on. It will create a strong-pm
+user account with `/var/lib/strong-pm` set as its home directory. If deploying
+to a hosted service, there may already be a user account prepared that you want
+the manager to run as, you can specify it with the `--user` option.
+
+You can also `--job-file` to generate the upstart conf-file locally, and move
+it to the remote system.
 
 ## Usage
 
@@ -148,15 +162,16 @@ usage: slc pm-install [options]
 usage: sl-pm-install [options]
 
 Options:
-  -h,--help         Print this message and exit.
-  -v,--version      Print version and exit.
-  -b,--base BASE    Base directory to work in (default .strong-deploy).
-  -c,--config       Config file (default BASE/config).
-  -u,--user         User to run sl-pm as (default current user).
-  -p,--port PORT    Listen on PORT for git pushes (no default).
-  -n,--dry-run      Don't write any files.
-  -j,--job-file     Path of Upstart job to create (default /etc/init/strong-pm.conf)
-  -f,--force        Overwrite existing job file if present
+  -h,--help           Print this message and exit.
+  -v,--version        Print version and exit.
+  -b,--base BASE      Base directory to work in (default is .strong-pm).
+  -c,--config CONFIG  Config file (default BASE/config).
+  -u,--user USER      User to run manager as (default is strong-pm).
+  -p,--port PORT      Listen on PORT for application deployment (no default).
+  -n,--dry-run        Don't write any files.
+  -j,--job-file FILE  Path of Upstart job to create (default is /etc/init/strong-pm.conf)
+  -f,--force          Overwrite existing job file if present
+  --upstart VERSION   Specify the version of Upstart, 1.4 or 0.6 (default is 1.4)
 ```
 
 ### slc pmctl
