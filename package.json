@@ -2,6 +2,19 @@
   "name": "strong-pm",
   "description": "StrongLoop Process Manager",
   "version": "0.1.9",
+  "keywords": [
+    "StrongLoop",
+    "build",
+    "bundle",
+    "dependencies",
+    "deploy",
+    "git",
+    "heroku",
+    "npm",
+    "openshift",
+    "pm",
+    "slc"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/strongloop/strong-pm.git"
