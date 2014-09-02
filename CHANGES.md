@@ -1,3 +1,31 @@
+2014-09-02, Version 1.0.0
+=========================
+
+ * package: document the files config section (Sam Roberts)
+
+ * package: update pm-install usage in README (Sam Roberts)
+
+ * package: add keywords for npm search (Sam Roberts)
+
+ * package: document usage and configuration (Sam Roberts)
+
+ * pmctl: fix missing argument --config in usage (Sam Roberts)
+
+ * test: objects-start/stop doesn't work without a license (Sam Roberts)
+
+ * test: don't pipe stdout, or collect stderr (Sam Roberts)
+
+ * test: update strong-build to 0.2.x (Sam Roberts)
+
+ * deps: update to strong-supervisor@0.3.3 (Ryan Graham)
+
+ * pmctl: add a control CLI to pm and supervisor (Sam Roberts)
+
+ * Revert "pmctl: add a control CLI to pm and supervisor" (Ryan Graham)
+
+ * pmctl: add a control CLI to pm and supervisor (Sam Roberts)
+
+
 2014-08-26, Version v0.1.9
 ==========================
 
