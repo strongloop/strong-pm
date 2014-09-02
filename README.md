@@ -88,6 +88,7 @@ Configurable items are:
 - start command: a single command, shell syntax is *not* supported
 - stop signal
 - restart signal
+- files to add to application's working directory
 
 The configuration for each item is the last found of:
 
@@ -118,6 +119,35 @@ Example:
     start = node .
     ; single instance node doesn't support restart
     restart = no
+
+### Files
+
+The manager can be configured to add files to the working directory of
+the application. This is useful to avoid deploy-time configuration being
+present in the application package. The files should be named in a specific
+`files` section of the config file. The allowed syntax is either
+
+- `dst = src`: the file `src` will be copied into the working copy, and named
+  `dst`
+- `src`: the file `src` will be copied into the working copy, and named
+  `src`
+
+If not qualified, the `src` filenames are resolved to the same directory as
+the config file.
+
+Example:
+
+```
+[files]
+strongloop.json  ; copy this file into every working directory
+
+[config-dev.files]
+.env=dev.env     ; copy dev.env to .env
+
+[config-prod.files]
+.env=prod.env    ; copy prod.env to .env
+```
+
 
 ## Installation as a Service
 
