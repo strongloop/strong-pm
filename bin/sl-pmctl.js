@@ -5,6 +5,7 @@ var assert = require('assert');
 var client = require('strong-control-channel/client');
 var debug = require('debug')('strong-pm:pmctl');
 var fs = require('fs');
+var npmls = require('strong-npm-ls');
 var path = require('path');
 var sprintf = require('extsprintf').sprintf;
 var util = require('util');
@@ -33,6 +34,7 @@ var USAGE = [
   '  cpu-start T             Start CPU profiling on T, use cpu-stop to save profile.',
   '  cpu-stop T [NAME]       Stop CPU profiling on T, save as `NAME.cpuprofile`.',
   '  heap-snapshot T [NAME]  Save heap snapshot on T, save as `NAME.heapsnapshot`.',
+  '  ls [DEPTH]              List dependencies of the current application.',
   '',
   '"Soft" stops notify workers they are being disconnected, and give them a',
   'grace period for any existing connections to finish. "Hard" stops kill the',
@@ -108,6 +110,7 @@ var commands = {
   'cpu-start': cmdCpuStart,
   'cpu-stop': cmdCpuStop,
   'heap-snapshot': cmdHeapSnapshot,
+  ls: cmdLs,
 };
 
 (commands[command] || cmdInvalid)();
@@ -276,6 +279,15 @@ function cmdHeapSnapshot() {
   request(ofApp(req), function(rsp) {
     console.log('Heap snapshot written to `%s`, load into Chrome Dev Tools',
                 name);
+  });
+}
+
+function cmdLs() {
+  var depth = optionalOne(Number.MAX_VALUE);
+  checkExtra();
+
+  request(ofApp({cmd: 'npm-ls'}), function(rsp) {
+    console.log(npmls.printable(rsp, depth));
   });
 }
 

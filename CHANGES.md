@@ -1,3 +1,9 @@
+2014-09-05, Version 1.1.0
+=========================
+
+ * pmctl: add npm-ls-alike command (Sam Roberts)
+
+
 2014-09-02, Version 1.0.0
 =========================
 

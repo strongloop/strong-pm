@@ -120,6 +120,8 @@ function test(port) {
   expect('--help', 'usage: ');
   expect('-h', 'usage: ');
   expect('', util.format('pid: *%d', pm.pid));
+  expect('ls', /test-app@/);
+  expect('ls', /node-syslog@/);
   expect('status', util.format('port: *%d', port));
   failon('start', 'running, so cannot be started');
   expect('stop', 'stopped with status SIGTERM');

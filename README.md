@@ -231,6 +231,7 @@ Commands:
   cpu-start T             Start CPU profiling on T, use cpu-stop to save profile.
   cpu-stop T [NAME]       Stop CPU profiling on T, save as `NAME.cpuprofile`.
   heap-snapshot T [NAME]  Save heap snapshot on T, save as `NAME.heapsnapshot`.
+  ls [DEPTH]              List dependencies of the current application.
 
 "Soft" stops notify workers they are being disconnected, and give them a
 grace period for any existing connections to finish. "Hard" stops kill the

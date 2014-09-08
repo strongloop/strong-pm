@@ -1,7 +1,7 @@
 {
   "name": "strong-pm",
   "description": "StrongLoop Process Manager",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "keywords": [
     "StrongLoop",
     "build",
@@ -54,6 +54,7 @@
     "passwd-user": "^1.0.0",
     "posix-getopt": "^1.0.0",
     "strong-control-channel": "^0.2.2",
+    "strong-npm-ls": "^1.0.0",
     "strong-service-install": "^0.1.0",
     "strong-supervisor": "^0.3.3",
     "tar": "^1.0.0",
