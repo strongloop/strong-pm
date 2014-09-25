@@ -36,6 +36,12 @@ See [strong-build](https://github.com/strongloop/strong-build) and
 [strong-deploy](https://github.com/strongloop/strong-deploy) for more
 information.
 
+## Metrics
+
+Metrics-related features (`slc run --metrics`, `slc pmctl objects-start`, etc.),
+requires a license, please contact
+[sales@strongloop.com](mailto:sales@strongloop.com).
+
 ## Options
 
 The following options are supported:
