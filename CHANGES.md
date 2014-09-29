@@ -1,3 +1,17 @@
+2014-09-29, Version 1.2.0
+=========================
+
+ * package: mention license in README (Sam Roberts)
+
+ * Enable strong-pm to be controlled from parent (Krishna Raman)
+
+ * package: npm ls requires supervisor after 1.0.0 (Sam Roberts)
+
+ * test: remove executable bit from test-pmctl.js (Sam Roberts)
+
+ * package: add keywords (Sam Roberts)
+
+
 2014-09-05, Version 1.1.0
 =========================
 
