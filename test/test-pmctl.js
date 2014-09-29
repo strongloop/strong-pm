@@ -1,4 +1,5 @@
 var assert = require('assert');
+var childctl = require('strong-control-channel/process');
 var cp = require('child_process');
 var debug = require('debug')('strong-pm:test');
 var fs = require('fs');
@@ -12,25 +13,27 @@ process.env.cluster_size = 0;
 
 console.log('Done setup, run process manager');
 
+function onReceive() {
+}
+
 helper.manager = function manager(callback) {
   var pmcli = require.resolve('../bin/sl-pm.js');
+
+  // Listened on zero to avoid port conflicts, search for actual port.
   var args = [
     '--listen=0',
   ];
   console.log('pmcli:', pmcli, args);
   var pm = cp.spawn(pmcli, args, {
-    stdio: ['ignore', 'pipe', process.stderr, 'ipc'],
+    stdio: ['ignore', process.stdout, process.stderr, 'ipc'],
   });
   pm.on('error', function(er) {
     assert.ifError(er);
   });
 
-  // Listened on zero to avoid port conflicts, search for actual port.
-  var pmurl;
-  pm.stdout.on('data', function(line) {
-    var match = /: listen on (\d+),/.exec(line);
-    if (!match) return;
-    var port = match[1];
+  var ctl = childctl.attach(onReceive, pm);
+  ctl.request({cmd: 'status'}, function (res) {
+    var port = res.port;
     console.log('Listening port: %s', port);
 
     callback(port);
@@ -58,6 +61,7 @@ function waiton(cmd, output) {
 helper.pmctl.expect = expect;
 function expect(cmd, output) {
   var out = pmctl(cmd);
+  console.log("%s output:\n %s", cmd, out);
 
   assert.equal(out.code, 0);
   checkOutput(out, output);

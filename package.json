@@ -1,19 +1,32 @@
 {
   "name": "strong-pm",
   "description": "StrongLoop Process Manager",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "keywords": [
     "StrongLoop",
+    "agent",
     "build",
     "bundle",
+    "cluster",
     "dependencies",
     "deploy",
+    "devops",
+    "forever",
     "git",
     "heroku",
+    "manager",
+    "master",
+    "nodeops",
     "npm",
     "openshift",
+    "ops",
     "pm",
-    "slc"
+    "process",
+    "runner",
+    "slc",
+    "strongloop",
+    "strongops",
+    "supervisor"
   ],
   "repository": {
     "type": "git",
@@ -56,7 +69,7 @@
     "strong-control-channel": "^0.2.2",
     "strong-npm-ls": "^1.0.0",
     "strong-service-install": "^0.1.0",
-    "strong-supervisor": "^0.3.3",
+    "strong-supervisor": "^1.0.0",
     "tar": "^1.0.0",
     "uid-number": "0.0.5"
   }
