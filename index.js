@@ -4,8 +4,11 @@ var debug = require('debug')('strong-pm');
 var ipcctl = require('./lib/ipcctl');
 var path = require('path');
 var fs = require('fs');
+var fmt = require('util').format;
+var ini = require('ini');
 
 var configForCommit = require('./lib/config').configForCommit;
+var defaultConfig = require('./lib/config').configDefaults;
 var prepare = require('./lib/prepare').prepare;
 var receive = require('./lib/receive').listen;
 var runner = require('./lib/run');
@@ -107,6 +110,16 @@ exports.deploy = function deploy(argv, callback) {
     console.error('Listen port was not specified, try `%s --help`.', $0);
 
     return callback(true);
+  }
+
+  if (!fs.existsSync(config)) {
+    var defautlConfigContents = fmt(
+      '; strong-pm config file\n; Default values from strong-pm@%s\n\n%s\n',
+      require('./package.json').version,
+      ini.stringify(defaultConfig)
+    );
+    fs.writeFileSync(config, defautlConfigContents);
+    console.log('Default config written to \'%s\'.', config);
   }
 
   stopWhenDone($0);
