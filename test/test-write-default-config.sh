@@ -18,6 +18,6 @@ assert_exit 1 test -f $CONF
 assert_file $CONF
 
 # .. and should contain the default config
-assert_file $CONF "start[]=sl-run --cluster=CPU"
+assert_file $CONF "start[] = sl-run --cluster=CPU"
 
 assert_report

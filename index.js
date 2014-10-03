@@ -118,7 +118,7 @@ exports.deploy = function deploy(argv, callback) {
     var defautlConfigContents = fmt(
       '; strong-pm config file\n; Default values from strong-pm@%s\n\n%s\n',
       require('./package.json').version,
-      ini.stringify(defaultConfig)
+      ini.stringify(defaultConfig, { whitespace: true })
     );
     fs.writeFileSync(config, defautlConfigContents);
     console.log('Default config written to \'%s\'.', config);
