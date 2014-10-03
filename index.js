@@ -99,6 +99,8 @@ exports.deploy = function deploy(argv, callback) {
 
   if (config == null) {
     config = path.resolve(base, 'config');
+  } else {
+    config = path.resolve(config);
   }
 
   if (parser.optind() !== argv.length) {
