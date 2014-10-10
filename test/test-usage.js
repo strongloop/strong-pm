@@ -7,7 +7,7 @@ require('shelljs/global');
 
 console.log('working dir for %s is %s', process.argv[1], process.cwd());
 
-var deploy = require('../').deploy;
+var main = require('../').main;
 
 // Check for node silently exiting with code 0 when tests have not passed.
 var ok = false;
@@ -28,24 +28,24 @@ function expectError(er) {
 
 // argv [0] and [1] are ignored (they are node and script name, not options)
 async.parallel([
-  deploy.bind(null, ['', '', '-h']),
-  deploy.bind(null, ['', '', '--help']),
-  deploy.bind(null, ['', '', '-hv']),
-  deploy.bind(null, ['', '', '-v']),
-  deploy.bind(null, ['', '', '--version']),
-  deploy.bind(null, ['', '', '-vh']),
+  main.bind(null, ['', '', '-h']),
+  main.bind(null, ['', '', '--help']),
+  main.bind(null, ['', '', '-hv']),
+  main.bind(null, ['', '', '-v']),
+  main.bind(null, ['', '', '--version']),
+  main.bind(null, ['', '', '-vh']),
   function(callback) {
-    deploy(['', '', 'no-such-arg'], function(er) {
+    main(['', '', 'no-such-arg'], function(er) {
       return callback(expectError(er));
     });
   },
   function(callback) {
-    deploy(['', '', '--no-such-option'], function(er) {
+    main(['', '', '--no-such-option'], function(er) {
       return callback(expectError(er));
     });
   },
   function(callback) {
-    deploy(['', '', '-Z'], function(er) {
+    main(['', '', '-Z'], function(er) {
       return callback(expectError(er));
     });
   },

@@ -1,0 +1,56 @@
+{
+  "_meta": {
+    "sources": [
+      "../models",
+      "../../node_modules/strong-mesh-models/models"
+    ]
+  },
+  "User": {
+    "dataSource": "db",
+    "public": false
+  },
+  "AccessToken": {
+    "dataSource": "db",
+    "public": false
+  },
+  "ACL": {
+    "dataSource": "db",
+    "public": false
+  },
+  "RoleMapping": {
+    "dataSource": "db",
+    "public": false
+  },
+  "Role": {
+    "dataSource": "db",
+    "public": false
+  },
+  "ServerService": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Group": {
+    "dataSource": "db",
+    "public": false
+  },
+  "Executor": {
+    "dataSource": "db",
+    "public": false
+  },
+  "ServiceInstance": {
+    "dataSource": "db",
+    "public": false
+  },
+  "ServiceProcess": {
+    "dataSource": "db",
+    "public": false
+  },
+  "ProfileData": {
+    "dataSource": "db",
+    "public": false
+  },
+  "ServerAction": {
+    "dataSource": "db",
+    "public": false
+  }
+}

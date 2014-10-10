@@ -14,7 +14,7 @@ assert(env.PWD !== process.cwd());
 assert.equal(fs.realpathSync(env.PWD), process.cwd());
 
 // Check binary dependencies were compiled
-require('node-syslog');
+require('buffertools');
 
 http.createServer(echo)
     .listen(process.env.PORT || 0, function() {

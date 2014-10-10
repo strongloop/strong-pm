@@ -11,8 +11,7 @@ server.on('listening', function() {
 });
 
 server.on('commit', function(commit) {
-  this.close();
-
+  this.stop();
   assert.equal(
     require(path.resolve(commit.dir, 'package.json')).name,
     app.APPNAME);

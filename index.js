@@ -1,53 +1,24 @@
 var Parser = require('posix-getopt').BasicParser;
 var assert = require('assert');
 var debug = require('debug')('strong-pm');
-var ipcctl = require('./lib/ipcctl');
+var mkdirp = require('mkdirp').sync;
 var path = require('path');
 var fs = require('fs');
 
-var configForCommit = require('./lib/config').configForCommit;
-var prepare = require('./lib/prepare').prepare;
-var receive = require('./lib/receive').listen;
 var runner = require('./lib/run');
-var cicadaCommit = require('cicada/lib/commit');
+var Server = require('./lib/server');
 
 function printHelp($0, prn) {
-  prn('usage: %s [options]', $0);
-  prn('');
-  prn('Options:');
-  prn('  -h,--help         Print this message and exit.');
-  prn('  -v,--version      Print version and exit.');
-  prn('  -b,--base BASE    Base directory to work in (default .strong-pm).');
-  prn('  -c,--config CFG   Config file (default BASE/config).');
-  prn('  -l,--listen PORT  Listen on PORT for git pushes (no default).');
-  prn('  -C,--control CTL  Listen for control messages on CTL (default pmctl).');
-  prn('  --no-control      Do not listen for control messages.');
+  var USAGE = fs.readFileSync(require.resolve('./bin/sl-pm.usage'), 'utf-8')
+    .replace(/%MAIN%/g, $0)
+    .trim()
+    ;
+
+  prn(USAGE);
 }
 
-function runCommand(cmd, callback) {
-  debug('run command: %s', cmd);
-  shell.exec(cmd, {silent: true}, function(code, output) {
-    debug('code %d: <<<\n%s>>>', code, output);
-    if (code !== 0) {
-      var er = Error(cmd);
-    }
-    return callback(er, output, code);
-  });
-}
-
-function reportRunError(er, output) {
-  if (!er) return;
-
-  console.error("Failed to run `%s`:", er.message);
-  if (output && output !== '') {
-    process.stderr.write(output);
-  }
-}
-
-exports.deploy = function deploy(argv, callback) {
-  var $0 = process.env.SLC_COMMAND ?
-    'slc ' + process.env.SLC_COMMAND :
-    path.basename(argv[1]);
+function main(argv, callback) {
+  var $0 = process.env.CMD ?  process.env.CMD : path.basename(argv[1]);
   var parser = new Parser([
       ':v(version)',
       'h(help)',
@@ -55,7 +26,7 @@ exports.deploy = function deploy(argv, callback) {
       'c:(config)',
       'l:(listen)',
       'C:(control)',
-      'N:(no-control)',
+      'N(no-control)',
     ].join(''),
     argv);
 
@@ -94,6 +65,11 @@ exports.deploy = function deploy(argv, callback) {
     }
   }
 
+  base = path.resolve(base);
+
+  if (control)
+    control = path.resolve(control);
+
   if (config == null) {
     config = path.resolve(base, 'config');
   }
@@ -109,83 +85,37 @@ exports.deploy = function deploy(argv, callback) {
     return callback(true);
   }
 
-  stopWhenDone($0);
+  // Run from base directory, so files and paths are created in it.
+  mkdirp(base);
+  process.chdir(base);
 
-  // Only callback on error, on success, we listen until terminated
-  return receive(listen, base)
-    .on('error', function(er) {
-      console.error('Listen on %s failed with: %s', listen, er.message);
-      return callback(er);
-    })
-    .on('commit', function(commit) {
-      debug('on commit:', commit);
-      commit.config = configForCommit(config, commit);
+  var app = new Server($0, config, base, listen, control);
 
-      debug('on config:', commit.config);
-      prepare(commit, function(err) {
-        debug('on prepare:', err);
-        if (err) {
-          // XXX ... can I remove the commit?  not much else to do, would be nice
-          // if git push could be failed, but I think its too late for that.
-          return;
-        }
+  app.on('listening', function(listenAddr){
+    console.log('%s: listen on %s, work base is `%s` with config `%s`',
+      $0, listenAddr.port, base, config);
+  });
 
-        runner.run(commit);
-      });
-    })
-    .on('listening', function() {
-      console.log('%s: listen on %s, work base is `%s` with config `%s`',
-                  $0, this.address().port, base, config);
+  app.start();
 
-      if (control) {
-        debug('start ipcctl on `%s`', control);
-        ipcControl = ipcctl.start({
-          control: control,
-          http: this,
-          runner: runner,
-          config: config,
-          base: base,
-        }).on('listening', function() {
-          var address = this.address();
+  // XXX stop just signals the supervisor with SIGTERM, and closes sockets.
+  // the socket close won't even complete while there are open connections...,
+  // which may happen if exec keeps a persistent ipc connection on pm. I'm
+  // not sure there is any point to this anymore, now what we only support
+  // supervisor as a runner, and supervisor exits when the parent exits. I think
+  // we can just let the signal terminate us, the OS will close sockets, and
+  // supervisor will exit itself.
+  //
+  // A fair amount of code dribbles down from this point that could be deleted.
+  stopWhenDone($0, app);
 
-          if (address.port) {
-            console.log('%s: control listening on port `%s`', $0, address.port);
-          } else {
-            console.log('%s: control listening on path `%s`', $0, address.path);
-          }
-        });
-      }
+  return app;
+}
 
-      var currentSymlink = this.git.workdir({id: 'current'});
-      var self = this;
-
-      fs.readlink(currentSymlink, function(err, id) {
-        if (err) return;
-
-        var dir = self.git.workdir({id: id});
-        var hash = id.split('.')[0];
-        // XXX(sam) repo not passed? config won't be correct!
-        var commit = cicadaCommit({hash: hash, id: id, dir: dir});
-        commit.config = configForCommit(config, commit);
-        runner.run(commit);
-      });
-    });
-};
-
-var ipcControl;
-
-function stopWhenDone($0) {
-  function stop() {
-    if (ipcControl) {
-      ipcControl.close();
-      ipcControl = null;
-    }
-    runner.stop();
-  }
-
+function stopWhenDone($0, app) {
   function dieBy(signal) {
     console.log('%s: stopped with %s', $0, signal);
-    stop();
+    app.stop();
 
     // re-kill ourself, so our exit status is signaled
     process.kill(process.pid, signal);
@@ -200,6 +130,8 @@ function stopWhenDone($0) {
   dieOn('SIGTERM');
 
   process.on('exit', function() {
-    stop();
+    app.stop();
   });
 }
+
+exports.main = main;
