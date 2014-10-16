@@ -68,7 +68,7 @@
     "posix-getopt": "^1.0.0",
     "strong-control-channel": "^0.2.2",
     "strong-npm-ls": "^1.0.0",
-    "strong-service-install": "^0.1.0",
+    "strong-service-install": "^1.0.0",
     "strong-supervisor": "^1.0.0",
     "tar": "^1.0.0",
     "uid-number": "0.0.5"

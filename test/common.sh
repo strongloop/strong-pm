@@ -33,7 +33,7 @@ function assert_file() {
   local fname=$1
   if test $# -gt 1; then
     shift
-    found=$(grep "\\$*" $fname)
+    found=$(grep -F -e "$*" $fname)
     result=$?
     if test $result -eq 0; then
       ok "needle: '$*' in $fname"
