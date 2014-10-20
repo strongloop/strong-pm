@@ -55,10 +55,6 @@ The following options are supported:
   It defaults to `.strong-pm` in the current working directory when
   run from the command line, but see `pm-install`.
 
-- `--config CFG`: the config file can be use to customize the behaviour of the
-  manager, if necessary, see below. It defaults to a file called `config` in the
-  `<BASE>` directory.
-
 ## Life-cycle
 
 When applications are deployed to the manager, it first prepares them. The
@@ -80,79 +76,55 @@ recommend changing it.
 
 ## Configuration
 
-The start command may be customized if necessary, see
-[strong-supervisor](http://github.com/strongloop/strong-supervisor) for
-supported options. Useful configuration options are those where the defaults may
-not reasonably work for all deployments: `--metrics`, timestamping, and perhaps
-cluster size.
+Configuration of strong-pm itself (port, base directory, etc.) is controlled by
+CLI arguments and environment variables when strong-pm is started.
 
-The config file is in [ini](https://www.npmjs.org/package/ini) format.
+Configuration of the application and its runtime are controlled by a combination
+of the application's package.json and the environment variables strong-pm
+provides to it.
 
-Configurable items are:
+These environment variables can be manipulated using the `env` sub-command to
+pmctl.
 
-- prepare command: an array of commands, shell syntax is *not* supported
-- start command: a single command, shell syntax is *not* supported
-- stop signal
-- restart signal
-- files to add to application's working directory
-
-The configuration for each item is the last found of:
-
-1. the builtin defaults
-2. the global configuration section
-3. the specific configuration matching the `--config` option of
-   [slc deploy](http://github.com/strongloop/strong-deploy)
-
-
-Example:
-
-    ; these are the defaults
-    prepare[] = npm rebuild
-    prepare[] = npm install --production
-    start = sl-run --cluster=CPU
-    stop = SIGTERM
-    restart = SIGHUP
-
-    ; these are overrides for a particular repo, deploy to it like:
-    ;   slc deploy --config config-one http://example.com:7777
-    ; this configuration is valid, but probably not useful (pmctl, for
-    ; example, will not support many commands if the supervisor is not
-    ; used)
-    [config-one]
-    ; no prepare
-    prepare =
-    ; run with node
-    start = node .
-    ; single instance node doesn't support restart
-    restart = no
+Examples:
+- List current environment: `slc pmctl env`
+- Add/set single variable: `slc pmctl env PORT=4321`
+- Add/set multiple variables: `slc pmctl env PORT=4321 WORKERS=4 NODE_ENV=staging`
+- Unset single variable: `slc pmctl env PORT=`
+- Unset multiple variables: `slc pmctl env PORT= WORKERS= NODE_ENV=`
+- Corner case, set to empty string: `slc pmctl env PORT=''`
 
 ### Files
 
 The manager can be configured to add files to the working directory of
 the application. This is useful to avoid deploy-time configuration being
-present in the application package. The files should be named in a specific
-`files` section of the config file. The allowed syntax is either
+present in the application package.
 
-- `dst = src`: the file `src` will be copied into the working copy, and named
+These files can be set using the `inject-file` sub-command of pmctl, optionally
+including a mapping:
+
+- `dst=src`: the file `src` will be copied into the working copy, and named
   `dst`
-- `src`: the file `src` will be copied into the working copy, and named
-  `src`
+- `src`: the file `src` will be copied into the working copy, and named using
+  the basename of `src`
 
-If not qualified, the `src` filenames are resolved to the same directory as
-the config file.
+The file given by `src` is uploaded to strong-pm and stored there for future
+application restarts.  If `src` is a path, it is trimmed to just the file name for the purposes of
+mapping.
 
 Example:
 
-```
-[files]
-strongloop.json  ; copy this file into every working directory
-
-[config-dev.files]
-.env=dev.env     ; copy dev.env to .env
-
-[config-prod.files]
-.env=prod.env    ; copy prod.env to .env
-```
+- `slc pmctl inject-file strongloop.json`
+  - upload strongloop.json from current directory and inject it into the
+    application environment at deployment time.
+- `slc pmctl inject-file /path/to/global/default:strongloop.json`
+  - upload the file at `/path/to/global/default` and inject it into the
+    applicaiton environment at deployment time as `strongloop.json`
+- `slc pmctl inject-file strongloop.json:`
+  - remove the strongloop.json file stored in strong-pm for deployments
+- `slc pmctl inject-file :strongloop.json`
+  - remove the strongloop.json file from application environment if it
+    is found at deployment time.
 
 
 ## Installation as a Service
@@ -173,6 +145,9 @@ the manager to run as, you can specify it with the `--user` option.
 You can also `--job-file` to generate the upstart conf-file locally, and move
 it to the remote system.
 
+To save time, the environment and file injections can be pre-seeded at service
+installation time with the `--env` and `--inject-file` options of `slc pm-install`.
+
 ## Usage
 
 ### slc pm
@@ -185,7 +160,6 @@ Options:
   -h,--help         Print this message and exit.
   -v,--version      Print version and exit.
   -b,--base BASE    Base directory to work in (default .strong-pm).
-  -c,--config CFG   Config file (default BASE/config).
   -l,--listen PORT  Listen on PORT for git pushes (no default).
   -C,--control CTL  Listen for control messages on CTL (default pmctl).
   --no-control      Do not listen for control messages.
@@ -202,7 +176,6 @@ Options:
   -v,--version        Print version and exit.
   -m,--metrics STATS  Specify --metrics option for supervisor running deployed applications.
   -b,--base BASE      Base directory to work in (default is .strong-pm).
-  -c,--config CONFIG  Config file (default BASE/config).
   -u,--user USER      User to run manager as (default is strong-pm).
   -p,--port PORT      Listen on PORT for application deployment (no default).
   -n,--dry-run        Don't write any files.
@@ -241,6 +214,8 @@ Commands:
   cpu-stop T [NAME]       Stop CPU profiling on T, save as `NAME.cpuprofile`.
   heap-snapshot T [NAME]  Save heap snapshot on T, save as `NAME.heapsnapshot`.
   ls [DEPTH]              List dependencies of the current application.
+  env [KEY=VALUE...]      List or set environment variables for current application.
+  inject-file <FILEMAP>   Define file injection mapping for current application.
 
 "Soft" stops notify workers they are being disconnected, and give them a
 grace period for any existing connections to finish. "Hard" stops kill the
