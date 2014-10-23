@@ -159,13 +159,15 @@ exports.deploy = function deploy(argv, callback) {
       var currentSymlink = this.git.workdir({id: 'current'});
       var self = this;
 
-      fs.readlink(currentSymlink, function(err, id) {
+      fs.readlink(currentSymlink, function(err, resolvedPath) {
         if (err) return;
 
-        var dir = self.git.workdir({id: id});
+        resolvedPath = resolvedPath.split(path.sep);
+        var repo = resolvedPath[0];
+        var id = resolvedPath[1];
+        var dir = self.git.workdir({id: id, repo: repo});
         var hash = id.split('.')[0];
-        // XXX(sam) repo not passed? config won't be correct!
-        var commit = cicadaCommit({hash: hash, id: id, dir: dir});
+        var commit = cicadaCommit({hash: hash, id: id, dir: dir, repo: repo});
         commit.config = configForCommit(config, commit);
         runner.run(commit);
       });
