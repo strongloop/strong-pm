@@ -1,0 +1,48 @@
+usage: %MAIN% [options] [command ...]
+
+Run-time control of the process manager.
+
+Options:
+  -h,--help               Print help and exit.
+  -v,--version            Print version and exit.
+  -C,--control CTL        Control channel to connect to.
+
+Commands:
+  status                  Report status, the default command.
+  shutdown                Stop the process manager.
+  start                   Start the current application.
+  stop                    Hard stop the current application.
+  soft-stop               Soft stop the current application.
+  restart                 Hard stop and restart the current application with
+                            new config.
+  soft-restart            Soft stop and restart the current application with
+                            new config.
+  cluster-restart         Restart the current application cluster workers.
+  set-size N              Set cluster size to N workers.
+  objects-start W         Start tracking objects on worker W.
+  objects-stop W          Stop tracking objects on worker W.
+  cpu-start W             Start CPU profiling on ID, use cpu-stop to save
+                            profile.
+  cpu-stop W [NAME]       Stop CPU profiling on worker W, save as
+                            `NAME.cpuprofile`.
+  heap-snapshot W [NAME]  Save heap snapshot for worker W, save as
+                            `NAME.heapsnapshot`.
+  ls [DEPTH]              List dependencies of the current application.
+
+"Soft" stops notify workers they are being disconnected, and give them a grace
+period for any existing connections to finish. "Hard" stops kill the supervisor
+and its workers with `SIGTERM`.
+
+Worker `W` is either a node cluster worker ID, or an operating system process
+ID. The special worker ID `0` can be used to identify the master.
+
+Profiling:
+
+Object tracking is published as metrics, and requires configuration so that the
+`--metrics=URL` option is passed to the runner.
+
+CPU profiles must be loaded into Chrome Dev Tools. The NAME is optional,
+profiles default to being named `node.<PID>.cpuprofile`.
+
+Heap snapshots must be loaded into Chrome Dev Tools. The NAME is optional,
+snapshots default to being named `node.<PID>.heapsnapshot`.

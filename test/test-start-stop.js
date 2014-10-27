@@ -2,9 +2,13 @@ var app = require('./helper');
 var assert = require('assert');
 var async = require('async');
 var path = require('path');
+var semver = require('semver');
 var util = require('util');
 
 var server = app.listen();
+
+// Remove default commit listener. Test provides custom implementation
+server.removeAllListeners('commit');
 
 function pushWithConfig(config, failStatus, callback) {
   console.log('\n\n');
@@ -54,6 +58,8 @@ function pushWithConfig(config, failStatus, callback) {
         assert.equal(status, signo ? signame : 'SIGTERM');
         return callback();
       });
+      server.emit('running', commit);
+
     });
 
   });
@@ -68,6 +74,9 @@ function test(config, failStatus) {
 // status reflects the signal it was killed with
 require('../lib/config').configDefaults.start = ['sl-run'];
 
+// 0.10 exists with 8 on no-such-file, 0.11 exits with 1
+var NEXIST = semver.gt(process.versions.node, '0.11.0') ? 1 : 8;
+
 server.once('listening', function() {
   async.series([
     test({}),
@@ -75,8 +84,8 @@ server.once('listening', function() {
     test({start: ['node .'], stop: ['SIGINT']}),
     test({start: ['sl-run'], stop: ['SIGHUP']}),
     // Test various kinds of valid ini file syntax, with invalid configuration.
-    test({start: ['node no-such-file']}, 8), // node status for no file
-    test({start: ['sl-run no-such-file']}, 1), // slr status for no file
+    test({start: ['node no-such-file']}, NEXIST), // node status for no file
+    test({start: ['sl-run no-such-file']}, NEXIST), // slr status for no file
     test({start: ['no-runner whatever']}, 127), // shell status for no file
     test({start: ['sl-run', 'ignored']}),
     test({start: []}),
@@ -88,7 +97,7 @@ server.once('listening', function() {
   ], function(err) {
     assert.ifError(err);
     app.ok = true;
-    server.close();
+    server.stop();
     app.stop();
     console.log('PASS');
   });

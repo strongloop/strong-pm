@@ -8,6 +8,9 @@ var util = require('util');
 
 var server = app.listen();
 
+// Remove default commit listener. Test provides custom implementation
+server.removeAllListeners('commit');
+
 function running() {
   var current = run.current();
   return current ? current.child : null;
@@ -44,6 +47,7 @@ function pushWithConfig(config, callback) {
       function poll() {
         // Should poll to ensure app's http port is reachable... but we don't
         // know what port its running on, and don't have its stdio output!
+        // XXX(sam) we will know its port soon, fix this then
         var appPid = commit.appPid();
         if (running() && appPid) {
           console.log('on timeout, app pid:', appPid);
@@ -54,7 +58,7 @@ function pushWithConfig(config, callback) {
 
       poll();
 
-      app.run(commit);
+      server.emit('prepared', commit);
     });
 
   });
@@ -189,6 +193,6 @@ server.once('listening', function() {
     test(cluster(T), replace(T), start, replace(F), repush, repush, stop),
   ], function() {
     app.ok = true;
-    server.close();
+    server.stop();
   });
 });

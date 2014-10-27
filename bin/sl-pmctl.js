@@ -3,62 +3,25 @@
 var Parser = require('posix-getopt').BasicParser;
 var assert = require('assert');
 var client = require('strong-control-channel/client');
+var concat = require('concat-stream');
 var debug = require('debug')('strong-pm:pmctl');
 var fs = require('fs');
+var http = require('http');
+var loopback = require('loopback');
+var loopbackBoot = require('loopback-boot');
 var npmls = require('strong-npm-ls');
 var path = require('path');
 var sprintf = require('extsprintf').sprintf;
+var url = require('url');
 var util = require('util');
 
-var USAGE = [
-  'usage: %s [options] [command]',
-  '',
-  'Run-time control of the process manager.',
-  '',
-  'Options:',
-  '  -h,--help               Print help and exit.',
-  '  -v,--version            Print version and exit.',
-  '',
-  'Commands:',
-  '  status                  Report status, the default command.',
-  '  shutdown                Stop the process manager.',
-  '  start                   Start the current application.',
-  '  stop                    Hard stop the current application.',
-  '  soft-stop               Soft stop the current application.',
-  '  restart                 Hard stop and restart the current application with new config.',
-  '  soft-restart            Soft stop and restart the current application with new config.',
-  '  cluster-restart         Restart the current application cluster workers.',
-  '  set-size N              Set cluster size to N workers.',
-  '  objects-start T         Start tracking objects on T, a worker ID or process PID.',
-  '  objects-stop T          Stop tracking objects on T.',
-  '  cpu-start T             Start CPU profiling on T, use cpu-stop to save profile.',
-  '  cpu-stop T [NAME]       Stop CPU profiling on T, save as `NAME.cpuprofile`.',
-  '  heap-snapshot T [NAME]  Save heap snapshot on T, save as `NAME.heapsnapshot`.',
-  '  ls [DEPTH]              List dependencies of the current application.',
-  '',
-  '"Soft" stops notify workers they are being disconnected, and give them a',
-  'grace period for any existing connections to finish. "Hard" stops kill the',
-  'supervisor and its workers with `SIGTERM`.',
-  '',
-  'Profiling:',
-  '',
-  'Either a node cluster worker ID, or an operating system process',
-  'ID can be used to identify the node instance to target to start',
-  'profiling of objects or CPU. The special worker ID `0` can be used',
-  'to identify the master.',
-  '',
-  'Object tracking is published as metrics, and requires configuration',
-  'so that the `--metrics=URL` option is passed to the runner.',
-  '',
-  'CPU profiles must be loaded into Chrome Dev Tools. The NAME is',
-  'optional, profiles default to being named `node.<PID>.cpuprofile`.',
-  '',
-  'Heap snapshots must be loaded into Chrome Dev Tools. The NAME is',
-  'optional, snapshots default to being named `node.<PID>.heapsnapshot`.',
-].join('\n');
-
 function printHelp($0, prn) {
-  prn(USAGE, $0);
+  var USAGE = fs.readFileSync(require.resolve('./sl-pmctl.usage'), 'utf-8')
+    .replace(/%MAIN%/g, $0)
+    .trim()
+    ;
+
+  prn(USAGE);
 }
 
 var argv = process.argv;
@@ -68,7 +31,11 @@ var parser = new Parser([
   'h(help)',
   'C:(control)',
 ].join(''), argv);
-var pmctl = fs.existsSync('pmctl') ? 'pmctl' : '/var/lib/strong-pm/pmctl';
+var pmctl = process.env.STRONGLOOP_PM ?
+  process.env.STRONGLOOP_PM :
+  fs.existsSync('pmctl') ?
+    'pmctl' :
+    '/var/lib/strong-pm/pmctl';
 var command = 'status';
 
 while ((option = parser.getopt()) !== undefined) {
@@ -80,7 +47,7 @@ while ((option = parser.getopt()) !== undefined) {
       printHelp($0, console.log);
       process.exit(0);
     case 'C':
-      pmctl = option.optarg;
+      pmctl = option.optarg; console.log(pmctl);
       break;
     default:
       console.error('Invalid usage (near option \'%s\'), try `%s --help`.',
@@ -95,6 +62,9 @@ if (optind < argv.length) {
   command = argv[optind++];
 }
 
+var remote = {
+  request: remoteRequest,
+};
 var commands = {
   status: cmdStatus,
   shutdown: cmdShutdown,
@@ -140,8 +110,8 @@ function cmdStatus() {
     fmt(0, 'manager');
     fmt(1, 'pid', '%s', rsp.pid);
     fmt(1, 'port', '%s', rsp.port);
-    fmt(1, 'base', '%s', rsp.base); // FIXME resolve
-    fmt(1, 'config', '%s', rsp.config); // FIXME relative to BASE
+    fmt(1, 'base', '%s', rsp.base);
+    fmt(1, 'config', '%s', rsp.config);
 
     var current = rsp.current;
 
@@ -259,14 +229,17 @@ function cmdCpuStart() {
 
 function cmdCpuStop() {
   var t = checkOne('T');
-  var name = optionalOne(util.format('node.%s', t));
+  var name = optionalOne(util.format('node.%s', t)) + '.cpuprofile';
   checkExtra();
 
-  request(ofApp({cmd: 'stop-cpu-profiling', target: t}), function(rsp) {
-    var filename = name + '.cpuprofile'; // Required by Chrome
-    fs.writeFileSync(filename, rsp.profile);
+  var req = {
+    cmd: 'stop-cpu-profiling',
+    target: t,
+    filePath: path.resolve(name)
+  };
+  request(ofApp(req), function(rsp) {
     console.log('CPU profile written to `%s`, load into Chrome Dev Tools',
-                filename);
+                name);
   });
 }
 
@@ -304,7 +277,7 @@ function request(cmd, display) {
     cmd = {cmd: cmd};
   }
 
-  client.request(pmctl, cmd, function(er, rsp) {
+  remote.request(pmctl, cmd, function(er, rsp) {
     if (er) {
       console.error('Communication error (%s), check manager is listening.',
         er.message);
@@ -312,7 +285,7 @@ function request(cmd, display) {
     }
 
     if (rsp.error) {
-      console.log('Command `%s` failed with: %s', cmd.cmd, rsp.error);
+      console.log('Command `%s` failed with: %s', cmd.sub || cmd.cmd, rsp.error);
       process.exit(1);
     }
     display(rsp);
@@ -353,4 +326,108 @@ function optionalOne(default_) {
 function extra() {
   console.error('Invalid usage (extra arguments), try `%s --help`.', $0);
   process.exit(1);
+}
+
+function remoteRequest(pmctl, cmd, callback) {
+  var endpoint = url.parse(pmctl);
+
+  if (!endpoint.protocol) {
+    return client.request(pmctl, cmd, callback);
+  }
+
+  // Normalize the URI
+  debug('normalize endpoint %j', endpoint);
+  endpoint.pathname = '/api'; // Loopback is mounted here
+  endpoint.hostname = endpoint.hostname || 'localhost'; // Allow `http://:8888`
+  delete endpoint.host; // So .hostname and .port are used to construct URL
+  pmctl = url.format(endpoint);
+
+  debug('http endpoint `%s`', pmctl);
+
+  var lb = loopback();
+  lb.dataSource('remote', {'connector': 'remote', 'url': pmctl});
+  loopbackBoot(lb, {'appRootDir': path.join(__dirname, '..', 'lib', 'client')});
+
+  // XXX 'action' should be called 'cmd', IMO
+  var Service = lb.models.ServerService;
+  var ServerAction = lb.models.ServerAction;
+
+  Service.findById(1, function(err, service) {
+    if (err) {
+      console.error('Failed to find service at `%s`: %s', pmctl, err.message);
+      process.exit(1);
+    }
+
+    var action = {
+      request: cmd,
+    };
+
+    service.actions.create(new ServerAction(action), function(err, action) {
+      checkError(err);
+
+      debug('remote action result: %j', action);
+
+      switch (cmd.sub) {
+        case 'stop-cpu-profiling':
+        case 'heap-snapshot': {
+          download(endpoint, action.result.url, cmd.filePath, downloaded);
+          break;
+        }
+        default:
+          return callback(null, action.result);
+      }
+
+      function downloaded(err) {
+        checkError(err);
+        return callback(null, action.result);
+      }
+
+      function checkError(err) {
+        if (err) {
+          console.error('Command `%s` failed: %s',
+            cmd.sub || cmd.cmd, err.message);
+          process.exit(1);
+        }
+      }
+    });
+  });
+}
+
+function download(endpoint, path, file, callback) {
+  endpoint.pathname = path;
+  location = url.format(endpoint);
+
+  var get = http.get(location, function(res) {
+    debug('http.get: %d', res.statusCode);
+
+    switch (res.statusCode) {
+      case 200: {
+        var out = fs.createWriteStream(file);
+        res.once('error', callback);
+        out.once('error', callback);
+        out.once('finish', callback);
+        res.pipe(out);
+        break;
+      }
+      case 204: {
+        // No content, keep polling until completed or errored
+        setTimeout(function() {
+          download(endpoint, path, file, callback);
+        }, 200);
+        break;
+      }
+      default: {
+        // Collect response stream to use as error message.
+        var out = concat(function(data) {
+          callback(Error(util.format('code %d/%s',
+            res.statusCode, data)));
+        });
+        res.once('error', callback);
+        out.once('error', callback);
+        res.pipe(out);
+      }
+    }
+  });
+
+  get.once('error', callback);
 }

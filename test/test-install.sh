@@ -38,7 +38,7 @@ assert_file $TMP/upstart.conf "env STRONGLOOP_METRICS=statsd:"
 assert_file $TMP/upstart.conf "--base $TMP/deeply/nested/sl-pm"
 
 # Should actually point to strong-pm
-assert_file $TMP/upstart.conf "$(which node) $(which sl-pm.js)"
+assert_file $TMP/upstart.conf "$(node -p process.execPath) $(which sl-pm.js)"
 
 # Should default to config relative to base
 assert_file $TMP/upstart.conf "--config $TMP/deeply/nested/sl-pm/config"

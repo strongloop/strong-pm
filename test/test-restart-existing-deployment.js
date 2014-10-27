@@ -11,6 +11,9 @@ require('shelljs/global');
 
 var server = app.listen();
 
+// Remove default commit listener. Test provides custom implementation
+server.removeAllListeners('commit');
+
 var REPO = 'some-repo-name';
 var listeningPort = 0;
 
@@ -20,8 +23,8 @@ function running() {
 }
 
 // Start the server for initial setup and push once its up
-server.on('listening', function() {
-  listeningPort = server.address().port;
+server.on('listening', function(listenAddr) {
+  listeningPort = listenAddr.port;
   console.log('Server running on port %d', listeningPort);
   console.log('Pushing repo %s', REPO);
   app.push(REPO);
@@ -54,7 +57,7 @@ server.on('commit', function(commit) {
       setTimeout(pollStarted, 20);
     }
 
-    app.run(commit);
+    server.emit('prepared', commit);
     console.log('Wait for app to compile native deps and start');
     pollStarted();
   });
@@ -66,7 +69,7 @@ server.on('commit', function(commit) {
         setTimeout(pollStopped, 20);
       } catch (e) {
         console.log('Stop listener');
-        server.close();
+        server.stop();
         return attemptRestart();
       }
     }
