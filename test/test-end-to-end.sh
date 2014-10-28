@@ -12,16 +12,12 @@ if test -n "$SKIP_VAGRANT"; then
   exit
 fi
 
-NODE_TGZ="node-v0.10.29-linux-x64.tar.gz"
-
-if ! test -f $NODE_TGZ; then
-  wget http://nodejs.org/dist/v0.10.29/$NODE_TGZ
-fi
-
 PKG=$(npm pack ..)
 
-PKG_NAME=$PKG NODE_TGZ=$NODE_TGZ vagrant destroy --force
-PKG_NAME=$PKG NODE_TGZ=$NODE_TGZ vagrant up --provision
+PKG_NAME=$PKG vagrant destroy --force
+PKG_NAME=$PKG NODE_VER=0.10.33 vagrant up --provision
+
+echo '# strong-pm running in VM'
 
 cd app
 rm -rf .git
