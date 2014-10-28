@@ -35,6 +35,7 @@ function main(argv, callback) {
       'l:(listen)',
       'C:(control)',
       'N(no-control)',
+      'F',
     ].join(''),
     argv);
 
@@ -42,6 +43,7 @@ function main(argv, callback) {
   var config;
   var listen;
   var control = 'pmctl';
+  var fake;
 
   while ((option = parser.getopt()) !== undefined) {
     switch (option.option) {
@@ -65,6 +67,9 @@ function main(argv, callback) {
         break;
       case 'N':
         control = undefined;
+        break;
+      case 'F':
+        fake = true;
         break;
       default:
         console.error('Invalid usage (near option \'%s\'), try `%s --help`.',
@@ -102,6 +107,7 @@ function main(argv, callback) {
   app.on('listening', function(listenAddr){
     console.log('%s: listen on %s, work base is `%s` with config `%s`',
       $0, listenAddr.port, base, config);
+    if (fake) _fakeMetrics(app);
   });
 
   app.start();
@@ -140,6 +146,59 @@ function stopWhenDone($0, app) {
   process.on('exit', function() {
     app.stop();
   });
+}
+
+function _fakeMetrics(server) {
+  console.error('start faking metrics');
+
+  var m = server._app.models;
+
+  m.ServiceInstance.upsert({
+    id: 1,
+    executorId: 1,
+    serverServiceId: 1,
+    groupId: 1,
+    currentDeploymentId: 'fake-sha',
+    deploymentStartTime: new Date(),
+    PMPort: server._listenPort,
+    // FIXME @kraman, our models are broken, I'm pretty sure
+//  processes: [
+//    {pid: 42, workerId: 0},
+//  ],
+  }, function(err, obj) {
+    console.error('fake upsert ServiceInstance: %j', err || obj);
+  });
+
+  m.ServiceProcess.upsert({
+    pid: 42, workerId: 0
+  }, function(err, obj) {
+    console.error('fake upsert ServerProcess:', err || obj);
+    assert.ifError(err);
+    assert.equal(obj.id, 1);
+  });
+
+  setInterval(function() {
+    m.ServiceMetric.upsert({
+      processId: 1,
+      timeStamp: new Date(),
+      counters: {},
+      gauges: {
+        'cpu.system': 18.3,
+        'cpu.user': 8.4,
+        'cpu.total': 26.7,
+        'heap.total': 67898,
+        'heap.used': 765,
+        'loop.count': 356,
+        'loop.maximum': 87,
+        'loop.minimum': 7,
+        'loop.average': 14,
+      },
+    }, function(err, obj) {
+      console.error('fake upser ServiceMetric:', err || obj);
+    });
+  }, 15 * 1000);
+
+  return;
 }
 
 exports.main = main;
