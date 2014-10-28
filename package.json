@@ -67,6 +67,7 @@
     "errorhandler": "^1.2.0",
     "extsprintf": "^1.2.0",
     "ini": "^1.2.1",
+    "lodash": "^2.4.1",
     "loopback": "^2.4.0",
     "loopback-boot": "^2.1.0",
     "loopback-datasource-juggler": "^2.9.0",

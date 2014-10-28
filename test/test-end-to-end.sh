@@ -20,7 +20,7 @@ PKG_NAME=$PKG NODE_VER=0.10.33 vagrant up --provision
 echo '# strong-pm running in VM'
 
 cd app
-rm -rf .git
+rm -rf .git .strong-pm
 git clean -f -x -d .
 git init .
 echo "PORT=8888" > .env
@@ -36,3 +36,20 @@ while ! curl -sI http://localhost:8888/this/is/a/test; do
   echo "# nothing yet, sleeping for 5s..."
   sleep 5
 done
+
+curl -s http://localhost:8888/this/is/a/test \
+  | grep -F -e '/this/is/a/test' \
+  && echo 'ok # echo server responded' \
+  || echo 'not ok # echo server failed to respond'
+
+../../bin/sl-pmctl.js -C http://localhost:7777/ env-set foo=success \
+  | grep -F -e 'Environment updated' \
+  && echo 'ok # pmctl env-set command ran without error' \
+  || echo 'not ok # failed to run env-set foo=success'
+
+sleep 5 # Long enough for app to restart
+
+curl -s http://localhost:8888/env \
+  | grep -F -e '"foo": "success"' \
+  && echo 'ok # set foo=success via pmctl' \
+  || echo 'not ok # failed to set foo=success via pmctl'

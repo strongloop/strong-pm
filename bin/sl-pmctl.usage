@@ -28,6 +28,8 @@ Commands:
   heap-snapshot W [NAME]  Save heap snapshot for worker W, save as
                             `NAME.heapsnapshot`.
   ls [DEPTH]              List dependencies of the current application.
+  env-set K=V...          Set one or more environment variables for current
+                          application and hard restart it with new environment.
 
 "Soft" stops notify workers they are being disconnected, and give them a grace
 period for any existing connections to finish. "Hard" stops kill the supervisor

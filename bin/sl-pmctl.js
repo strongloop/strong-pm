@@ -81,6 +81,7 @@ var commands = {
   'cpu-stop': cmdCpuStop,
   'heap-snapshot': cmdHeapSnapshot,
   ls: cmdLs,
+  'env-set': cmdEnvSet,
 };
 
 (commands[command] || cmdInvalid)();
@@ -264,6 +265,26 @@ function cmdLs() {
   });
 }
 
+function cmdEnvSet() {
+  var vars = checkSome('K=V');
+  var env = _.reduce(vars, extractKeyValue, {});
+
+  request({cmd: 'env-set', env: env}, function(rsp) {
+    console.log('Environment updated: %s', rsp.message);
+  });
+
+  function extractKeyValue(store, pair) {
+    var kv = pair.split('=');
+    if (!kv[0] || !kv[1]) {
+      console.error('Invalid usage (not K=V format: `%s`), try `%s --help`.',
+                    pair, $0);
+      process.exit(1);
+    }
+    store[kv[0]] = kv[1];
+    return store;
+  }
+}
+
 function simpleCommand(cmd) {
   checkExtra();
 
@@ -314,6 +335,17 @@ function checkOne(name) {
     process.exit(1);
   }
   return argv[optind++];
+}
+
+function checkSome(name) {
+  if (optind >= argv.length) {
+    console.error(
+      'Invalid usage (missing required argument `%s`), try `%s --help`.',
+      name,
+      $0);
+    process.exit(1);
+  }
+  return argv.slice(optind);
 }
 
 function optionalOne(default_) {

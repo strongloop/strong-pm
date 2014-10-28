@@ -157,6 +157,11 @@ function test(port) {
   expect('set-size 1');
   waiton('status', /worker count: *1/);
 
+  expect('env-set FOO=bar BAR=foo', 'Environment updated');
+  waiton('status', /worker count: *0/);
+  expect('set-size 1');
+  waiton('status', /worker count: *1/);
+
   expect('cpu-start 0', /Profiler started/);
 
   if (process.env.STRONGLOOP_LICENSE) {
