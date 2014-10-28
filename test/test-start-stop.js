@@ -23,6 +23,7 @@ function pushWithConfig(config, failStatus, callback) {
     assert.equal(commit.repo, repo);
 
     commit.config = config;
+    commit.env = server.env(process.env);
 
     app.prepare(commit, function(err) {
       console.log('on prepare:', err);

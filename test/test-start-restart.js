@@ -28,6 +28,7 @@ function pushWithConfig(config, callback) {
     assert.equal(commit.repo, repo);
 
     commit.config = config;
+    commit.env = server.env(process.env);
 
     commit.appPid = function() {
       var appFile = path.join(this.dir, 'app.pid');

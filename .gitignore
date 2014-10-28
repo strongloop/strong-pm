@@ -9,3 +9,4 @@ npm-debug.log
 test/.vagrant/
 test/copy.out
 test/receive-base
+test/SANDBOX*
