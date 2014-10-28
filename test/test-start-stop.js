@@ -85,7 +85,7 @@ server.once('listening', function() {
     test({start: ['sl-run'], stop: ['SIGHUP']}),
     // Test various kinds of valid ini file syntax, with invalid configuration.
     test({start: ['node no-such-file']}, NEXIST), // node status for no file
-    test({start: ['sl-run no-such-file']}, NEXIST), // slr status for no file
+    test({start: ['sl-run no-such-file']}, 1), // slr status for no file
     test({start: ['no-runner whatever']}, 127), // shell status for no file
     test({start: ['sl-run', 'ignored']}),
     test({start: []}),
