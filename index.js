@@ -161,16 +161,12 @@ function _fakeMetrics(server) {
     currentDeploymentId: 'fake-sha',
     deploymentStartTime: new Date(),
     PMPort: server._listenPort,
-    // FIXME @kraman, our models are broken, I'm pretty sure
-//  processes: [
-//    {pid: 42, workerId: 0},
-//  ],
   }, function(err, obj) {
     console.error('fake upsert ServiceInstance: %j', err || obj);
   });
 
   m.ServiceProcess.upsert({
-    pid: 42, workerId: 0
+    id: 1, pid: 42, workerId: 0
   }, function(err, obj) {
     console.error('fake upsert ServerProcess:', err || obj);
     assert.ifError(err);
