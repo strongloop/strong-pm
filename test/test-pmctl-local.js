@@ -151,11 +151,7 @@ function test(port) {
 
   expect('set-size 1');
   waiton('status', /worker count: *1/);
-  if (require('semver').gt(process.version, '0.11.0')) {
-    expect('cpu-start 0', /Profiler started/);
-  } else {
-    failon('cpu-start 0', /CPU profiler unavailable/);
-  }
+  expect('cpu-start 0', /Profiler started/);
 
   if (process.env.STRONGLOOP_LICENSE) {
     expect('objects-start 1');
