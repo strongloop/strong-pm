@@ -47,7 +47,7 @@
   },
   "ServiceMetric": {
     "dataSource": "db",
-    "public": false
+    "public": true
   },
   "ProfileData": {
     "dataSource": "db",
