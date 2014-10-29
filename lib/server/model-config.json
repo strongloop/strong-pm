@@ -35,15 +35,15 @@
   },
   "Executor": {
     "dataSource": "db",
-    "public": false
+    "public": true
   },
   "ServiceInstance": {
     "dataSource": "db",
-    "public": false
+    "public": true
   },
   "ServiceProcess": {
     "dataSource": "db",
-    "public": false
+    "public": true
   },
   "ServiceMetric": {
     "dataSource": "db",
