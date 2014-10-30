@@ -173,22 +173,29 @@ function _fakeMetrics(server) {
     assert.equal(obj.id, 1);
   });
 
+  function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+  function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+  }
+
   setInterval(function() {
     m.ServiceMetric.upsert({
       processId: 1,
       timeStamp: new Date(),
       counters: {},
       gauges: {
-        'cpu.system': 18.3,
-        'cpu.user': 8.4,
-        'cpu.total': 26.7,
-        'heap.total': 67898,
-        'heap.used': 765,
-        'loop.count': 356,
-        'loop.maximum': 87,
-        'loop.minimum': 7,
-        'loop.average': 14,
-      },
+        'cpu.system': getRandomArbitrary(1.1, 89.4),
+        'cpu.user': getRandomArbitrary(1.1, 9.4),
+        'cpu.total': getRandomArbitrary(12.3, 99.1),
+        'heap.total': getRandomInt(1000, 99999),
+        'heap.used': getRandomInt(225, 989),
+        'loop.count': getRandomInt(100, 500),
+        'loop.maximum': getRandomInt(78, 100),
+        'loop.minimum': getRandomInt(1, 12),
+        'loop.average': getRandomInt(13, 78)
+      }
     }, function(err, obj) {
       console.error('fake upser ServiceMetric:', err || obj);
     });
