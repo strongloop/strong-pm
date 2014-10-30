@@ -151,6 +151,12 @@ function test(port) {
 
   expect('set-size 1');
   waiton('status', /worker count: *1/);
+
+  waiton('restart', 'stopped with status SIGTERM, restarting');
+  waiton('status', /worker count: *0/);
+  expect('set-size 1');
+  waiton('status', /worker count: *1/);
+
   expect('cpu-start 0', /Profiler started/);
 
   if (process.env.STRONGLOOP_LICENSE) {
