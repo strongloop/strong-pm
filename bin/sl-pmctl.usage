@@ -30,6 +30,9 @@ Commands:
   ls [DEPTH]              List dependencies of the current application.
   env-set K=V...          Set one or more environment variables for current
                           application and hard restart it with new environment.
+  env-unset KEYS...       Unset one or more environment variables for current
+                          application and hard restart it with the new
+                          environment.
   env[-get] [KEYS...]     List specified environment variables. If none are
                           given, list all variables.
 

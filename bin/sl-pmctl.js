@@ -85,6 +85,7 @@ var commands = {
   'env-set': cmdEnvSet,
   'env-get': cmdEnvGet,
   env: cmdEnvGet,
+  'env-unset': cmdEnvUnset,
 };
 
 (commands[command] || cmdInvalid)();
@@ -286,6 +287,17 @@ function cmdEnvSet() {
     store[kv[0]] = kv[1];
     return store;
   }
+}
+
+function cmdEnvUnset() {
+  var keys = checkSome('KEYS');
+  var nulls = _.map(keys, _.constant(null));
+  var nulledKeys = _.zipObject(keys, nulls);
+
+  // unset is set, but with null values, which indicate delete
+  request({cmd: 'env-set', env: nulledKeys }, function(rsp) {
+    console.log('Environment updated: %s', rsp.message);
+  });
 }
 
 function cmdEnvGet() {

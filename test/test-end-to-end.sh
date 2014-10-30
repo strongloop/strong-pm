@@ -42,7 +42,7 @@ curl -s http://localhost:8888/this/is/a/test \
   && echo 'ok # echo server responded' \
   || echo 'not ok # echo server failed to respond'
 
-../../bin/sl-pmctl.js -C http://localhost:7777/ env-set foo=success \
+../../bin/sl-pmctl.js -C http://localhost:7777/ env-set foo=success bar=foo \
   | grep -F -e 'Environment updated' \
   && echo 'ok # pmctl env-set command ran without error' \
   || echo 'not ok # failed to run env-set foo=success'
@@ -53,3 +53,15 @@ curl -s http://localhost:8888/env \
   | grep -F -e '"foo": "success"' \
   && echo 'ok # set foo=success via pmctl' \
   || echo 'not ok # failed to set foo=success via pmctl'
+
+../../bin/sl-pmctl.js -C http://localhost:7777/ env-unset foo \
+  | grep -F -e 'Environment updated' \
+  && echo 'ok # pmctl env-set command ran without error' \
+  || echo 'not ok # failed to run env-set foo=success'
+
+sleep 5 # Long enough for app to restart
+
+curl -s http://localhost:8888/env \
+  | grep -F -e '"foo": "success"' \
+  && echo 'not ok # failed to unset foo via pmctl' \
+  || echo 'ok # unset foo via pmctl'
