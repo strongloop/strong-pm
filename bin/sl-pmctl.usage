@@ -30,6 +30,8 @@ Commands:
   ls [DEPTH]              List dependencies of the current application.
   env-set K=V...          Set one or more environment variables for current
                           application and hard restart it with new environment.
+  env[-get] [KEYS...]     List specified environment variables. If none are
+                          given, list all variables.
 
 "Soft" stops notify workers they are being disconnected, and give them a grace
 period for any existing connections to finish. "Hard" stops kill the supervisor

@@ -157,8 +157,15 @@ function test(port) {
   expect('set-size 1');
   waiton('status', /worker count: *1/);
 
+  expect('env-get', 'No matching environment variables defined');
+  expect('env-get NOTSET', 'No matching environment variables defined');
+
   expect('env-set FOO=bar BAR=foo', 'Environment updated');
-  waiton('status', /worker count: *0/);
+  expect('env-get', /FOO=bar/);
+  expect('env-get', /BAR=foo/);
+  expect('env-get FOO', /FOO=bar/);
+  expect('env-get NOTSET', 'No matching environment variables defined');
+
   expect('set-size 1');
   waiton('status', /worker count: *1/);
 

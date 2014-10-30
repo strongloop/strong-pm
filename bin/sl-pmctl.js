@@ -14,6 +14,7 @@ var path = require('path');
 var sprintf = require('extsprintf').sprintf;
 var url = require('url');
 var util = require('util');
+var _ = require('lodash');
 
 function printHelp($0, prn) {
   var USAGE = fs.readFileSync(require.resolve('./sl-pmctl.usage'), 'utf-8')
@@ -82,6 +83,8 @@ var commands = {
   'heap-snapshot': cmdHeapSnapshot,
   ls: cmdLs,
   'env-set': cmdEnvSet,
+  'env-get': cmdEnvGet,
+  env: cmdEnvGet,
 };
 
 (commands[command] || cmdInvalid)();
@@ -285,6 +288,21 @@ function cmdEnvSet() {
   }
 }
 
+function cmdEnvGet() {
+  var vars = optionalSome('K');
+  request({cmd: 'env-get'}, function(rsp) {
+    var filtered = vars.length > 0 ? _.pick(rsp.env, vars) : rsp.env;
+    console.log('Environment variables:');
+    if (_.keys(filtered).length === 0) {
+      console.log('  No matching environment variables defined');
+    } else {
+      _(filtered).keys().sort().each(function(k) {
+        console.log(' %s=%s', k, filtered[k]);
+      });
+    }
+  });
+}
+
 function simpleCommand(cmd) {
   checkExtra();
 
@@ -353,6 +371,13 @@ function optionalOne(default_) {
     return argv[optind++];
   }
   return default_;
+}
+
+function optionalSome() {
+  if (optind < argv.length) {
+    return argv.slice(optind);
+  }
+  return [];
 }
 
 function extra() {
