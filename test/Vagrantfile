@@ -31,7 +31,7 @@ $test = <<SCRIPT
     ## ($* > /dev/null && echo "ok # $*") || (echo "not ok # $*" >&2)
   }
   report npm install -g strong-pm.tgz
-  report sudo sl-pm-install --port 7777
+  report sudo sl-pm-install --port 7777 --set-env SL_PM_VAGRANT=42
   report test -f /etc/init/strong-pm.conf
   report sudo start strong-pm
   report sudo status strong-pm

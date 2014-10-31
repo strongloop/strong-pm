@@ -37,6 +37,11 @@ while ! curl -sI http://localhost:8888/this/is/a/test; do
   sleep 5
 done
 
+curl -s http://localhost:8888/env \
+  | grep -F -e '"SL_PM_VAGRANT": "42"' \
+  && echo 'ok # seed environment includes SL_PM_VAGRANT=42 via pm-install' \
+  || echo 'not ok # failed to set SL_PM_VAGRANT=42 via pm-install'
+
 curl -s http://localhost:8888/this/is/a/test \
   | grep -F -e '/this/is/a/test' \
   && echo 'ok # echo server responded' \
