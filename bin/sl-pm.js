@@ -8,7 +8,7 @@ process.on('disconnect', function() {
   process.exit(2);
 });
 
-require('../').deploy(process.argv, function(er) {
+require('../').main(process.argv, function(er) {
   if (!er) {
     process.exit(0);
   }

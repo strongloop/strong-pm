@@ -29,11 +29,16 @@ assert_exit 1 $CMD --dry-run --port 7777 --user definitely-does-not-exist
 assert_exit 0 $CMD --port 7777 \
               --job-file $TMP/upstart.conf \
               --user `id -un` \
+              --metrics statsd: \
               --base $TMP/deeply/nested/sl-pm
 
 # Should match what was specified
 assert_file $TMP/upstart.conf "--listen 7777"
+assert_file $TMP/upstart.conf "env STRONGLOOP_METRICS=statsd:"
 assert_file $TMP/upstart.conf "--base $TMP/deeply/nested/sl-pm"
+
+# Should actually point to strong-pm
+assert_file $TMP/upstart.conf "$(node -p process.execPath) $(which sl-pm.js)"
 
 # Should default to config relative to base
 assert_file $TMP/upstart.conf "--config $TMP/deeply/nested/sl-pm/config"

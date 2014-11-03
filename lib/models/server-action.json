@@ -1,0 +1,9 @@
+{
+  "name": "ServerAction",
+  "base": "Action",
+  "properties": {},
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": []
+}

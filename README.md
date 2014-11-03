@@ -200,6 +200,7 @@ usage: sl-pm-install [options]
 Options:
   -h,--help           Print this message and exit.
   -v,--version        Print version and exit.
+  -m,--metrics STATS  Specify --metrics option for supervisor running deployed applications.
   -b,--base BASE      Base directory to work in (default is .strong-pm).
   -c,--config CONFIG  Config file (default BASE/config).
   -u,--user USER      User to run manager as (default is strong-pm).
@@ -209,6 +210,8 @@ Options:
   -f,--force          Overwrite existing job file if present
   --upstart VERSION   Specify the version of Upstart, 1.4 or 0.6 (default is 1.4)
 ```
+
+The URL formats supported by `--meetrics STATS` are defined by strong-supervisor.
 
 ### slc pmctl
 

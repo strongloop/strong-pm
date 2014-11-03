@@ -1,0 +1,12 @@
+{
+  "name": "ServerService",
+  "plural": "Services",
+  "base": "Service",
+  "properties": {},
+  "options": {},
+  "relations": {},
+  "indexes": {},
+  "acls": [],
+  "models": ["Group", "Service"]
+}
+

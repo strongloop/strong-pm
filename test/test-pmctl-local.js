@@ -23,6 +23,9 @@ helper.manager = function manager(callback) {
   var args = [
     '--listen=0',
   ];
+  if (process.env.STRONGLOOP_PM) {
+    args.push('--no-control');
+  }
   console.log('pmcli:', pmcli, args);
   var pm = cp.spawn(pmcli, args, {
     stdio: ['ignore', process.stdout, process.stderr, 'ipc'],
@@ -32,9 +35,14 @@ helper.manager = function manager(callback) {
   });
 
   var ctl = childctl.attach(onReceive, pm);
+
   ctl.request({cmd: 'status'}, function (res) {
     var port = res.port;
     console.log('Listening port: %s', port);
+
+    if (process.env.STRONGLOOP_PM) {
+      process.env.STRONGLOOP_PM = 'http://localhost:' + port;
+    }
 
     callback(port);
   });
@@ -61,7 +69,7 @@ function waiton(cmd, output) {
 helper.pmctl.expect = expect;
 function expect(cmd, output) {
   var out = pmctl(cmd);
-  console.log("%s output:\n %s", cmd, out);
+  console.log("%s code: %j output: <\n%s>", cmd, out.code, out.output);
 
   assert.equal(out.code, 0);
   checkOutput(out, output);
@@ -125,7 +133,7 @@ function test(port) {
   expect('-h', 'usage: ');
   expect('', util.format('pid: *%d', pm.pid));
   expect('ls', /test-app@/);
-  expect('ls', /node-syslog@/);
+  expect('ls', /buffertools@/);
   expect('status', util.format('port: *%d', port));
   failon('start', 'running, so cannot be started');
   expect('stop', 'stopped with status SIGTERM');
@@ -143,11 +151,13 @@ function test(port) {
 
   expect('set-size 1');
   waiton('status', /worker count: *1/);
-  if (require('semver').gt(process.version, '0.11.0')) {
-    expect('cpu-start 0', /Profiler started/);
-  } else {
-    failon('cpu-start 0', /CPU profiler unavailable/);
-  }
+
+  waiton('restart', 'stopped with status SIGTERM, restarting');
+  waiton('status', /worker count: *0/);
+  expect('set-size 1');
+  waiton('status', /worker count: *1/);
+
+  expect('cpu-start 0', /Profiler started/);
 
   if (process.env.STRONGLOOP_LICENSE) {
     expect('objects-start 1');
@@ -157,6 +167,12 @@ function test(port) {
   }
 
   expect('heap-snapshot 1 _heap');
+  assert.doesNotThrow(
+    function() {
+      fs.statSync('_heap.heapsnapshot')
+    },
+    '_heap.heapsnapshot should exist'
+  );
 
   expect('shutdown');
 

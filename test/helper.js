@@ -7,7 +7,7 @@ var util = require('util');
 require('shelljs/global');
 
 exports.configForCommit = require('../lib/config').configForCommit;
-exports.deploy = require('../').deploy;
+exports.main = require('../').main;
 exports.prepare = require('../lib/prepare').prepare;
 exports.run = require('../lib/run').run;
 exports.stop = require('../lib/run').stop;
@@ -21,7 +21,7 @@ exports.ex = ex;
 
 console.log('working dir for %s is %s', process.argv[1], process.cwd());
 
-var receive = require('../lib/receive').listen;
+var Server = require('../lib/server');
 
 // Check for node silently exiting with code 0 when tests have not passed.
 exports.ok = false;
@@ -56,8 +56,8 @@ ex('git commit --author="sl-pm-test <nobody@strongloop.com>" -m initial');
 ex('sl-build --install --commit');
 
 assert(!test('-e', 'node_modules/debug'), 'dev dep not installed');
-assert(test('-e', 'node_modules/node-syslog'), 'prod dep installed');
-assert(!test('-e', 'node_modules/node-syslog/build'), 'addons not built');
+assert(test('-e', 'node_modules/buffertools'), 'prod dep installed');
+assert(!test('-e', 'node_modules/buffertools/build'), 'addons not built');
 assert(which('sl-build'), 'sl-build not in path');
 
 console.log('test/app built succesfully');
@@ -66,12 +66,15 @@ var server;
 var port;
 
 exports.listen = function() {
-  server = receive(0, '../receive-base');
-  server.on('listening', function() {
-    port = this.address().port;
+  var base = '../receive-base';
+  var app = new Server('test', path.resolve(base, 'config'), base, 0, 'pmctl');
+  app.on('listening', function(listenAddr){
+    port = listenAddr.port;
     console.log('git receive listening on  %d', port);
   });
-  return server;
+
+  app.start();
+  return app;
 };
 
 // Pushes don't work if we have already pushed... so force a new repo name for

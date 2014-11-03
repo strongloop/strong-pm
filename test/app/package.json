@@ -10,7 +10,7 @@
   "license": "MIT",
   "repository": "http://github.com/strongloop/strong-pm",
   "dependencies": {
-    "node-syslog": "^1.1.7"
+    "buffertools": "^2.1.2"
   },
   "devDependencies": {
     "debug": "^1.0.1"
