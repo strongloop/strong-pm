@@ -1,7 +1,7 @@
 {
   "name": "strong-pm",
   "description": "StrongLoop Process Manager",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "keywords": [
     "StrongLoop",
     "agent",

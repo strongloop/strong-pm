@@ -1,3 +1,29 @@
+2014-11-03, Version 1.3.0
+=========================
+
+ * Don't crash on runner exit after soft-stop (Ryan Graham)
+
+ * models: fix instance.processes update (Sam Roberts)
+
+ * test: cpu profiling now supported on v0.10 (Sam Roberts)
+
+ * Fix no-such-file test (Ryan Graham)
+
+ * Add LB API for remote control using pmctl (Krishna Raman)
+
+ * test: execPath and which node are not the same (Sam Roberts)
+
+ * Add --metrics option to pm-install (Ryan Graham)
+
+ * Upgrade strong-service-install to 1.0.0 (Ryan Graham)
+
+ * Refactor install options to avoid duplication (Ryan Graham)
+
+ * Always chown basedir (Ryan Graham)
+
+ * Update contribution guidelines (Ryan Graham)
+
+
 2014-09-29, Version 1.2.0
 =========================
 
@@ -12,7 +38,7 @@
  * package: add keywords (Sam Roberts)
 
 
-2014-09-05, Version 1.1.0
+2014-09-08, Version 1.1.0
 =========================
 
  * pmctl: add npm-ls-alike command (Sam Roberts)
@@ -43,11 +69,9 @@
 
  * Revert "pmctl: add a control CLI to pm and supervisor" (Ryan Graham)
 
- * pmctl: add a control CLI to pm and supervisor (Sam Roberts)
 
-
-2014-08-26, Version v0.1.9
-==========================
+2014-08-26, Version 0.1.9
+=========================
 
  * Use upstream passwd-user (Ryan Graham)
 
@@ -62,13 +86,13 @@
  * deploy: Add tarball over HTTP deploy support (Krishna Raman)
 
 
-2014-08-12, Version v0.1.8
-==========================
+2014-08-12, Version 0.1.8
+=========================
 
 
 
-2014-08-06, Version v0.1.7
-==========================
+2014-08-06, Version 0.1.7
+=========================
 
  * Rename strong-cli to strongloop (Krishna Raman)
 
@@ -77,33 +101,38 @@
  * test: Allow standalone Vagrantfile usage (Ryan Graham)
 
 
-2014-07-29, Version v0.1.6
-==========================
+2014-07-29, Version 0.1.6
+=========================
 
 
 
-2014-07-29, Version v0.1.5
-==========================
+2014-07-29, Version 0.1.5
+=========================
 
  * bundle forked dependency: passwd-user (Ryan Graham)
-
-
-2014-07-21, Version v0.1.4
-==========================
 
  * Update README (Sam Roberts)
 
  * Use .gitignore, not .npmignore (Sam Roberts)
 
 
-2014-07-21, Version v0.1.3
-==========================
+2014-07-21, Version 0.1.3
+=========================
+
+
+
+2014-07-21, Version 0.1.4
+=========================
+
+ * Update README (Sam Roberts)
+
+ * Use .gitignore, not .npmignore (Sam Roberts)
 
  * Npm ignore .strong* temporary files (Sam Roberts)
 
 
-2014-07-21, Version v0.1.2
-==========================
+2014-07-21, Version 0.1.2
+=========================
 
  * install: Improve --help output (Ryan Graham)
 
@@ -112,8 +141,8 @@
  * Update strong-supervisor dependency to 0.3.0 (Sam Roberts)
 
 
-2014-07-21, Version v0.1.0
-==========================
+2014-07-21, Version 0.1.0
+=========================
 
  * Add sl-pm-install command (Ryan Graham)
 
