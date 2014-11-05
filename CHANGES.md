@@ -1,3 +1,9 @@
+2014-11-05, Version 1.3.1
+=========================
+
+ * Use released version of loopback-explorer (Ryan Graham)
+
+
 2014-11-03, Version 1.3.0
 =========================
 
@@ -101,12 +107,12 @@
  * test: Allow standalone Vagrantfile usage (Ryan Graham)
 
 
-2014-07-29, Version 0.1.6
+2014-07-29, Version 0.1.5
 =========================
 
 
 
-2014-07-29, Version 0.1.5
+2014-07-29, Version 0.1.6
 =========================
 
  * bundle forked dependency: passwd-user (Ryan Graham)
@@ -114,6 +120,13 @@
  * Update README (Sam Roberts)
 
  * Use .gitignore, not .npmignore (Sam Roberts)
+
+ * Npm ignore .strong* temporary files (Sam Roberts)
+
+
+2014-07-21, Version 0.1.2
+=========================
+
 
 
 2014-07-21, Version 0.1.3
@@ -129,10 +142,6 @@
  * Use .gitignore, not .npmignore (Sam Roberts)
 
  * Npm ignore .strong* temporary files (Sam Roberts)
-
-
-2014-07-21, Version 0.1.2
-=========================
 
  * install: Improve --help output (Ryan Graham)
 
