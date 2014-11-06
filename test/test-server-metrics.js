@@ -5,20 +5,49 @@ var debug = require('debug')('strong-pm:test');
 var path = require('path');
 var runner = require('../lib/run');
 var tap = require('tap');
+var events = require('events');
+var util = require('util');
 
 var BASE = path.resolve(__dirname, '.strong-pm');
+
+function MockCurrent() {
+  this.child = {
+    pid: 59312
+  };
+}
+util.inherits(MockCurrent, events.EventEmitter);
+
+MockCurrent.prototype.request = function request(req, cb) {
+  if (req.cmd === 'status') {
+    cb({ master: { setSize: 1 } });
+  }
+  if (req.cmd === 'npm-ls') {
+    cb({});
+  }
+}
 
 tap.test('metrics update', function(t) {
   var s = new Server('pm', null, '_base', 1234, null);
   var m = s._app.models;
   var commit = {hash: 'hash1', dir: 'dir1'};
 
+  runner._mockCurrent = new MockCurrent();
+  runner._mockCurrent.commit = commit;
+  runner.current = function() {
+    return runner._mockCurrent;
+  }
+
   s._isStarted = true; // Make server think its running.
   s._loadModels(emitRunning);
 
   function emitRunning() {
-    s.emit('running', commit);
-    setImmediate(emitOne);
+    // mock started event from runner
+    s._onMasterStart({
+      cmd: 'started',
+      appName: 'test-app',
+      agentVersion: '1.0.0',
+      pid: 1234
+    }, emitOne);
   }
 
   function emitOne() {
@@ -87,7 +116,7 @@ tap.test('metrics update', function(t) {
       // Note that lib/server mutates metrics during request handling... which
       // it is allowed to do, but what we see below is not exactly the same
       // as the metrics message seen above.
-      m.ServiceMetric.findOne({workerId: wid}, function(err, obj) {
+      m.ServiceMetric.findOne({where: {workerId: wid}}, function(err, obj) {
         debug('found metric for %d:', wid, err || obj);
         assert.equal(obj.workerId, wid);
         assert.equal(String(obj.timeStamp), String(new Date(METRICS.timestamp)));
