@@ -31,7 +31,7 @@ function main(argv, callback) {
       ':v(version)',
       'h(help)',
       'b:(base)',
-      'c:(config)',
+      'c:(config)', // unused. left in so Upstart/systemd jobs don't crash
       'l:(listen)',
       'C:(control)',
       'N(no-control)',
@@ -57,7 +57,7 @@ function main(argv, callback) {
         base = option.optarg;
         break;
       case 'c':
-        config = option.optarg;
+        console.error('Warning: ignoring config file: ', option.optarg);
         break;
       case 'l':
         listen = option.optarg;
@@ -105,8 +105,8 @@ function main(argv, callback) {
   var app = new Server($0, config, base, listen, control);
 
   app.on('listening', function(listenAddr){
-    console.log('%s: listen on %s, work base is `%s` with config `%s`',
-      $0, listenAddr.port, base, config);
+    console.log('%s: listen on %s, work base is `%s`',
+      $0, listenAddr.port, base);
     if (fake) _fakeMetrics(app);
   });
 
