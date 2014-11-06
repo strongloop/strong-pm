@@ -418,10 +418,10 @@ function remoteRequest(pmctl, cmd, callback) {
   loopbackBoot(lb, {'appRootDir': path.join(__dirname, '..', 'lib', 'client')});
 
   // XXX 'action' should be called 'cmd', IMO
-  var Service = lb.models.ServerService;
-  var ServerAction = lb.models.ServerAction;
+  var ServiceInstance = lb.models.ServiceInstance;
+  var InstanceAction = lb.models.InstanceAction;
 
-  Service.findById(1, function(err, service) {
+  ServiceInstance.findById(1, function(err, instance) {
     if (err) {
       console.error('Failed to find service at `%s`: %s', pmctl, err.message);
       process.exit(1);
@@ -431,7 +431,7 @@ function remoteRequest(pmctl, cmd, callback) {
       request: cmd,
     };
 
-    service.actions.create(new ServerAction(action), function(err, action) {
+    instance.actions.create(new InstanceAction(action), function(err, action) {
       checkError(err);
 
       debug('remote action result: %j', action);
