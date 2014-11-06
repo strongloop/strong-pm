@@ -79,7 +79,7 @@
     "posix-getopt": "^1.0.0",
     "serve-favicon": "^2.1.5",
     "strong-control-channel": "^1",
-    "strong-mesh-models": "^2.0.0",
+    "strong-mesh-models": "^3.0.0",
     "strong-npm-ls": "^1.0.0",
     "strong-service-install": "^1.0.0",
     "strong-supervisor": "^1.0.0",

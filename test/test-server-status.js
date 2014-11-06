@@ -5,8 +5,26 @@ var debug = require('debug')('strong-pm:test');
 var path = require('path');
 var runner = require('../lib/run');
 var tap = require('tap');
+var events = require('events');
+var util = require('util');
 
 var BASE = path.resolve(__dirname, '.strong-pm');
+
+function MockCurrent() {
+  this.child = {
+    pid: 59312
+  };
+}
+util.inherits(MockCurrent, events.EventEmitter);
+
+MockCurrent.prototype.request = function request(req, cb) {
+  if (req.cmd === 'status') {
+    cb({ master: { setSize: 1 } });
+  }
+  if (req.cmd === 'npm-ls') {
+    cb({});
+  }
+}
 
 tap.test('worker status update', function(t) {
   debug('test: worker status update');
@@ -15,6 +33,12 @@ tap.test('worker status update', function(t) {
   var commit = {hash: 'hash1', dir: 'dir1'};
 
   s._isStarted = true; // Make server think its running.
+
+  runner._mockCurrent = new MockCurrent();
+  runner.current = function() {
+    return runner._mockCurrent;
+  }
+
   s._loadModels(emitRunning);
 
   function emitRunning() {
