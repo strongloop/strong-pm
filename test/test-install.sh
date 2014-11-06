@@ -39,7 +39,6 @@ $CMD --port 7777 \
 
 # Should match what was specified
 assert_file $TMP/upstart.conf "--listen 7777"
-assert_file $TMP/upstart.conf "env STRONGLOOP_METRICS=statsd:"
 assert_file $TMP/upstart.conf "--base $TMP/deeply/nested/sl-pm"
 
 # Should actually point to strong-pm
@@ -50,6 +49,9 @@ assert_file $TMP/upstart.conf "--config $TMP/deeply/nested/sl-pm/config"
 
 # Should create base for us
 assert_exit 0 test -d $TMP/deeply/nested/sl-pm
+
+# Should put --metrics into STRONGLOOP_METRICS in seed environment
+assert_file $TMP/deeply/nested/sl-pm/env.json '"STRONGLOOP_METRICS":"statsd:"'
 
 # Should create initial environment file with FOO and BAR in it
 assert_file $TMP/deeply/nested/sl-pm/env.json '"FOO":"bar"'
