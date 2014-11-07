@@ -200,15 +200,22 @@ usage: sl-pm-install [options]
 Options:
   -h,--help           Print this message and exit.
   -v,--version        Print version and exit.
-  -m,--metrics STATS  Specify --metrics option for supervisor running deployed applications.
+  -m,--metrics STATS  Specify --metrics option for supervisor running
+                      deployed applications.
   -b,--base BASE      Base directory to work in (default is .strong-pm).
   -c,--config CONFIG  Config file (default BASE/config).
+  -e,--set-env K=V... Initial application environment variables. If
+                      setting multiple variables they must be quoted
+                      into a single argument: "K1=V1 K2=V2 K3=V3".
   -u,--user USER      User to run manager as (default is strong-pm).
-  -p,--port PORT      Listen on PORT for application deployment (no default).
+  -p,--port PORT      Listen on PORT for application deployment (no
+                      default).
   -n,--dry-run        Don't write any files.
-  -j,--job-file FILE  Path of Upstart job to create (default is /etc/init/strong-pm.conf)
+  -j,--job-file FILE  Path of Upstart job to create (default is
+                      /etc/init/strong-pm.conf)
   -f,--force          Overwrite existing job file if present
-  --upstart VERSION   Specify the version of Upstart, 1.4 or 0.6 (default is 1.4)
+  --upstart VERSION   Specify the version of Upstart, 1.4 or 0.6
+                      (default is 1.4)
 ```
 
 The URL formats supported by `--meetrics STATS` are defined by strong-supervisor.
@@ -224,6 +231,7 @@ Run-time control of the process manager.
 Options:
   -h,--help               Print help and exit.
   -v,--version            Print version and exit.
+  -C,--control CTL        Control channel to connect to.
 
 Commands:
   status                  Report status, the default command.
@@ -231,34 +239,44 @@ Commands:
   start                   Start the current application.
   stop                    Hard stop the current application.
   soft-stop               Soft stop the current application.
-  restart                 Hard stop and restart the current application with new config.
-  soft-restart            Soft stop and restart the current application with new config.
+  restart                 Hard stop and restart the current application with
+                            new config.
+  soft-restart            Soft stop and restart the current application with
+                            new config.
   cluster-restart         Restart the current application cluster workers.
   set-size N              Set cluster size to N workers.
-  objects-start T         Start tracking objects on T, a worker ID or process PID.
-  objects-stop T          Stop tracking objects on T.
-  cpu-start T             Start CPU profiling on T, use cpu-stop to save profile.
-  cpu-stop T [NAME]       Stop CPU profiling on T, save as `NAME.cpuprofile`.
-  heap-snapshot T [NAME]  Save heap snapshot on T, save as `NAME.heapsnapshot`.
+  objects-start W         Start tracking objects on worker W.
+  objects-stop W          Stop tracking objects on worker W.
+  cpu-start W             Start CPU profiling on ID, use cpu-stop to save
+                            profile.
+  cpu-stop W [NAME]       Stop CPU profiling on worker W, save as
+                            `NAME.cpuprofile`.
+  heap-snapshot W [NAME]  Save heap snapshot for worker W, save as
+                            `NAME.heapsnapshot`.
   ls [DEPTH]              List dependencies of the current application.
+  env-set K=V...          Set one or more environment variables for current
+                          application and hard restart it with new environment.
+  env-unset KEYS...       Unset one or more environment variables for current
+                          application and hard restart it with the new
+                          environment.
+  env[-get] [KEYS...]     List specified environment variables. If none are
+                          given, list all variables.
 
-"Soft" stops notify workers they are being disconnected, and give them a
-grace period for any existing connections to finish. "Hard" stops kill the
-supervisor and its workers with `SIGTERM`.
+"Soft" stops notify workers they are being disconnected, and give them a grace
+period for any existing connections to finish. "Hard" stops kill the supervisor
+and its workers with `SIGTERM`.
+
+Worker `W` is either a node cluster worker ID, or an operating system process
+ID. The special worker ID `0` can be used to identify the master.
 
 Profiling:
 
-Either a node cluster worker ID, or an operating system process
-ID can be used to identify the node instance to target to start
-profiling of objects or CPU. The special worker ID `0` can be used
-to identify the master.
+Object tracking is published as metrics, and requires configuration so that the
+`--metrics=URL` option is passed to the runner.
 
-Object tracking is published as metrics, and requires configuration
-so that the `--metrics=URL` option is passed to the runner.
+CPU profiles must be loaded into Chrome Dev Tools. The NAME is optional,
+profiles default to being named `node.<PID>.cpuprofile`.
 
-CPU profiles must be loaded into Chrome Dev Tools. The NAME is
-optional, profiles default to being named `node.<PID>.cpuprofile`.
-
-Heap snapshots must be loaded into Chrome Dev Tools. The NAME is
-optional, snapshots default to being named `node.<PID>.heapsnapshot`.
+Heap snapshots must be loaded into Chrome Dev Tools. The NAME is optional,
+snapshots default to being named `node.<PID>.heapsnapshot`.
 ```
