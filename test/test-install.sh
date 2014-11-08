@@ -17,10 +17,13 @@ assert_exit 0 $CMD --help
 # dry-run should not fail
 assert_exit 0 $CMD --dry-run --port 7777 --user `id -un`
 
+# fails if attempting to use upstart systemd at the same time
+assert_exit 1 $CMD --dry-run --port 7777 --user `id -un` --upstart 0.6 --systemd
+
 # requires a valid port
-assert_exit 1 $CMD --dry-run --port ''
-assert_exit 1 $CMD --dry-run --port abc
-assert_exit 1 $CMD --dry-run --port 0
+assert_exit 1 $CMD --dry-run --user `id -un` --port ''
+assert_exit 1 $CMD --dry-run --user `id -un` --port abc
+assert_exit 1 $CMD --dry-run --user `id -un` --port 0
 
 # should fail when given user doesn't actually exist
 assert_exit 1 $CMD --dry-run --port 7777 --user definitely-does-not-exist
