@@ -187,8 +187,13 @@ Options:
   -b,--base BASE    Base directory to work in (default .strong-pm).
   -c,--config CFG   Config file (default BASE/config).
   -l,--listen PORT  Listen on PORT for git pushes (no default).
-  -C,--control CTL  Listen for control messages on CTL (default pmctl).
-  --no-control      Do not listen for control messages.
+  -C,--control CTL  Listen for local control messages on CTL (default `pmctl`).
+  --no-control      Do not listen for local control messages.
+
+The process manager will be controllable via HTTP on the port specified. That
+port is also used for deployment with strong-deploy. It is also controllable
+using local domain sockets, which look like file paths, and the listen path
+can be changed or disabled.
 ```
 
 ### slc pm-install
@@ -231,7 +236,18 @@ Run-time control of the process manager.
 Options:
   -h,--help               Print help and exit.
   -v,--version            Print version and exit.
-  -C,--control CTL        Control channel to connect to.
+  -C,--control CTL        Control endpoint for process manager.
+
+The control endpoint for the process manager is searched for if not specified,
+in this order:
+
+1. `STRONGLOOP_PM` in environment: may be a local domain path, or an HTTP URL
+2. `./pmctl`: a process manager running the current working director
+3. `/var/lib/strong-pm/pmctl`: a process manager installed by pm-install
+
+An HTTP URL is mandatory for remote process managers, but can also be used on
+localhost. It must specify at least the process manager's listen port, such as
+`http://example.com:7654`.
 
 Commands:
   status                  Report status, the default command.
