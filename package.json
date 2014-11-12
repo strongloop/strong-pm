@@ -72,6 +72,7 @@
     "loopback-boot": "^2.1.0",
     "loopback-datasource-juggler": "^2.9.0",
     "loopback-explorer": "^1.5.1",
+    "loopback-sdk-angular": "1.3.3",
     "mkdirp": "^0.5.0",
     "npm-path": "^1.0.1",
     "passwd-user": "^1.0.0",
