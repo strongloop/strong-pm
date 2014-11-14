@@ -161,7 +161,12 @@ The process manager should be installed as a service, so it gets integration
 with the system process manager. This will ensure it is started on machine boot,
 logs are correctly aggregated, permissions are set correctly, etc.
 
-The pm-install tool does this installation.
+The pm-install tool does this installation for you, and supports the following
+init systems:
+
+ * Upstart 0.6
+ * Upstart 1.4 (default)
+ * systemd
 
 In it's typical usage, you would install strongloop globally on the deployment
 system (`npm install -g strongloop`), and then call `slc pm-install` with
@@ -170,7 +175,7 @@ user account with `/var/lib/strong-pm` set as its home directory. If deploying
 to a hosted service, there may already be a user account prepared that you want
 the manager to run as, you can specify it with the `--user` option.
 
-You can also `--job-file` to generate the upstart conf-file locally, and move
+You can also `--job-file` to generate the service conf-file locally, and move
 it to the remote system.
 
 ## Usage
@@ -221,6 +226,12 @@ Options:
   -f,--force          Overwrite existing job file if present
   --upstart VERSION   Specify the version of Upstart, 1.4 or 0.6
                       (default is 1.4)
+  --systemd           Install as a systemd service, not an Upstart job.
+
+OS Service support:
+  The --systemd and --upstart VERSION options are mutually exclusive.
+  If neither is specified, the service is installed as an Upstart job
+  using a template that assumes Upstart 1.4 or higher.
 ```
 
 The URL formats supported by `--meetrics STATS` are defined by strong-supervisor.

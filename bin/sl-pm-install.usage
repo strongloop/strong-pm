@@ -19,3 +19,9 @@ Options:
   -f,--force          Overwrite existing job file if present
   --upstart VERSION   Specify the version of Upstart, 1.4 or 0.6
                       (default is 1.4)
+  --systemd           Install as a systemd service, not an Upstart job.
+
+OS Service support:
+  The --systemd and --upstart VERSION options are mutually exclusive.
+  If neither is specified, the service is installed as an Upstart job
+  using a template that assumes Upstart 1.4 or higher.
