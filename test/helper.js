@@ -120,3 +120,19 @@ exports.pushTarball = function(repo, callback) {
 
   return repo;
 };
+
+exports.localDeploy = function(dirPath, repo, callback) {
+  var cmd = [
+      'curl',
+      '-H "Content-Type: application/x-pm-deploy"',
+      '-X POST',
+      '--data \'{ "local-directory": "' +
+      dirPath +
+      '" }\'',
+      util.format('http://127.0.0.1:%d/%s', port, repo)
+    ].join(' ');
+
+  ex(cmd, function() {
+    if (callback) return callback();
+  });
+};
