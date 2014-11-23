@@ -10,3 +10,4 @@ test/.vagrant/
 test/copy.out
 test/receive-base
 test/SANDBOX*
+test/container

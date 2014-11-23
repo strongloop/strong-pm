@@ -12,7 +12,7 @@ if test -n "$SKIP_DOCKER"; then
   exit
 fi
 
-make container/strong-pm.tgz
+make npm_config_registry=${npm_config_registry:-$(npm config get registry)} container/strong-pm.tgz container/Dockerfile
 
 docker build -t strong-pm:test container
 docker run -i -t -d \

@@ -17,6 +17,6 @@ RUN node-gyp install && npm cache clear
 
 # actual work..
 COPY strong-pm.tgz /home/strongloop/
-RUN sudo npm install -g strong-pm.tgz
+RUN sudo npm install --registry NPM_CONFIG_REGISTRY --global strong-pm.tgz
 
 ENTRYPOINT ["/usr/bin/sl-pm"]
