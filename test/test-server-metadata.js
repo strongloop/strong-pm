@@ -117,6 +117,7 @@ function testWorkerExitState(cb) {
       cb(err);
     });
   });
+  pmctl('set-size 0', function(){});
 }
 
 function killClusterMaster(cb) {
@@ -156,7 +157,6 @@ server.once('running', function() {
     testObjTrackingStart,
     pmctl.bind(null, 'objects-stop 1'),
     testObjTrackingStop,
-    pmctl.bind(null, 'set-size 0'),
     testWorkerExitState,
     killClusterMaster,
     testRestartedInstState,
