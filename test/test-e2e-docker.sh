@@ -2,8 +2,8 @@
 
 set -e
 
-if ! which docker > /dev/null; then
-  echo "ok # skip docker tests, docker not found"
+if ! docker info > /dev/null; then
+  echo "ok # skip docker tests, docker not installed or not running"
   exit
 fi
 
