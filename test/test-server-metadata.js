@@ -47,6 +47,14 @@ function testInitialInstState(cb) {
   });
 }
 
+function testInstanceState(expected, cb) {
+  ServiceInstance.findOne(function(err, instance) {
+    assert.ifError(err);
+    assert.equal(instance.started, expected);
+    cb(err);
+  });
+}
+
 function testInitialWorkerState(cb) {
   ServiceProcess.findOne({where: { workerId: 1 }}, function(err, proc) {
     assert.ifError(err);
@@ -153,6 +161,9 @@ server.once('running', function() {
     killClusterMaster,
     testRestartedInstState,
     testTotalWorkers,
+    testInstanceState.bind(null, true),
+    pmctl.bind(null, 'stop'),
+    testInstanceState.bind(null, false),
     server.stop.bind(server),
   ], function(err) {
     assert.ifError(err);
