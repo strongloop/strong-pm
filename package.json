@@ -55,7 +55,7 @@
     "rimraf": "^2.2.8",
     "semver": "^4.1.0",
     "shelljs": "^0.3.0",
-    "strong-build": "^0.2.0",
+    "strong-build": "^1.0.0",
     "tap": "git://github.com/strongloop-forks/node-tap#production",
     "temporary": "0.0.8"
   },
