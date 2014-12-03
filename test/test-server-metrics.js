@@ -60,6 +60,7 @@ tap.test('metrics update', function(t) {
     runner.emit('request', fork, emitMetrics);
   }
 
+  var MARGIN = 5 * 1000; // in seconds
   var METRICS = {
     processes: {
       "1" : {
@@ -98,11 +99,11 @@ tap.test('metrics update', function(t) {
         "timers" : {}
       },
     },
-    "timestamp" : 1415207178
+    "timestamp" : new Date().getTime() - 5 * 60 * 1000 + MARGIN,
   }
 
   function emitMetrics() {
-    debug('emit one');
+    debug('emit metrics');
 
     var req = { cmd: 'metrics', metrics: METRICS };
     runner.emit('request', req, checkMetrics);
@@ -126,10 +127,31 @@ tap.test('metrics update', function(t) {
         callback();
       });
     }
-    async.each(['1'], checkMetric, end);
+    async.each(['1'], checkMetric, emitNewMetrics);
     // FIXME 0 doesn't pass, because it has no Process, because the master
     // isn't forked :-(
     //async.each(Object.keys(METRICS.processes), checkMetric, end);
+  }
+
+  function emitNewMetrics() {
+    debug('emit new metrics');
+    // Wait for MARGIN to cause last metrics to be outdated, then report empty
+    // metrics to trigger the cleanup.
+    var req = { cmd: 'metrics', metrics: { processes: {} } };
+    setTimeout(function() {
+      runner.emit('request', req, checkNewMetrics);
+    }, MARGIN);
+  }
+
+  function checkNewMetrics() {
+    var where = {
+      timeStamp: {lt: METRICS.timestamp - 5 * 60 * 1000},
+    };
+    m.ServiceMetric.count(/*where,*/ function(er, count) {
+      assert.ifError(er);
+      t.equal(count, 0, 'old should be deleted');
+      end();
+    });
   }
 
   function end() {
