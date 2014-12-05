@@ -1,0 +1,22 @@
+FROM nodesource/node:trusty
+
+RUN apt-get install -yq git && apt-get clean
+# RUN node-gyp install
+
+# Create "strongloop" user
+RUN useradd -ms /bin/bash strongloop
+# && chown -R strongloop /usr/local
+# Let everyone run sudo without a password (dangerous!)
+RUN echo "ALL	ALL = (ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+# Set up some semblance of an environment
+WORKDIR /home/strongloop
+ENV HOME /home/strongloop
+USER strongloop
+RUN node-gyp install && npm cache clear
+
+# actual work..
+COPY strong-pm.tgz /home/strongloop/
+RUN sudo npm install --registry NPM_CONFIG_REGISTRY --global strong-pm.tgz
+
+ENTRYPOINT ["/usr/bin/sl-pm"]

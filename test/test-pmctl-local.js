@@ -157,6 +157,22 @@ function test(port) {
   expect('set-size 1');
   waiton('status', /worker count: *1/);
 
+  expect('env-get', 'No matching environment variables defined');
+  expect('env-get NOTSET', 'No matching environment variables defined');
+
+  expect('env-set FOO=bar BAR=foo', 'Environment updated');
+  expect('env-get', /FOO=bar/);
+  expect('env-get', /BAR=foo/);
+  expect('env-get FOO', /FOO=bar/);
+  expect('env-get NOTSET', 'No matching environment variables defined');
+
+  expect('env-unset FOO', 'Environment updated');
+  expect('env-get', /BAR=foo/);
+  expect('env-get FOO', 'No matching environment variables defined');
+
+  expect('set-size 1');
+  waiton('status', /worker count: *1/);
+
   expect('cpu-start 0', /Profiler started/);
 
   if (process.env.STRONGLOOP_LICENSE) {

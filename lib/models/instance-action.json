@@ -1,5 +1,5 @@
 {
-  "name": "ServerAction",
+  "name": "InstanceAction",
   "base": "Action",
   "properties": {},
   "validations": [],

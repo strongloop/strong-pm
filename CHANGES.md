@@ -1,3 +1,81 @@
+2014-12-05, Version 1.4.0
+=========================
+
+ * Delete metrics older than 5 min on metrics update (Sam Roberts)
+
+ * Use compression directly (Ritchie Martori)
+
+ * Add ability to set cluster size for start/deploy (Krishna Raman)
+
+ * Update instance state upon start/stop (Krishna Raman)
+
+ * package: update strong-build dev-dep to ^1.x (Sam Roberts)
+
+ * deploy: deploy local directory and run it in place (Krishna Raman)
+
+ * test: fix systemd service installation test (Ryan Graham)
+
+ * test: skip docker tests if docker is misconfigured (Ryan Graham)
+
+ * Update TODO (Sam Roberts)
+
+ * Don't create new router for / (Ryan Graham)
+
+ * inherit host registry in test VM and container (Ryan Graham)
+
+ * test: Add Docker based e2e tests (Ryan Graham)
+
+ * Bubble supervisor events to parent (Krishna Raman)
+
+ * Add additional service and instance metadata (Krishna Raman)
+
+ * Receive live metrics and update in-memory models (Sam Roberts)
+
+ * pm: implement fake metrics generation (Sam Roberts)
+
+ * model: executor, instance, process, metric exposed (Sam Roberts)
+
+ * server: ServiceProcess processId rename to pid (Sam Roberts)
+
+ * gen-angular-sdk: a script to generate the SDK (seanbrookes)
+
+ * fix: use init specific default job-file (Ryan Graham)
+
+ * Fix invalid debug statement (Krishna Raman)
+
+ * Document systemd/Upstart support (Ryan Graham)
+
+ * pm: exit on parent ipc disconnect (Sam Roberts)
+
+ * Support installing strong-pm as a systemd service (Ryan Graham)
+
+ * package: document control endpoint (Sam Roberts)
+
+ * docs: update command usage sections (Ryan Graham)
+
+ * internal: use persisted environment for --metrics (Ryan Graham)
+
+ * install: add --set-env/-e for initial app env (Ryan Graham)
+
+ * internal: extract sl-pm-usage to usage file (Ryan Graham)
+
+ * install: Recursively set ownership of baseDir (Ryan Graham)
+
+ * Use released version of loopback-explorer (Ryan Graham)
+
+ * pmctl: Add env-unset to remove configured env vars (Ryan Graham)
+
+ * pmctl: Add env-get to get configured app env vars (Ryan Graham)
+
+ * pmctl: Add env-set to configure app env vars (Ryan Graham)
+
+ * Store/load persisted environments for applications (Ryan Graham)
+
+ * don't copy /etc/skel in service installation (Ryan Graham)
+
+ * test: Upgrade node in Vagrant test VM (Ryan Graham)
+
+
 2014-11-05, Version 1.3.1
 =========================
 

@@ -161,7 +161,12 @@ The process manager should be installed as a service, so it gets integration
 with the system process manager. This will ensure it is started on machine boot,
 logs are correctly aggregated, permissions are set correctly, etc.
 
-The pm-install tool does this installation.
+The pm-install tool does this installation for you, and supports the following
+init systems:
+
+ * Upstart 0.6
+ * Upstart 1.4 (default)
+ * systemd
 
 In it's typical usage, you would install strongloop globally on the deployment
 system (`npm install -g strongloop`), and then call `slc pm-install` with
@@ -170,7 +175,7 @@ user account with `/var/lib/strong-pm` set as its home directory. If deploying
 to a hosted service, there may already be a user account prepared that you want
 the manager to run as, you can specify it with the `--user` option.
 
-You can also `--job-file` to generate the upstart conf-file locally, and move
+You can also `--job-file` to generate the service conf-file locally, and move
 it to the remote system.
 
 ## Usage
@@ -187,8 +192,13 @@ Options:
   -b,--base BASE    Base directory to work in (default .strong-pm).
   -c,--config CFG   Config file (default BASE/config).
   -l,--listen PORT  Listen on PORT for git pushes (no default).
-  -C,--control CTL  Listen for control messages on CTL (default pmctl).
-  --no-control      Do not listen for control messages.
+  -C,--control CTL  Listen for local control messages on CTL (default `pmctl`).
+  --no-control      Do not listen for local control messages.
+
+The process manager will be controllable via HTTP on the port specified. That
+port is also used for deployment with strong-deploy. It is also controllable
+using local domain sockets, which look like file paths, and the listen path
+can be changed or disabled.
 ```
 
 ### slc pm-install
@@ -200,15 +210,28 @@ usage: sl-pm-install [options]
 Options:
   -h,--help           Print this message and exit.
   -v,--version        Print version and exit.
-  -m,--metrics STATS  Specify --metrics option for supervisor running deployed applications.
+  -m,--metrics STATS  Specify --metrics option for supervisor running
+                      deployed applications.
   -b,--base BASE      Base directory to work in (default is .strong-pm).
   -c,--config CONFIG  Config file (default BASE/config).
+  -e,--set-env K=V... Initial application environment variables. If
+                      setting multiple variables they must be quoted
+                      into a single argument: "K1=V1 K2=V2 K3=V3".
   -u,--user USER      User to run manager as (default is strong-pm).
-  -p,--port PORT      Listen on PORT for application deployment (no default).
+  -p,--port PORT      Listen on PORT for application deployment (no
+                      default).
   -n,--dry-run        Don't write any files.
-  -j,--job-file FILE  Path of Upstart job to create (default is /etc/init/strong-pm.conf)
+  -j,--job-file FILE  Path of Upstart job to create (default is
+                      /etc/init/strong-pm.conf)
   -f,--force          Overwrite existing job file if present
-  --upstart VERSION   Specify the version of Upstart, 1.4 or 0.6 (default is 1.4)
+  --upstart VERSION   Specify the version of Upstart, 1.4 or 0.6
+                      (default is 1.4)
+  --systemd           Install as a systemd service, not an Upstart job.
+
+OS Service support:
+  The --systemd and --upstart VERSION options are mutually exclusive.
+  If neither is specified, the service is installed as an Upstart job
+  using a template that assumes Upstart 1.4 or higher.
 ```
 
 The URL formats supported by `--meetrics STATS` are defined by strong-supervisor.
@@ -224,6 +247,18 @@ Run-time control of the process manager.
 Options:
   -h,--help               Print help and exit.
   -v,--version            Print version and exit.
+  -C,--control CTL        Control endpoint for process manager.
+
+The control endpoint for the process manager is searched for if not specified,
+in this order:
+
+1. `STRONGLOOP_PM` in environment: may be a local domain path, or an HTTP URL
+2. `./pmctl`: a process manager running the current working director
+3. `/var/lib/strong-pm/pmctl`: a process manager installed by pm-install
+
+An HTTP URL is mandatory for remote process managers, but can also be used on
+localhost. It must specify at least the process manager's listen port, such as
+`http://example.com:7654`.
 
 Commands:
   status                  Report status, the default command.
@@ -231,34 +266,44 @@ Commands:
   start                   Start the current application.
   stop                    Hard stop the current application.
   soft-stop               Soft stop the current application.
-  restart                 Hard stop and restart the current application with new config.
-  soft-restart            Soft stop and restart the current application with new config.
+  restart                 Hard stop and restart the current application with
+                            new config.
+  soft-restart            Soft stop and restart the current application with
+                            new config.
   cluster-restart         Restart the current application cluster workers.
   set-size N              Set cluster size to N workers.
-  objects-start T         Start tracking objects on T, a worker ID or process PID.
-  objects-stop T          Stop tracking objects on T.
-  cpu-start T             Start CPU profiling on T, use cpu-stop to save profile.
-  cpu-stop T [NAME]       Stop CPU profiling on T, save as `NAME.cpuprofile`.
-  heap-snapshot T [NAME]  Save heap snapshot on T, save as `NAME.heapsnapshot`.
+  objects-start W         Start tracking objects on worker W.
+  objects-stop W          Stop tracking objects on worker W.
+  cpu-start W             Start CPU profiling on ID, use cpu-stop to save
+                            profile.
+  cpu-stop W [NAME]       Stop CPU profiling on worker W, save as
+                            `NAME.cpuprofile`.
+  heap-snapshot W [NAME]  Save heap snapshot for worker W, save as
+                            `NAME.heapsnapshot`.
   ls [DEPTH]              List dependencies of the current application.
+  env-set K=V...          Set one or more environment variables for current
+                          application and hard restart it with new environment.
+  env-unset KEYS...       Unset one or more environment variables for current
+                          application and hard restart it with the new
+                          environment.
+  env[-get] [KEYS...]     List specified environment variables. If none are
+                          given, list all variables.
 
-"Soft" stops notify workers they are being disconnected, and give them a
-grace period for any existing connections to finish. "Hard" stops kill the
-supervisor and its workers with `SIGTERM`.
+"Soft" stops notify workers they are being disconnected, and give them a grace
+period for any existing connections to finish. "Hard" stops kill the supervisor
+and its workers with `SIGTERM`.
+
+Worker `W` is either a node cluster worker ID, or an operating system process
+ID. The special worker ID `0` can be used to identify the master.
 
 Profiling:
 
-Either a node cluster worker ID, or an operating system process
-ID can be used to identify the node instance to target to start
-profiling of objects or CPU. The special worker ID `0` can be used
-to identify the master.
+Object tracking is published as metrics, and requires configuration so that the
+`--metrics=URL` option is passed to the runner.
 
-Object tracking is published as metrics, and requires configuration
-so that the `--metrics=URL` option is passed to the runner.
+CPU profiles must be loaded into Chrome Dev Tools. The NAME is optional,
+profiles default to being named `node.<PID>.cpuprofile`.
 
-CPU profiles must be loaded into Chrome Dev Tools. The NAME is
-optional, profiles default to being named `node.<PID>.cpuprofile`.
-
-Heap snapshots must be loaded into Chrome Dev Tools. The NAME is
-optional, snapshots default to being named `node.<PID>.heapsnapshot`.
+Heap snapshots must be loaded into Chrome Dev Tools. The NAME is optional,
+snapshots default to being named `node.<PID>.heapsnapshot`.
 ```

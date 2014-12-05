@@ -4,7 +4,12 @@
 VAGRANTFILE_API_VERSION = "2"
 
 $pkg_name = ENV['PKG_NAME'] || Dir["../strong-pm-*.tgz"].last
-$node_tgz = ENV['NODE_TGZ'] || "node-v0.10.29-linux-x64.tar.gz"
+$node_version = ENV['NODE_VER'] || "0.10.33"
+$NODE_URL = "http://nodejs.org/dist/v#{$node_version}/node-v#{$node_version}-linux-x64.tar.gz"
+npm_config_registry = ENV['npm_config_registry'] ||
+                      `npm config get registry`.strip ||
+                      'https://registry.npmjs.org/'
+$NPM_REGISTRY = "--registry #{npm_config_registry}"
 
 $bootstrap = <<SCRIPT
   test -f bootstrapped.txt && exit
@@ -16,7 +21,7 @@ SCRIPT
 
 $setup = <<SCRIPT
   rm -rf /usr/local/lib/node_modules
-  tar -C /usr/local --strip-components 1 -xzf node-linux-x64.tar.gz
+  curl -s #{$NODE_URL} | tar -C /usr/local --strip-components 1 -xzf -
   chown -R vagrant /usr/local
 SCRIPT
 
@@ -29,8 +34,8 @@ $test = <<SCRIPT
     ($* && echo "ok # $*") || (echo "not ok # $*" >&2)
     ## ($* > /dev/null && echo "ok # $*") || (echo "not ok # $*" >&2)
   }
-  report npm install -g strong-pm.tgz
-  report sudo sl-pm-install --port 7777
+  report npm install #{$NPM_REGISTRY} -g strong-pm.tgz
+  report sudo sl-pm-install --port 7777 --set-env SL_PM_VAGRANT=42
   report test -f /etc/init/strong-pm.conf
   report sudo start strong-pm
   report sudo status strong-pm
@@ -45,9 +50,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # used for installing npm packages from private repos
   config.ssh.forward_agent = true
-
-  # Version of nodejs tests are run against
-  config.vm.provision "file", source: $node_tgz, destination: "node-linux-x64.tar.gz"
 
   # Ideally this part would be cached
   config.vm.provision "shell", inline: $bootstrap, privileged: true

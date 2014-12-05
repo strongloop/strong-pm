@@ -47,7 +47,7 @@ exports.APPNAME = APPNAME;
 assert.equal(package().name, APPNAME, 'cwd is ' + APPNAME);
 
 rm('-rf', '../receive-base');
-rm('-rf', '.git');
+rm('-rf', '.git', '.strong-pm');
 ex('git clean -f -d -x .');
 assert(!test('-e', 'node_modules'));
 ex('git init');
@@ -67,6 +67,7 @@ var port;
 
 exports.listen = function() {
   var base = '../receive-base';
+  mkdir('-p', base);
   var app = new Server('test', path.resolve(base, 'config'), base, 0, 'pmctl');
   app.on('listening', function(listenAddr){
     port = listenAddr.port;
@@ -118,4 +119,20 @@ exports.pushTarball = function(repo, callback) {
   });
 
   return repo;
+};
+
+exports.localDeploy = function(dirPath, repo, callback) {
+  var cmd = [
+      'curl',
+      '-H "Content-Type: application/x-pm-deploy"',
+      '-X POST',
+      '--data \'{ "local-directory": "' +
+      dirPath +
+      '" }\'',
+      util.format('http://127.0.0.1:%d/%s', port, repo)
+    ].join(' ');
+
+  ex(cmd, function() {
+    if (callback) return callback();
+  });
 };

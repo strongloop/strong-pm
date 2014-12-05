@@ -5,7 +5,18 @@ Run-time control of the process manager.
 Options:
   -h,--help               Print help and exit.
   -v,--version            Print version and exit.
-  -C,--control CTL        Control channel to connect to.
+  -C,--control CTL        Control endpoint for process manager.
+
+The control endpoint for the process manager is searched for if not specified,
+in this order:
+
+1. `STRONGLOOP_PM` in environment: may be a local domain path, or an HTTP URL
+2. `./pmctl`: a process manager running the current working director
+3. `/var/lib/strong-pm/pmctl`: a process manager installed by pm-install
+
+An HTTP URL is mandatory for remote process managers, but can also be used on
+localhost. It must specify at least the process manager's listen port, such as
+`http://example.com:7654`.
 
 Commands:
   status                  Report status, the default command.
@@ -28,6 +39,13 @@ Commands:
   heap-snapshot W [NAME]  Save heap snapshot for worker W, save as
                             `NAME.heapsnapshot`.
   ls [DEPTH]              List dependencies of the current application.
+  env-set K=V...          Set one or more environment variables for current
+                          application and hard restart it with new environment.
+  env-unset KEYS...       Unset one or more environment variables for current
+                          application and hard restart it with the new
+                          environment.
+  env[-get] [KEYS...]     List specified environment variables. If none are
+                          given, list all variables.
 
 "Soft" stops notify workers they are being disconnected, and give them a grace
 period for any existing connections to finish. "Hard" stops kill the supervisor

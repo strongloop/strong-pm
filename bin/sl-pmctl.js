@@ -14,6 +14,7 @@ var path = require('path');
 var sprintf = require('extsprintf').sprintf;
 var url = require('url');
 var util = require('util');
+var _ = require('lodash');
 
 function printHelp($0, prn) {
   var USAGE = fs.readFileSync(require.resolve('./sl-pmctl.usage'), 'utf-8')
@@ -81,6 +82,10 @@ var commands = {
   'cpu-stop': cmdCpuStop,
   'heap-snapshot': cmdHeapSnapshot,
   ls: cmdLs,
+  'env-set': cmdEnvSet,
+  'env-get': cmdEnvGet,
+  env: cmdEnvGet,
+  'env-unset': cmdEnvUnset,
 };
 
 (commands[command] || cmdInvalid)();
@@ -264,6 +269,52 @@ function cmdLs() {
   });
 }
 
+function cmdEnvSet() {
+  var vars = checkSome('K=V');
+  var env = _.reduce(vars, extractKeyValue, {});
+
+  request({cmd: 'env-set', env: env}, function(rsp) {
+    console.log('Environment updated: %s', rsp.message);
+  });
+
+  function extractKeyValue(store, pair) {
+    var kv = pair.split('=');
+    if (!kv[0] || !kv[1]) {
+      console.error('Invalid usage (not K=V format: `%s`), try `%s --help`.',
+                    pair, $0);
+      process.exit(1);
+    }
+    store[kv[0]] = kv[1];
+    return store;
+  }
+}
+
+function cmdEnvUnset() {
+  var keys = checkSome('KEYS');
+  var nulls = _.map(keys, _.constant(null));
+  var nulledKeys = _.zipObject(keys, nulls);
+
+  // unset is set, but with null values, which indicate delete
+  request({cmd: 'env-set', env: nulledKeys }, function(rsp) {
+    console.log('Environment updated: %s', rsp.message);
+  });
+}
+
+function cmdEnvGet() {
+  var vars = optionalSome('K');
+  request({cmd: 'env-get'}, function(rsp) {
+    var filtered = vars.length > 0 ? _.pick(rsp.env, vars) : rsp.env;
+    console.log('Environment variables:');
+    if (_.keys(filtered).length === 0) {
+      console.log('  No matching environment variables defined');
+    } else {
+      _(filtered).keys().sort().each(function(k) {
+        console.log(' %s=%s', k, filtered[k]);
+      });
+    }
+  });
+}
+
 function simpleCommand(cmd) {
   checkExtra();
 
@@ -316,11 +367,29 @@ function checkOne(name) {
   return argv[optind++];
 }
 
+function checkSome(name) {
+  if (optind >= argv.length) {
+    console.error(
+      'Invalid usage (missing required argument `%s`), try `%s --help`.',
+      name,
+      $0);
+    process.exit(1);
+  }
+  return argv.slice(optind);
+}
+
 function optionalOne(default_) {
   if (optind < argv.length) {
     return argv[optind++];
   }
   return default_;
+}
+
+function optionalSome() {
+  if (optind < argv.length) {
+    return argv.slice(optind);
+  }
+  return [];
 }
 
 function extra() {
@@ -349,10 +418,10 @@ function remoteRequest(pmctl, cmd, callback) {
   loopbackBoot(lb, {'appRootDir': path.join(__dirname, '..', 'lib', 'client')});
 
   // XXX 'action' should be called 'cmd', IMO
-  var Service = lb.models.ServerService;
-  var ServerAction = lb.models.ServerAction;
+  var ServiceInstance = lb.models.ServiceInstance;
+  var InstanceAction = lb.models.InstanceAction;
 
-  Service.findById(1, function(err, service) {
+  ServiceInstance.findById(1, function(err, instance) {
     if (err) {
       console.error('Failed to find service at `%s`: %s', pmctl, err.message);
       process.exit(1);
@@ -362,7 +431,7 @@ function remoteRequest(pmctl, cmd, callback) {
       request: cmd,
     };
 
-    service.actions.create(new ServerAction(action), function(err, action) {
+    instance.actions.create(new InstanceAction(action), function(err, action) {
       checkError(err);
 
       debug('remote action result: %j', action);

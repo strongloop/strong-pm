@@ -25,6 +25,7 @@ function test(config) {
       },
       hash: 'HASH',
       commands: [],
+      env: process.env,
       spawn: function(cmd, options) {
         assert.equal(options.env, process.env);
         assert.equal(options.stdio, 'inherit');

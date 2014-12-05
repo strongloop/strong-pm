@@ -16,7 +16,7 @@ assert.equal(fs.realpathSync(env.PWD), process.cwd());
 // Check binary dependencies were compiled
 require('buffertools');
 
-http.createServer(echo)
+http.createServer(onRequest)
     .listen(process.env.PORT || 0, function() {
   console.log('pid %d listening on %s', process.pid, this.address().port);
 
@@ -25,8 +25,15 @@ http.createServer(echo)
   fs.writeFileSync('app.port', this.address().port);
 });
 
-function echo(req, res) {
-  res.end(req.method + ' ' + req.url + '\n\n');
+function onRequest(req, res) {
+  switch(req.url) {
+    case '/env':
+      res.end(JSON.stringify(process.env, null, 2) + '\n\n');
+      break;
+    default:
+      res.end(req.method + ' ' + req.url + '\n\n');
+      break;
+  }
 }
 
 function handler(signame) {
