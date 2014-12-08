@@ -99,6 +99,21 @@ function start(callback) {
   });
 }
 
+function push(callback) {
+  pushWithConfig(CONFIG, function() {
+    assert(running());
+    callback();
+  });
+}
+
+function stopCurrent(callback) {
+  console.log('... STOP CURRENT');
+  run.current().stop(function(reason) {
+    console.log('stopped with reason %j', reason);
+    return callback();
+  });
+}
+
 function repush(callback) {
   console.log('... RESTART');
   assert(running());
@@ -170,6 +185,8 @@ server.once('listening', function() {
   var T = true, F = false;
 
   async.series([
+    test(cluster(T), replace(T), start, stopCurrent, push, stop),
+
     // no clustering, no replace, supervisor will be SIGTERMed
     test(cluster(F), replace(F), start, stop),
     test(cluster(F), replace(F), start, repush, stop),
