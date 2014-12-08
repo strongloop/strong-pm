@@ -23,6 +23,7 @@ docker_run() {
   docker run -i -t -d \
     --expose 7777 --expose 8888 -P \
     --env DEBUG=strong-pm:* \
+    --env STRONG_PM_LOCKED=$STRONG_PM_LOCKED \
     --cidfile=sl-pm.docker.cid \
     $1 --listen 7777
 
@@ -99,5 +100,24 @@ curl -s $APP/env \
   | grep -F -e '"foo": "success"' \
   && echo 'not ok # failed to unset foo via pmctl' \
   || echo 'ok # unset foo via pmctl'
+
+# make new image of strong-pm that includes a deployed app
+docker commit $SL_PM strong-pm:test-locked
+docker stop $SL_PM
+
+# run strong-pm instance that already has an app deployed to it
+STRONG_PM_LOCKED=1 docker_run strong-pm:test-locked
+
+echo "# waiting for manager to deploy our app..."
+sleep 5
+echo "# polling...."
+while ! curl -sI $APP/this/is/a/test; do
+  echo "# nothing yet, sleeping for 5s..."
+  sleep 5
+done
+
+git push --quiet $STRONGLOOP_PM/repo HEAD \
+  && echo 'not ok # git push should be rejected' \
+  || echo 'ok # git push rejected'
 
 docker stop $SL_PM

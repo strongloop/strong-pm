@@ -96,7 +96,7 @@ exports.push = function(repo, callback) {
   // Must be async... or we block ourselves from receiving
   ex(cmd, function() {
     if (callback) {
-      return callback();
+      return callback.apply(this, arguments);
     }
   });
   return repo;
