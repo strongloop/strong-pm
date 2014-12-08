@@ -84,6 +84,7 @@
     "strong-service-install": "^1.1.0",
     "strong-supervisor": "^1.4.0",
     "tar": "^1.0.0",
-    "uid-number": "0.0.5"
+    "uid-number": "0.0.5",
+    "uuid": "^2.0.1"
   }
 }
