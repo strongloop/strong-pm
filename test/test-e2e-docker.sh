@@ -120,4 +120,25 @@ git push --quiet $STRONGLOOP_PM/repo HEAD \
   && echo 'not ok # git push should be rejected' \
   || echo 'ok # git push rejected'
 
+for BLOCKED in shutdown start stop soft-stop restart soft-restart cluster-restart env-get "set-size 1" "env-set FOO=bar"; do
+  echo "# checking $BLOCKED is blocked"
+  DEBUG=strong-pm:* ../../bin/sl-pmctl.js -C $STRONGLOOP_PM $BLOCKED \
+    && echo "not ok # pmctl $BLOCKED should fail in lockdown" \
+    || echo "ok # pmctl $BLOCKED fails in lockdown"
+done
+
+for ALLOWED in status ls "cpu-start 1" "cpu-stop 1" "heap-snapshot 1" "objects-stop 1"; do
+  echo "# checking $ALLOWED is allowed"
+  DEBUG=strong-pm:* ../../bin/sl-pmctl.js -C $STRONGLOOP_PM $ALLOWED \
+    && echo "ok # pmctl $ALLOWED allowed in lockdown" \
+    || echo "not ok # pmctl $ALLOWED should be allowed in lockdown"
+done
+
+for UNLICENSED in "objects-start 1"; do
+  echo "# checking $UNLICENSED fails on license"
+  DEBUG=strong-pm:* ../../bin/sl-pmctl.js -C $STRONGLOOP_PM $UNLICENSED | grep license \
+    && echo "ok # pmctl $UNLICENSED allowed in lockdown" \
+    || echo "not ok # pmctl $UNLICENSED should be allowed in lockdown"
+done
+
 docker stop $SL_PM
