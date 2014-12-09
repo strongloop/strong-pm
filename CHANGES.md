@@ -1,3 +1,21 @@
+2014-12-09, Version 1.4.1
+=========================
+
+ * locked mode: reject all deployment attempts (Ryan Graham)
+
+ * test: refactor docker e2e test script (Ryan Graham)
+
+ * Fix deploy after current app is stopped (Sam Roberts)
+
+ * run: improve log messages about actions and state (Sam Roberts)
+
+ * Don't report supervisor "status" msg as unknown (Sam Roberts)
+
+ * Fix confusing debug output about current deploy (Sam Roberts)
+
+ * package: use debug v2.x in all strongloop deps (Sam Roberts)
+
+
 2014-12-05, Version 1.4.0
 =========================
 
@@ -185,12 +203,12 @@
  * test: Allow standalone Vagrantfile usage (Ryan Graham)
 
 
-2014-07-29, Version 0.1.5
+2014-07-29, Version 0.1.6
 =========================
 
 
 
-2014-07-29, Version 0.1.6
+2014-07-29, Version 0.1.5
 =========================
 
  * bundle forked dependency: passwd-user (Ryan Graham)
@@ -198,13 +216,6 @@
  * Update README (Sam Roberts)
 
  * Use .gitignore, not .npmignore (Sam Roberts)
-
- * Npm ignore .strong* temporary files (Sam Roberts)
-
-
-2014-07-21, Version 0.1.2
-=========================
-
 
 
 2014-07-21, Version 0.1.3
@@ -220,6 +231,10 @@
  * Use .gitignore, not .npmignore (Sam Roberts)
 
  * Npm ignore .strong* temporary files (Sam Roberts)
+
+
+2014-07-21, Version 0.1.2
+=========================
 
  * install: Improve --help output (Ryan Graham)
 
