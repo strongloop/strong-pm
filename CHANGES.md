@@ -1,3 +1,17 @@
+2014-12-10, Version 1.4.2
+=========================
+
+ * Add Dockerfile for Docker Hub automated build (Ryan Graham)
+
+ * debug: don't put process.env into the commits (Sam Roberts)
+
+ * debug: don't warn on absence of config file (Sam Roberts)
+
+ * debug: fix debug output suggesting process leaks (Sam Roberts)
+
+ * debug: log the info that triggered an update (Sam Roberts)
+
+
 2014-12-09, Version 1.4.1
 =========================
 
