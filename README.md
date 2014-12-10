@@ -178,6 +178,22 @@ the manager to run as, you can specify it with the `--user` option.
 You can also `--job-file` to generate the service conf-file locally, and move
 it to the remote system.
 
+## Docker Container
+
+This repository is also the source of the
+[strongloop/strong-pm](https://registry.hub.docker.com/u/strongloop/strong-pm/)
+repo on Docker Hub. You can get started as quickly as:
+
+```sh
+$ docker pull strongloop/strong-pm
+$ docker run -d -p 7000:7000 -p 80:3000 --name strong-pm strongloop/strong-pm
+```
+
+And now you've got a strong-pm container up and running that you can deploy to
+with `slc deploy http://localhost:7000`.
+
+For more information on Docker and Docker Hub, see https://www.docker.com/
+
 ## Usage
 
 ### slc pm
