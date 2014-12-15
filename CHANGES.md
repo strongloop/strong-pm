@@ -1,4 +1,10 @@
-2014-12-10, Version 1.4.2
+2014-12-15, Version 1.5.0
+=========================
+
+ * Support sl-run spawn on Windows (Sam Roberts)
+
+
+2014-12-09, Version 1.4.2
 =========================
 
  * Add Dockerfile for Docker Hub automated build (Ryan Graham)
@@ -227,15 +233,6 @@
 
  * bundle forked dependency: passwd-user (Ryan Graham)
 
- * Update README (Sam Roberts)
-
- * Use .gitignore, not .npmignore (Sam Roberts)
-
-
-2014-07-21, Version 0.1.3
-=========================
-
-
 
 2014-07-21, Version 0.1.4
 =========================
@@ -249,6 +246,13 @@
 
 2014-07-21, Version 0.1.2
 =========================
+
+
+
+2014-07-21, Version 0.1.3
+=========================
+
+ * Npm ignore .strong* temporary files (Sam Roberts)
 
  * install: Improve --help output (Ryan Graham)
 
