@@ -1,11 +1,13 @@
+2014-12-16, Version 1.5.1
+=========================
+
+ * run: metrics triggers log msg every 15 secs (Sam Roberts)
+
+
 2014-12-15, Version 1.5.0
 =========================
 
  * Support sl-run spawn on Windows (Sam Roberts)
-
-
-2014-12-09, Version 1.4.2
-=========================
 
  * Add Dockerfile for Docker Hub automated build (Ryan Graham)
 
@@ -20,6 +22,21 @@
 
 2014-12-09, Version 1.4.1
 =========================
+
+
+
+2014-12-09, Version 1.4.2
+=========================
+
+ * Add Dockerfile for Docker Hub automated build (Ryan Graham)
+
+ * debug: don't put process.env into the commits (Sam Roberts)
+
+ * debug: don't warn on absence of config file (Sam Roberts)
+
+ * debug: fix debug output suggesting process leaks (Sam Roberts)
+
+ * debug: log the info that triggered an update (Sam Roberts)
 
  * locked mode: reject all deployment attempts (Ryan Graham)
 
