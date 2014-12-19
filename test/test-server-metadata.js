@@ -88,6 +88,17 @@ function testCpuStop(cb) {
   });
 }
 
+function testCpuWatchdogStart(cb) {
+  if (!cpuProfilingSupported) return cb();
+
+  ServiceProcess.findOne({where: { workerId: 1 }}, function(err, proc) {
+    assert.ifError(err);
+    assert.equal(proc.isProfiling, true);
+    assert.equal(proc.watchdogTimeout, 1000);
+    cb(err);
+  });
+}
+
 function testObjTrackingStart(cb) {
   ServiceProcess.findOne({where: { workerId: 1 }}, function(err, proc) {
     assert.ifError(err);
@@ -146,7 +157,7 @@ function testTotalWorkers(cb) {
 }
 
 server.once('running', function() {
-  async.series([
+  var tests = [
     testInitialInstState,
     testInitialWorkerState,
     pmctl.bind(null, 'cpu-start 1'),
@@ -163,9 +174,19 @@ server.once('running', function() {
     testTotalWorkers,
     testInstanceState.bind(null, true),
     pmctl.bind(null, 'stop'),
-    testInstanceState.bind(null, false),
-    server.stop.bind(server),
-  ], function(err) {
+    testInstanceState.bind(null, false)
+  ];
+
+  if (process.platform === 'linux') {
+    tests.push(pmctl.bind(null, 'start'),
+      pmctl.bind(null, 'cpu-start 1 1000'),
+      testCpuWatchdogStart,
+      pmctl.bind(null, 'cpu-stop 1'),
+      testCpuStop);
+  }
+
+  tests.push(server.stop.bind(server));
+  async.series(tests, function(err) {
     assert.ifError(err);
     app.ok = 1;
   });

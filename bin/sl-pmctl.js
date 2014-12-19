@@ -225,11 +225,13 @@ function cmdObjectsStop() {
 
 function cmdCpuStart() {
   var t = checkOne('T');
+  var timeout = optionalOne(0);
   checkExtra();
 
-  request(ofApp({cmd: 'start-cpu-profiling', target: t}), function(rsp) {
-    console.log('Profiler started, use cpu-stop to get profile');
-  });
+  request(ofApp({cmd: 'start-cpu-profiling', target: t, timeout: timeout}),
+    function(rsp) {
+      console.log('Profiler started, use cpu-stop to get profile');
+    });
 }
 
 function cmdCpuStop() {
