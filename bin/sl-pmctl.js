@@ -17,7 +17,7 @@ var util = require('util');
 var _ = require('lodash');
 
 function printHelp($0, prn) {
-  var USAGE = fs.readFileSync(require.resolve('./sl-pmctl.usage'), 'utf-8')
+  var USAGE = fs.readFileSync(require.resolve('./sl-pmctl.txt'), 'utf-8')
     .replace(/%MAIN%/g, $0)
     .trim()
     ;
