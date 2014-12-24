@@ -174,6 +174,15 @@ function test(port) {
   waiton('status', /worker count: *1/);
 
   expect('cpu-start 0', /Profiler started/);
+  expect('cpu-stop 0', /CPU profile written.*node.0.cpuprofile/);
+
+  if (process.platform === 'linux') {
+    expect('cpu-start 0 100', /Profiler started/);
+    expect('cpu-stop 0', /CPU profile written.*node.0.cpuprofile/);
+  } else {
+    failon('cpu-start 0 100', /Profiler started/);
+    failon('cpu-stop 0', /Profiler stopped/);
+  }
 
   if (process.env.STRONGLOOP_LICENSE) {
     expect('objects-start 1');

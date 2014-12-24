@@ -225,7 +225,7 @@ function cmdObjectsStop() {
 
 function cmdCpuStart() {
   var t = checkOne('T');
-  var timeout = optionalOne(0);
+  var timeout = optionalOne(0) | 0;
   checkExtra();
 
   request(ofApp({cmd: 'start-cpu-profiling', target: t, timeout: timeout}),

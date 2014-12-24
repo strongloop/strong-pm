@@ -32,15 +32,10 @@ Commands:
   set-size N              Set cluster size to N workers.
   objects-start W         Start tracking objects on worker W.
   objects-stop W          Stop tracking objects on worker W.
-  cpu-start W [TIMEOUT]   Start CPU profiling on ID, use cpu-stop to save
-                            profile.
-
-                            TIMEOUT is the optional watchdog timeout, in
-                            milliseconds.  In watchdog mode, the profiler is
-                            suspended until an event loop stall is detected;
-                            i.e. when the event loop blocks for longer than
-                            TIMEOUT.
-                            Only supported on Linux.
+  cpu-start W [TIMEOUT]   Start CPU profiling on worker W.
+      TIMEOUT is the optional watchdog timeout, in milliseconds.  In watchdog
+      mode, the profiler is suspended until an event loop stall is detected;
+      i.e. when a script is running for too long.  Only supported on Linux.
   cpu-stop W [NAME]       Stop CPU profiling on worker W, save as
                             `NAME.cpuprofile`.
   heap-snapshot W [NAME]  Save heap snapshot for worker W, save as
