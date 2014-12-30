@@ -17,7 +17,7 @@ var util = require('util');
 var _ = require('lodash');
 
 function printHelp($0, prn) {
-  var USAGE = fs.readFileSync(require.resolve('./sl-pmctl.usage'), 'utf-8')
+  var USAGE = fs.readFileSync(require.resolve('./sl-pmctl.txt'), 'utf-8')
     .replace(/%MAIN%/g, $0)
     .trim()
     ;
@@ -208,7 +208,7 @@ function cmdSetSize() {
 }
 
 function cmdObjectsStart() {
-  var t = checkOne('T');
+  var t = checkOne('ID');
   checkExtra();
 
   request(ofApp({cmd: 'start-tracking-objects', target: t}), function(rsp) {
@@ -216,7 +216,7 @@ function cmdObjectsStart() {
 }
 
 function cmdObjectsStop() {
-  var t = checkOne('T');
+  var t = checkOne('ID');
   checkExtra();
 
   request(ofApp({cmd: 'stop-tracking-objects', target: t}), function(rsp) {
@@ -224,8 +224,8 @@ function cmdObjectsStop() {
 }
 
 function cmdCpuStart() {
-  var t = checkOne('T');
-  var timeout = optionalOne(0);
+  var t = checkOne('ID');
+  var timeout = optionalOne(0) | 0;
   checkExtra();
 
   request(ofApp({cmd: 'start-cpu-profiling', target: t, timeout: timeout}),
@@ -235,7 +235,7 @@ function cmdCpuStart() {
 }
 
 function cmdCpuStop() {
-  var t = checkOne('T');
+  var t = checkOne('ID');
   var name = optionalOne(util.format('node.%s', t)) + '.cpuprofile';
   checkExtra();
 
@@ -251,7 +251,7 @@ function cmdCpuStop() {
 }
 
 function cmdHeapSnapshot() {
-  var t = checkOne('T');
+  var t = checkOne('ID');
   var name = optionalOne(util.format('node.%s', t)) + '.heapsnapshot';
   checkExtra();
 
