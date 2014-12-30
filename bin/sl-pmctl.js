@@ -208,7 +208,7 @@ function cmdSetSize() {
 }
 
 function cmdObjectsStart() {
-  var t = checkOne('T');
+  var t = checkOne('ID');
   checkExtra();
 
   request(ofApp({cmd: 'start-tracking-objects', target: t}), function(rsp) {
@@ -216,7 +216,7 @@ function cmdObjectsStart() {
 }
 
 function cmdObjectsStop() {
-  var t = checkOne('T');
+  var t = checkOne('ID');
   checkExtra();
 
   request(ofApp({cmd: 'stop-tracking-objects', target: t}), function(rsp) {
@@ -224,7 +224,7 @@ function cmdObjectsStop() {
 }
 
 function cmdCpuStart() {
-  var t = checkOne('T');
+  var t = checkOne('ID');
   var timeout = optionalOne(0) | 0;
   checkExtra();
 
@@ -235,7 +235,7 @@ function cmdCpuStart() {
 }
 
 function cmdCpuStop() {
-  var t = checkOne('T');
+  var t = checkOne('ID');
   var name = optionalOne(util.format('node.%s', t)) + '.cpuprofile';
   checkExtra();
 
@@ -251,7 +251,7 @@ function cmdCpuStop() {
 }
 
 function cmdHeapSnapshot() {
-  var t = checkOne('T');
+  var t = checkOne('ID');
   var name = optionalOne(util.format('node.%s', t)) + '.heapsnapshot';
   checkExtra();
 
