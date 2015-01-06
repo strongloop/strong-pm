@@ -148,7 +148,7 @@ tap.test('worker status update', function(t) {
       processes = processes.map(function(p) {
         return {
           serviceInstanceId: 1,
-          workerId: p.id,
+          workerId: p.workerId,
           pid: p.pid,
           // XXX start/stop time, etc.
         }
