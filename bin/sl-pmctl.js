@@ -48,7 +48,7 @@ while ((option = parser.getopt()) !== undefined) {
       printHelp($0, console.log);
       process.exit(0);
     case 'C':
-      pmctl = option.optarg; console.log(pmctl);
+      pmctl = option.optarg;
       break;
     default:
       console.error('Invalid usage (near option \'%s\'), try `%s --help`.',
