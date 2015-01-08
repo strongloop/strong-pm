@@ -1,7 +1,7 @@
 {
   "name": "strong-pm",
   "description": "StrongLoop Process Manager",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "keywords": [
     "StrongLoop",
     "agent",
@@ -82,7 +82,7 @@
     "strong-mesh-models": "^3.0.0",
     "strong-npm-ls": "^1.0.0",
     "strong-service-install": "^1.1.0",
-    "strong-supervisor": "^1.0.0",
+    "strong-supervisor": "^1.4.0",
     "tar": "^1.0.0",
     "uid-number": "0.0.5"
   }
