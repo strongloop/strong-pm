@@ -57,6 +57,7 @@ helper.pmctl.waiton = waiton;
 function waiton(cmd, output) {
   while (true) {
     try {
+      console.trace('WAITON %s', cmd);
       expect(cmd, output);
       return;
     } catch(er) {
@@ -69,7 +70,7 @@ function waiton(cmd, output) {
 helper.pmctl.expect = expect;
 function expect(cmd, output) {
   var out = pmctl(cmd);
-  console.log("%s code: %j output: <\n%s>", cmd, out.code, out.output);
+  console.log("EXPECT %s code: %j output: <\n%s>", cmd, out.code, out.output);
 
   assert.equal(out.code, 0);
   checkOutput(out, output);
@@ -104,7 +105,7 @@ function pmctl(/* cmd, arguments...*/) {
 
 helper.pause = pause;
 function pause(secs) {
-  var secs = secs || 1;
+  var secs = secs || 2;
   var start = process.hrtime();
   while (true) {
     var ts = process.hrtime(start);
