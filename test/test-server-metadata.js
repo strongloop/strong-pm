@@ -1,11 +1,11 @@
+process.env.STRONGLOOP_CLUSTER = 1;
+
 var app = require('./helper');
 var assert = require('assert');
 var async = require('async');
 var exec = require('child_process').exec;
 var path = require('path');
 var util = require('util');
-
-process.env.cluster_size = 1;
 
 var server = app.listen();
 var cpuProfilingSupported = require('semver').gt(process.version, '0.11.0');

@@ -9,7 +9,7 @@ var util = require('util');
 
 require('shelljs/global');
 
-process.env.cluster_size = 0;
+process.env.STRONGLOOP_CLUSTER = 0;
 
 console.log('Done setup, run process manager');
 
