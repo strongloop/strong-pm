@@ -16,7 +16,9 @@ in this order:
 
 An HTTP URL is mandatory for remote process managers, but can also be used on
 localhost. It must specify at least the process manager's listen port, such as
-`http://example.com:7654`.
+`http://example.com:7654`. If the process manager is using HTTP authentication
+then valid credentials must be set in the URL directly, such as
+`http://user-here:pass-here@example.com:7654`.
 
 Commands:
   status                  Report status, the default command.

@@ -468,6 +468,9 @@ function download(endpoint, path, file, callback) {
   endpoint.pathname = path;
   location = url.format(endpoint);
 
+  // TODO: add support for Digest auth, which is probably easiest done by
+  //       switching to the request module
+  //       see test/test-pmctl-rest-digest-auth.js
   var get = http.get(location, function(res) {
     debug('http.get: %d', res.statusCode);
 

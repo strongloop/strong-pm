@@ -22,7 +22,9 @@ function setup(t) {
       return t.end();
     }
     _pm = manager(function(_port) {
-      var pmurl = util.format('http://127.0.0.1:%d/default', _port);
+      var auth = process.env.TEST_STRONGLOOP_PM_HTTP_AUTH || '';
+      auth += auth.length > 0 ? '@' : '';
+      var pmurl = util.format('http://%s127.0.0.1:%d/default', auth, _port);
       console.log('pmurl: %s', pmurl);
 
       cp.exec(util.format('git push %s master:master', pmurl), function(er) {
@@ -151,7 +153,10 @@ function manager(callback) {
     console.log('Listening port: %s', port);
 
     if (process.env.STRONGLOOP_PM) {
-      process.env.STRONGLOOP_PM = 'http://localhost:' + port;
+      var auth = process.env.TEST_STRONGLOOP_PM_HTTP_AUTH || '';
+      auth += auth.length > 0 ? '@' : '';
+      process.env.STRONGLOOP_PM = util.format('http://%s127.0.0.1:%d/',
+                                              auth, port);
     }
 
     callback(port);

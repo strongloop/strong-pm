@@ -24,6 +24,7 @@ docker_run() {
     --expose 7777 --expose 8888 -P \
     --env DEBUG=strong-pm:* \
     --env STRONG_PM_LOCKED=$STRONG_PM_LOCKED \
+    --env STRONGLOOP_PM_HTTP_AUTH=$STRONGLOOP_PM_HTTP_AUTH \
     --cidfile=sl-pm.docker.cid \
     $1 --listen 7777
 
@@ -42,8 +43,14 @@ docker_run() {
   else
     LOCALHOST="127.0.0.1"
   fi
+  export LOCALHOST_NOAUTH="$LOCALHOST"
+
+  if test -n "$STRONGLOOP_PM_HTTP_AUTH"; then
+    LOCALHOST="$STRONGLOOP_PM_HTTP_AUTH@$LOCALHOST"
+  fi
 
   export STRONGLOOP_PM=http://$LOCALHOST:$(port $(docker port $SL_PM 7777/tcp))
+  export STRONGLOOP_PM_NOAUTH=http://$LOCALHOST_NOAUTH:$(port $(docker port $SL_PM 7777/tcp))
   export APP=http://$LOCALHOST:$(port $(docker port $SL_PM 8888/tcp))
   echo "# strong-pm URL: $STRONGLOOP_PM"
   echo "# app URL: $APP"
@@ -102,11 +109,11 @@ curl -s $APP/env \
   || echo 'ok # unset foo via pmctl'
 
 # make new image of strong-pm that includes a deployed app
-docker commit $SL_PM strong-pm:test-locked
+docker commit $SL_PM strong-pm:test-deployed
 docker stop $SL_PM
 
 # run strong-pm instance that already has an app deployed to it
-STRONG_PM_LOCKED=1 docker_run strong-pm:test-locked
+STRONG_PM_LOCKED=1 docker_run strong-pm:test-deployed
 
 echo "# waiting for manager to deploy our app..."
 sleep 5
@@ -119,5 +126,27 @@ done
 git push --quiet $STRONGLOOP_PM/repo HEAD \
   && echo 'not ok # git push should be rejected' \
   || echo 'ok # git push rejected'
+
+docker stop $SL_PM
+
+# run strong-pm instance that already has an app deployed to it
+STRONGLOOP_PM_HTTP_AUTH=user:pass docker_run strong-pm:test-deployed
+
+echo "# waiting for manager to deploy our app..."
+sleep 5
+echo "# polling...."
+while ! curl -sI $APP/this/is/a/test; do
+  echo "# nothing yet, sleeping for 5s..."
+  sleep 5
+done
+
+../../bin/sl-pmctl.js -C $STRONGLOOP_PM status \
+  && echo 'ok # pmctl status command ran with auth' \
+  || echo 'not ok # failed to run status with auth'
+
+
+../../bin/sl-pmctl.js -C $STRONGLOOP_PM_NOAUTH status \
+  && echo 'not ok # pmctl status should fail without auth' \
+  || echo 'not # pmctl failed to run status without auth'
 
 docker stop $SL_PM

@@ -50,6 +50,27 @@ function assert_file() {
   fi
 }
 
+function assert_not_file() {
+  local fname=$1
+  if test $# -gt 1; then
+    shift
+    found=$(grep -F -e "$*" $fname)
+    result=$?
+    if test $result -eq 0; then
+      fail "needle: '$*' in $fname"
+    else
+      ok "needle: '$*' NOT in $fname"
+    fi
+  else
+    report="file exists: $fname"
+    if test -f $fname; then
+      fail "$report"
+    else
+      ok "$report"
+    fi
+  fi
+}
+
 function assert_report() {
   exit $fails
 }

@@ -66,6 +66,7 @@
     "debug": "^2.0.0",
     "errorhandler": "^1.2.0",
     "extsprintf": "^1.2.0",
+    "http-auth": "^2.2.5",
     "ini": "^1.2.1",
     "lodash": "^2.4.1",
     "loopback": "^2.4.0",
