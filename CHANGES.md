@@ -1,4 +1,52 @@
-2014-12-16, Version 1.5.1
+2015-01-21, Version 1.6.0
+=========================
+
+ * Revert "Merge pull request #94 from strongloop/feature/scheduler_related" (Krishna Raman)
+
+ * test: specify order to match expected result (Ryan Graham)
+
+ * test: rewrote pmctl-local to not use shelljs (Sam Roberts)
+
+ * Bump major version (Krishna Raman)
+
+ * Move profile download endpoint to ServiceInstance (Krishna Raman)
+
+ * Associate metrics models with ServiceInstance (Krishna Raman)
+
+ * Associate ProfileData with targeted Process model (Krishna Raman)
+
+ * Initialize models with ID from environment (Krishna Raman)
+
+ * Use unique InstanceAction string id (Krishna Raman)
+
+ * Update models when env is set/unset (Krishna Raman)
+
+ * Update version to reflect new one-shot feature (Sam Roberts)
+
+ * deps: switch to strong-fork-cicada (Ryan Graham)
+
+ * pm: env can define the initial cluster size (Sam Roberts)
+
+ * test: improve traceability of pmctl tests (Sam Roberts)
+
+ * pmctl: fix punctuation and grammar in usage text (Sam Roberts)
+
+ * pmctl: remove stray log of control path (Sam Roberts)
+
+ * pmctl: reorganize long form usage (Sam Roberts)
+
+ * pmctl: add timeout argument to cpu-start (Sam Roberts)
+
+ * Rename help text files to <cmd>.txt (Sam Roberts)
+
+ * Fix bad CLA URL in CONTRIBUTING.md (Ryan Graham)
+
+ * Add pmctl support for watchdog timeout (Krishna Raman)
+
+ * Fix mesh model resolution to use module name (Krishna Raman)
+
+
+2014-12-15, Version 1.5.1
 =========================
 
  * run: metrics triggers log msg every 15 secs (Sam Roberts)
@@ -8,21 +56,6 @@
 =========================
 
  * Support sl-run spawn on Windows (Sam Roberts)
-
- * Add Dockerfile for Docker Hub automated build (Ryan Graham)
-
- * debug: don't put process.env into the commits (Sam Roberts)
-
- * debug: don't warn on absence of config file (Sam Roberts)
-
- * debug: fix debug output suggesting process leaks (Sam Roberts)
-
- * debug: log the info that triggered an update (Sam Roberts)
-
-
-2014-12-09, Version 1.4.1
-=========================
-
 
 
 2014-12-09, Version 1.4.2
@@ -37,6 +70,10 @@
  * debug: fix debug output suggesting process leaks (Sam Roberts)
 
  * debug: log the info that triggered an update (Sam Roberts)
+
+
+2014-12-09, Version 1.4.1
+=========================
 
  * locked mode: reject all deployment attempts (Ryan Graham)
 
