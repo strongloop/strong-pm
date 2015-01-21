@@ -130,7 +130,7 @@ tap.test('worker status update', function(t) {
   }
 
   function checkWorkers(expect, next) {
-    m.ServiceProcess.find({serviceProcessId: 1}, function(err, processes) {
+    m.ServiceProcess.find({order: 'workerId ASC' }, function(err, processes) {
       debug('processes: %j', err || processes);
       debug('expect: %j', expect);
       debug('next: %j', next.name);

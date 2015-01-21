@@ -27,6 +27,8 @@ var Server = require('../lib/server');
 exports.ok = false;
 
 process.on('exit', function(code) {
+  if (exports.ok === undefined)
+    return; // Test isn't using the OK check
   if (code === 0) {
     assert(exports.ok, 'test did not set OK before exit');
     console.log('PASS');

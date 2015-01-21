@@ -17,7 +17,7 @@ var runner = require('./lib/run');
 var Server = require('./lib/server');
 
 function printHelp($0, prn) {
-  var USAGE = fs.readFileSync(require.resolve('./bin/sl-pm.usage'), 'utf-8')
+  var USAGE = fs.readFileSync(require.resolve('./bin/sl-pm.txt'), 'utf-8')
     .replace(/%MAIN%/g, $0)
     .trim()
     ;

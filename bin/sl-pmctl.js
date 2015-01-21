@@ -17,7 +17,7 @@ var util = require('util');
 var _ = require('lodash');
 
 function printHelp($0, prn) {
-  var USAGE = fs.readFileSync(require.resolve('./sl-pmctl.usage'), 'utf-8')
+  var USAGE = fs.readFileSync(require.resolve('./sl-pmctl.txt'), 'utf-8')
     .replace(/%MAIN%/g, $0)
     .trim()
     ;
@@ -48,7 +48,7 @@ while ((option = parser.getopt()) !== undefined) {
       printHelp($0, console.log);
       process.exit(0);
     case 'C':
-      pmctl = option.optarg; console.log(pmctl);
+      pmctl = option.optarg;
       break;
     default:
       console.error('Invalid usage (near option \'%s\'), try `%s --help`.',
@@ -208,7 +208,7 @@ function cmdSetSize() {
 }
 
 function cmdObjectsStart() {
-  var t = checkOne('T');
+  var t = checkOne('ID');
   checkExtra();
 
   request(ofApp({cmd: 'start-tracking-objects', target: t}), function(rsp) {
@@ -216,7 +216,7 @@ function cmdObjectsStart() {
 }
 
 function cmdObjectsStop() {
-  var t = checkOne('T');
+  var t = checkOne('ID');
   checkExtra();
 
   request(ofApp({cmd: 'stop-tracking-objects', target: t}), function(rsp) {
@@ -224,16 +224,18 @@ function cmdObjectsStop() {
 }
 
 function cmdCpuStart() {
-  var t = checkOne('T');
+  var t = checkOne('ID');
+  var timeout = optionalOne(0) | 0;
   checkExtra();
 
-  request(ofApp({cmd: 'start-cpu-profiling', target: t}), function(rsp) {
-    console.log('Profiler started, use cpu-stop to get profile');
-  });
+  request(ofApp({cmd: 'start-cpu-profiling', target: t, timeout: timeout}),
+    function(rsp) {
+      console.log('Profiler started, use cpu-stop to get profile');
+    });
 }
 
 function cmdCpuStop() {
-  var t = checkOne('T');
+  var t = checkOne('ID');
   var name = optionalOne(util.format('node.%s', t)) + '.cpuprofile';
   checkExtra();
 
@@ -249,7 +251,7 @@ function cmdCpuStop() {
 }
 
 function cmdHeapSnapshot() {
-  var t = checkOne('T');
+  var t = checkOne('ID');
   var name = optionalOne(util.format('node.%s', t)) + '.heapsnapshot';
   checkExtra();
 
