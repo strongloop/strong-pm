@@ -10,8 +10,13 @@ var path = require('path');
 
 require('shelljs/global');
 
-exports.reset = reset;
-exports.pm = pm;
+module.exports = exports = {
+  pm: pm,
+  pmWithApp: pmWithApp,
+  queued: queued,
+  reset: reset,
+  pmctlWithCtl: pmctlWithCtl,
+}
 
 function reset(callback) {
   console.log('working dir for %s is %s', process.argv[1], process.cwd());
@@ -122,5 +127,120 @@ function pm(args, env, callback) {
       pm.env.STRONGLOOP_PM = pm.pmurl;
       pm.env.STRONGLOOP_PM_NOAUTH = pm.pmurlNoAuth;
     }
+  }
+}
+
+function pmWithApp(args, env, callback) {
+  reset();
+  pm(args, env, function(pm) {
+    console.log('pmurl: %s', pm.pmurl);
+    cp.exec(fmt('git push %s master:master', pm.pmurl), function(er) {
+      assert.ifError(er, 'git push succeeds when auth not required');
+      callback(pm);
+    });
+  });
+}
+
+function queued(t) {
+  var queue = [];
+
+  return {
+    waiton: addStep.bind(null, queue, waiton, t),
+    expect: addStep.bind(null, queue, expect, t),
+    failon: addStep.bind(null, queue, failon, t),
+    shutdown: runTests,
+  }
+
+  function runTests(server) {
+    console.error('running queued tests...');
+    async.series(queue, function() {
+      server.on('exit', function(code, signal) {
+        t.equal(signal, 'SIGTERM', 'pm server shutdown by us');
+        t.end();
+      })
+      server.kill('SIGTERM');
+    });
+  }
+
+  function addStep(queue, f, args) {
+    args = [].slice.call(arguments).slice(2);
+    queue.push(function(next) {
+      f.apply(null, args.concat([next]));
+    });
+  }
+}
+
+function expect(t, cmd, pattern, next) {
+  console.log('# START expect %j =~ %s', cmd, pattern);
+  pmctl(cmd, function(out) {
+    console.log('# expect %j with pattern %s against code: %j',
+                cmd, pattern, out.code);
+
+    t.equal(out.code, 0, 'pmctl exit code');
+
+    if (out.code == 0) {
+      t.assert(checkOutput(out, pattern), pattern || '(no pattern)');
+    }
+
+    if (out.code != 0 || !checkOutput(out, pattern)) {
+      console.log('check failed against: <\n%>', out.output);
+    }
+
+    next();
+  });
+}
+
+function waiton(t, cmd, pattern, next) {
+  console.log('# START waiton %j =~ %s', cmd, pattern);
+  return check();
+
+  function check() {
+    pmctl(cmd, function(out) {
+      console.log("# waiton %j =~ %s against code: %j", cmd, pattern, out.code);
+      if (out.code == 0 && checkOutput(out, pattern)) {
+        t.equal(out.code, 0, 'pmctl exit code');
+        t.assert(true, pattern || '(no pattern)');
+        return next();
+      }
+      setTimeout(check, 1000);
+    });
+  }
+}
+
+function failon(t, cmd, pattern, next) {
+  console.log('# START failon %j', cmd);
+  pmctl(cmd, function(out) {
+    console.log('# failon %j against code: %j', cmd, out.code);
+    t.notEqual(out.code, 0);
+    return next();
+  });
+}
+
+function pmctl(cmd, callback) {
+  var cli = require.resolve('../bin/sl-pmctl.js');
+  var args = [cli].concat(cmd);
+  return cp.execFile(process.execPath, args, {env: { STRONGLOOP_PM: '' }}, function(er, stdout, stderr) {
+    var out = {
+      out: stdout.trim(),
+      err: stderr.trim(),
+      output: stdout + '\n' + stderr,
+      code: er ? er.code : 0
+    };
+    debug('Run: %s => %s out <\n%s>\nerr <\n%s>',
+    cmd, out.code, out.out, out.err);
+    return callback(out);
+  });
+}
+
+function checkOutput(out, pattern) {
+  // undefined and '' become /(?:)/
+  // RegExp's become themselves
+  return new RegExp(pattern).test(out.output);
+}
+
+function pmctlWithCtl(ctlPath) {
+  return function pmctl(args) {
+    args = [].slice.call(arguments);
+    return ['--control', ctlPath].concat(args);
   }
 }

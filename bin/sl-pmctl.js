@@ -86,6 +86,7 @@ var commands = {
   'env-get': cmdEnvGet,
   env: cmdEnvGet,
   'env-unset': cmdEnvUnset,
+  'log-dump': cmdLogDump,
 };
 
 (commands[command] || cmdInvalid)();
@@ -317,6 +318,26 @@ function cmdEnvGet() {
   });
 }
 
+function cmdLogDump() {
+  var repeat = (optionalOne('NOFOLLOW') === '--folow');
+
+  return logDump();
+
+  function logDump() {
+    request({ cmd: 'log-dump' }, function(rsp) {
+      if (rsp.message) {
+        console.error(rsp.message);
+      } else {
+        process.stdout.write(rsp.log);
+      }
+      if (repeat) {
+        setTimeout(logDump, 1000);
+      }
+      return repeat;
+    });
+  }
+}
+
 function simpleCommand(cmd) {
   checkExtra();
 
@@ -341,8 +362,10 @@ function request(cmd, display) {
       console.log('Command `%s` failed with: %s', cmd.sub || cmd.cmd, rsp.error);
       process.exit(1);
     }
-    display(rsp);
-    process.exit(0);
+    var keepAlive = display(rsp);
+    if (!keepAlive) {
+      process.exit(0);
+    }
   });
 }
 

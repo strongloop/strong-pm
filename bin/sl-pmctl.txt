@@ -72,5 +72,9 @@ Commands:
         the application is hard restarted with the new environment after change
         (either set or unset).
 
+  log-dump [--follow]     Empty the log buffer, dumping the contents to stdout.
+                          If --follow is given the log buffer is continuously
+                          dumped to stdout.
+
 Worker `ID` is either a node cluster worker ID, or an operating system process
 ID. The special worker ID `0` can be used to identify the master.
