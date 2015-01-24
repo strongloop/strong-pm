@@ -5,10 +5,11 @@ var cp = require('child_process');
 var debug = require('debug')('strong-pm:test');
 var defaults = require('lodash').defaults;
 var fmt = require('util').format;
+var fs = require('fs');
 var mktmpdir = require('mktmpdir');
+var partial = require('lodash').partial;
 var path = require('path');
-
-require('shelljs/global');
+var rimraf = require('rimraf');
 
 module.exports = exports = {
   pm: pm,
@@ -22,38 +23,35 @@ function reset(callback) {
   console.log('working dir for %s is %s', process.argv[1], process.cwd());
 
   // Enter test sandbox app
-  cd(path.resolve(__dirname, 'app'));
+  var cd = path.resolve(__dirname, 'app');
+  process.chdir(cd);
 
-  // Make sure we're working in our sandbox
-  assert.equal(package().name, 'test-app', 'cwd is test-app');
+  return async.series([
+    partial(rimraf, path.resolve(cd, '.git')),
+    partial(rimraf, path.resolve(cd, '.strong-pm')),
+    ex('git clean -f -d -x .'),
+    ex('git init'),
+    ex('git add .'),
+    ex('git commit --author="sl-pm-test <nobody@strongloop.com>" -m initial'),
+    ex('sl-build --install --commit'),
+  ], function(err) {
+    assert.ifError(err);
+    console.log('test/app built succesfully')
+    callback();
+  });
 
-  rm('-rf', '../receive-base');
-  rm('-rf', '.git', '.strong-pm');
-  ex('git clean -f -d -x .');
-  assert(!test('-e', 'node_modules'));
-  ex('git init');
-  ex('git add .');
-  ex('git commit --author="sl-pm-test <nobody@strongloop.com>" -m initial');
-  ex('sl-build --install --commit');
-
-  assert(!test('-e', 'node_modules/debug'), 'dev dep not installed');
-  assert(test('-e', 'node_modules/buffertools'), 'prod dep installed');
-  assert(!test('-e', 'node_modules/buffertools/build'), 'addons not built');
-  assert(which('sl-build'), 'sl-build not in path');
-
-  console.log('test/app built succesfully');
-
-  if (callback) {
-    setImmediate(callback);
-  }
-
-  function ex(cmd, async) {
+  function ex(cmd) {
     console.log('exec `%s`', cmd);
-    return exec(cmd, async);
-  }
-
-  function package() {
-    return require(path.resolve(pwd(),'package.json'));
+    return function(cb) {
+      cp.exec(cmd, {cwd: cd}, function(err, stdout, stderr) {
+        if (err) {
+          console.error(stdout);
+          console.error(stderr);
+          assert.ifError(err);
+        }
+        cb(err);
+      });
+    };
   }
 }
 
@@ -70,7 +68,7 @@ function pm(args, env, callback) {
 
   // Listened on zero to avoid port conflicts, search for actual port.
   args.push('--listen=0');
-  if (process.env.STRONGLOOP_PM || env.STRONGLOOP_PM) {
+  if (env.STRONGLOOP_PM) {
     args.push('--no-control');
   }
 
@@ -103,8 +101,6 @@ function pm(args, env, callback) {
     pm.ctl = childctl.attach(onReceive, pm);
   });
 
-  return;
-
   function onReceive(req, cb) {
     if (req.cmd && req.cmd === 'listening') {
       console.log('Listening port: %s', req.port);
@@ -131,55 +127,79 @@ function pm(args, env, callback) {
 }
 
 function pmWithApp(args, env, callback) {
-  reset();
-  pm(args, env, function(pm) {
-    console.log('pmurl: %s', pm.pmurl);
-    cp.exec(fmt('git push %s master:master', pm.pmurl), function(er) {
-      assert.ifError(er, 'git push succeeds when auth not required');
-      callback(pm);
+  reset(function() {
+    pm(args, env, function(pm) {
+      console.log('pmurl: %s', pm.pmurl);
+      cp.exec(fmt('git push %s master:master', pm.pmurl), function(er) {
+        assert.ifError(er, 'git push succeeds when auth not required');
+        callback(pm);
+      });
     });
   });
 }
 
 function queued(t) {
   var queue = [];
+  var newT = {
+    queue: queue,
+    waiton: partial(addStep, queue, waiton, t),
+    expect: partial(addStep, queue, expect, t),
+    failon: partial(addStep, queue, failon, t),
+    shutdown: partial(runTests, queue, t),
+    test: subTest,
+  };
+  ['equal', 'notEqual', 'assert', 'end', 'skip', 'doesNotThrow'].forEach(function(m) {
+    newT[m] = function() {
+      t[m].apply(t, arguments);
+    };
+  });
+  return newT;
 
-  return {
-    waiton: addStep.bind(null, queue, waiton, t),
-    expect: addStep.bind(null, queue, expect, t),
-    failon: addStep.bind(null, queue, failon, t),
-    shutdown: runTests,
-  }
-
-  function runTests(server) {
-    console.error('running queued tests...');
-    async.series(queue, function() {
-      server.on('exit', function(code, signal) {
-        t.equal(signal, 'SIGTERM', 'pm server shutdown by us');
-        t.end();
-      })
-      server.kill('SIGTERM');
-    });
-  }
-
-  function addStep(queue, f, args) {
-    args = [].slice.call(arguments).slice(2);
+  function subTest(name, opts, cb) {
+    if (!cb && typeof opts === 'function') {
+      cb = opts;
+      opts = {};
+    }
     queue.push(function(next) {
-      f.apply(null, args.concat([next]));
+      t.test(name, function(subT) {
+        var subQueued = queued(subT);
+        subT.on('end', next);
+        cb(subQueued);
+        runTests(subQueued.queue, subT);
+      });
     });
+  }
+
+  function runTests(queue, t, server) {
+    console.log('# running queued tests...');
+    async.series(queue, function() {
+      if (server) {
+        server.on('exit', function(code, signal) {
+          t.equal(signal, 'SIGTERM', 'pm server shutdown by us');
+          t.end();
+        })
+        server.kill('SIGTERM');
+      } else {
+        t.end();
+      }
+    });
+  }
+
+  function addStep(queue, f, t, c, p) {
+    queue.push(partial(f, t, c, p));
   }
 }
 
 function expect(t, cmd, pattern, next) {
-  console.log('# START expect %j =~ %s', cmd, pattern);
+  var name = fmt('pmctl %j =~ %s', cmd, new RegExp(pattern));
+  console.log('# START expect %s', name);
   pmctl(cmd, function(out) {
-    console.log('# expect %j with pattern %s against code: %j',
-                cmd, pattern, out.code);
+    console.log('# expect %s against code: %j', name, out.code);
 
-    t.equal(out.code, 0, 'pmctl exit code');
+    t.equal(out.code, 0, name + ' exit code');
 
     if (out.code == 0) {
-      t.assert(checkOutput(out, pattern), pattern || '(no pattern)');
+      t.assert(checkOutput(out, pattern), name);
     }
 
     if (out.code != 0 || !checkOutput(out, pattern)) {
@@ -191,15 +211,15 @@ function expect(t, cmd, pattern, next) {
 }
 
 function waiton(t, cmd, pattern, next) {
-  console.log('# START waiton %j =~ %s', cmd, pattern);
+  var name = fmt('pmctl %j =~ %s', cmd, new RegExp(pattern));
+  console.log('# START waiton %s', name);
   return check();
 
   function check() {
     pmctl(cmd, function(out) {
-      console.log("# waiton %j =~ %s against code: %j", cmd, pattern, out.code);
+      console.log("# waiton %s against code: %j", name, out.code);
       if (out.code == 0 && checkOutput(out, pattern)) {
-        t.equal(out.code, 0, 'pmctl exit code');
-        t.assert(true, pattern || '(no pattern)');
+        t.assert(true, name);
         return next();
       }
       setTimeout(check, 1000);
@@ -208,10 +228,11 @@ function waiton(t, cmd, pattern, next) {
 }
 
 function failon(t, cmd, pattern, next) {
-  console.log('# START failon %j', cmd);
+  var name = fmt('pmctl %j !~ %s', cmd, new RegExp(pattern));
+  console.log('# START failon %s', name);
   pmctl(cmd, function(out) {
-    console.log('# failon %j against code: %j', cmd, out.code);
-    t.notEqual(out.code, 0);
+    console.log('# failon %s against code: %j', name, out.code);
+    t.notEqual(out.code, 0, name);
     return next();
   });
 }
@@ -227,7 +248,7 @@ function pmctl(cmd, callback) {
       code: er ? er.code : 0
     };
     debug('Run: %s => %s out <\n%s>\nerr <\n%s>',
-    cmd, out.code, out.out, out.err);
+          cmd, out.code, out.out, out.err);
     return callback(out);
   });
 }
