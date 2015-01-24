@@ -1,8 +1,12 @@
 var assert = require('assert');
-var path = require('path');
-var cp = require('child_process');
+var async = require('async');
 var childctl = require('strong-control-channel/process');
+var cp = require('child_process');
+var debug = require('debug')('strong-pm:test');
 var defaults = require('lodash').defaults;
+var fmt = require('util').format;
+var mktmpdir = require('mktmpdir');
+var path = require('path');
 
 require('shelljs/global');
 
@@ -61,32 +65,62 @@ function pm(args, env, callback) {
 
   // Listened on zero to avoid port conflicts, search for actual port.
   args.push('--listen=0');
-
-  console.log('pmcli:', pmcli, args);
-
-  var pm = cp.spawn(pmcli, args, {
-    stdio: ['ignore', process.stdout, process.stderr, 'ipc'],
-    env: defaults(env, process.env),
-  });
-
-  pm.on('error', function(er) {
-    assert.ifError(er);
-  });
-
-  if (callback) {
-    pm.on('listening', callback);
+  if (process.env.STRONGLOOP_PM || env.STRONGLOOP_PM) {
+    args.push('--no-control');
   }
 
-  // Used by PM to signal its controller that it is listening
-  pm.ctl = childctl.attach(onReceive, pm);
+  var pm;
 
-  return pm;
+  return mktmpdir(function(err, tmpdir, cleanup) {
+    console.log('pmcli:', pmcli, args);
+
+    pm = cp.spawn(pmcli, args, {
+      stdio: ['ignore', process.stdout, process.stderr, 'ipc'],
+      env: defaults(env, process.env),
+      cwd: tmpdir,
+    });
+    pm.cwd = tmpdir;
+    pm.env = env;
+
+    pm.on('error', function(er) {
+      cleanup();
+      assert.ifError(er);
+    });
+    pm.on('exit', function() {
+      cleanup();
+    });
+
+    if (callback) {
+      pm.on('listening', callback);
+    }
+
+    // Used by PM to signal its controller that it is listening
+    pm.ctl = childctl.attach(onReceive, pm);
+  });
+
+  return;
 
   function onReceive(req, cb) {
     if (req.cmd && req.cmd === 'listening') {
       console.log('Listening port: %s', req.port);
-      pm.emit('listening', req.port);
+      pm.port = req.port;
+      syncEnv(pm);
+      pm.emit('listening', pm);
     }
     return cb();
+  }
+
+  function syncEnv(pm) {
+    var auth = pm.env.TEST_STRONGLOOP_PM_HTTP_AUTH || '';
+    auth += auth.length > 0 ? '@' : '';
+    pm.pmurl = fmt('http://%s127.0.0.1:%d/default', auth, pm.port);
+    pm.pmurlNoAuth = fmt('http://127.0.0.1:%d/default', pm.port);
+    pm.pmctlUrl = fmt('http://%s127.0.0.1:%d/api', auth, pm.port);
+    pm.pmctlUrlNoAuth = fmt('http://127.0.0.1:%d/api', pm.port);
+    pm.pmctlPath = path.resolve(pm.cwd, 'pmctl');
+    if (env.STRONGLOOP_PM) {
+      pm.env.STRONGLOOP_PM = pm.pmurl;
+      pm.env.STRONGLOOP_PM_NOAUTH = pm.pmurlNoAuth;
+    }
   }
 }
