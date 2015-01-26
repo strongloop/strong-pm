@@ -57,7 +57,21 @@ tap.test('metrics update', function(t) {
       id:1,
       pid:1001,
     };
-    runner.emit('request', fork, emitMetrics);
+    var exit = {
+      cmd: 'exit',
+      id:1,
+      pid:1001,
+      reason: 'killed',
+      suicide: false
+    };
+    async.series(
+      [
+        runner.emit.bind(runner, 'request', fork),
+        runner.emit.bind(runner, 'request', exit),
+        runner.emit.bind(runner, 'request', fork)
+      ],
+      emitMetrics
+    );
   }
 
   var MARGIN = 5 * 1000; // in seconds
@@ -124,7 +138,11 @@ tap.test('metrics update', function(t) {
         t.deepEqual(obj.timers, metric.timers);
         t.deepEqual(obj.gauges, metric.gauges);
         t.deepEqual(obj.counters, metric.counters);
-        callback();
+        m.ServiceProcess.findById(obj.processId, function(err, proc) {
+          t.ifError(err);
+          t.ok(!proc.stopReason, 'Stop reason should be unset');
+          callback();          
+        });
       });
     }
     async.each(['1'], checkMetric, emitNewMetrics);
