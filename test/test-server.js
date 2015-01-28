@@ -45,7 +45,7 @@ tap.test('new server', function(t) {
       t.equal(_.id, '1');
       t.equal(_.address, 'localhost');
     });
-    m.ServerService.findById(1, function(err, _) {
+    m.Service.findById(1, function(err, _) {
       debug('service:', _);
       assert.ifError(err);
       t.equal(_.id, 1);
@@ -117,7 +117,7 @@ tap.test('service starts', function(t) {
       t.equal(s._listenPort, 1234);
       t.equal(_.PMPort, s._listenPort);
 
-      m.ServerService.findById(1, function(err, _) {
+      m.Service.findById(1, function(err, _) {
         debug('service: %j', _);
         assert.ifError(err);
         t.equal(_.id, 1);
@@ -130,7 +130,7 @@ tap.test('service starts', function(t) {
 
   function end() {
     var tasks = {
-      ServerService: 0,
+      Service: 0,
       Executor: 0,
       ServiceInstance: 0,
       Group: 0,

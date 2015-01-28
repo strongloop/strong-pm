@@ -25,7 +25,7 @@
     "dataSource": "remote",
     "public": false
   },
-  "ServerService": {
+  "Service": {
     "dataSource": "remote",
     "public": true
   },
