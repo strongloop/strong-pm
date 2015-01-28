@@ -41,6 +41,10 @@
     "dataSource": "remote",
     "public": false
   },
+  "ServiceContainer": {
+    "dataSource": "remote",
+    "public": true
+  },
   "ServiceProcess": {
     "dataSource": "remote",
     "public": false

@@ -41,6 +41,10 @@
     "dataSource": "db",
     "public": true
   },
+  "ServiceContainer": {
+    "dataSource": "db",
+    "public": true
+  },
   "ServiceProcess": {
     "dataSource": "db",
     "public": true
