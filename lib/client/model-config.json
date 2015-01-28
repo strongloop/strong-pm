@@ -49,7 +49,7 @@
     "dataSource": "remote",
     "public": false
   },
-  "InstanceAction": {
+  "Action": {
     "dataSource": "remote",
     "public": false
   }
