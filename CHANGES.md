@@ -1,3 +1,27 @@
+2015-01-29, Version 1.7.0
+=========================
+
+ * fix 'pmctl log-dump --follow' option parsing (Ryan Graham)
+
+ * test: use queued async helper for pmctl-local (Ryan Graham)
+
+ * test: make helper-async fully async (Ryan Graham)
+
+ * feature: pmctl log-dump command to dump logs (Ryan Graham)
+
+ * feature: store recent log entries in memory (Ryan Graham)
+
+ * test: use mktmpdir in pm tests (Ryan Graham)
+
+ * docs: update command usage text (Ryan Graham)
+
+ * test: add additional git push tests (Ryan Graham)
+
+ * Add support for HTTP authentication (Ryan Graham)
+
+ * Fix metrics process id assignment (Krishna Raman)
+
+
 2015-01-21, Version 1.6.0
 =========================
 
