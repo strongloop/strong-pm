@@ -212,9 +212,14 @@ Options:
   --no-control      Do not listen for local control messages.
 
 The process manager will be controllable via HTTP on the port specified. That
-port is also used for deployment with strong-deploy. It is also controllable
-using local domain sockets, which look like file paths, and the listen path
-can be changed or disabled.
+port is also used for deployment with strong-deploy. Basic authentication
+can be enabled for HTTP by setting the STRONGLOOP_PM_HTTP_AUTH environment
+variable to <user>:<pass> (eg. strong-pm:super-secret). This is the same format
+as used by the --http-auth option of pm-install.
+
+It is also controllable using local domain sockets, which look like file paths,
+and the listen path can be changed or disabled. These sockets do not support
+HTTP authentication.
 ```
 
 ### slc pm-install
@@ -243,6 +248,11 @@ Options:
   --upstart VERSION   Specify the version of Upstart, 1.4 or 0.6
                       (default is 1.4)
   --systemd           Install as a systemd service, not an Upstart job.
+  --http-auth CREDS   Enable HTTP authentication using Basic auth,
+                      requiring the specified credentials for every
+                      request sent to the REST API where CREDS is
+                      given in the form of <user>:<pass>.
+
 
 OS Service support:
   The --systemd and --upstart VERSION options are mutually exclusive.
@@ -256,7 +266,7 @@ The URL formats supported by `--meetrics STATS` are defined by strong-supervisor
 
 ```
 usage: slc pmctl [options] [command]
-usage: sl-pmctl [options] [command]
+usage: sl-pmctl [options] [command ...]
 
 Run-time control of the process manager.
 
@@ -268,13 +278,15 @@ Options:
 The control endpoint for the process manager is searched for if not specified,
 in this order:
 
-1. `STRONGLOOP_PM` in environment: may be a local domain path, or an HTTP URL
-2. `./pmctl`: a process manager running the current working director
-3. `/var/lib/strong-pm/pmctl`: a process manager installed by pm-install
+1. `STRONGLOOP_PM` in environment: may be a local domain path, or an HTTP URL.
+2. `./pmctl`: a process manager running in the current working directory.
+3. `/var/lib/strong-pm/pmctl`: a process manager installed by pm-install.
 
 An HTTP URL is mandatory for remote process managers, but can also be used on
 localhost. It must specify at least the process manager's listen port, such as
-`http://example.com:7654`.
+`http://example.com:7654`. If the process manager is using HTTP authentication
+then valid credentials must be set in the URL directly, such as
+`http://user-here:pass-here@example.com:7654`.
 
 Commands:
   status                  Report status, the default command.
@@ -286,40 +298,48 @@ Commands:
                             new config.
   soft-restart            Soft stop and restart the current application with
                             new config.
+        "Soft" stops notify workers they are being disconnected, and give them
+        a grace period for any existing connections to finish. "Hard" stops
+        kill the supervisor and its workers with `SIGTERM`.
+
   cluster-restart         Restart the current application cluster workers.
+        This is a zero-downtime restart, the workers are soft restarted
+        one-by-one, so that some workers will always be available to service
+        requests.
+
   set-size N              Set cluster size to N workers.
-  objects-start W         Start tracking objects on worker W.
-  objects-stop W          Stop tracking objects on worker W.
-  cpu-start W             Start CPU profiling on ID, use cpu-stop to save
-                            profile.
-  cpu-stop W [NAME]       Stop CPU profiling on worker W, save as
-                            `NAME.cpuprofile`.
-  heap-snapshot W [NAME]  Save heap snapshot for worker W, save as
-                            `NAME.heapsnapshot`.
+        The default cluster size is the number of CPU cores.
+
+  objects-start ID        Start tracking objects on worker ID.
+  objects-stop ID         Stop tracking objects on worker ID.
+        Object tracking is published as metrics, and requires configuration so
+        that the `--metrics=URL` option is passed to the runner.
+
+  cpu-start ID [TIMEOUT]  Start CPU profiling on worker ID.
+        TIMEOUT is the optional watchdog timeout, in milliseconds.  In watchdog
+        mode, the profiler is suspended until an event loop stall is detected;
+        i.e. when a script is running for too long.  Only supported on Linux.
+
+  cpu-stop ID [NAME]      Stop CPU profiling on worker ID.
+        The profile is saved as `<NAME>.cpuprofile`. CPU profiles must be
+        loaded into Chrome Dev Tools. The NAME is optional, and defaults to
+        `node.<PID>`.
+
+  heap-snapshot ID [NAME] Save heap snapshot for worker ID.
+        The snapshot is saved as `<NAME>.heapsnapshot`.  Heap snapshots must be
+        loaded into Chrome Dev Tools. The NAME is optional, and defaults to
+        `node.<PID>`.
+
   ls [DEPTH]              List dependencies of the current application.
-  env-set K=V...          Set one or more environment variables for current
-                          application and hard restart it with new environment.
-  env-unset KEYS...       Unset one or more environment variables for current
-                          application and hard restart it with the new
-                          environment.
+
   env[-get] [KEYS...]     List specified environment variables. If none are
-                          given, list all variables.
+                          specified, list all variables.
+  env-set K=V...          Set one or more environment variables.
+  env-unset KEYS...       Unset one or more environment variables.
+        The environment variables are applied to the current application, and
+        the application is hard restarted with the new environment after change
+        (either set or unset).
 
-"Soft" stops notify workers they are being disconnected, and give them a grace
-period for any existing connections to finish. "Hard" stops kill the supervisor
-and its workers with `SIGTERM`.
-
-Worker `W` is either a node cluster worker ID, or an operating system process
+Worker `ID` is either a node cluster worker ID, or an operating system process
 ID. The special worker ID `0` can be used to identify the master.
-
-Profiling:
-
-Object tracking is published as metrics, and requires configuration so that the
-`--metrics=URL` option is passed to the runner.
-
-CPU profiles must be loaded into Chrome Dev Tools. The NAME is optional,
-profiles default to being named `node.<PID>.cpuprofile`.
-
-Heap snapshots must be loaded into Chrome Dev Tools. The NAME is optional,
-snapshots default to being named `node.<PID>.heapsnapshot`.
 ```

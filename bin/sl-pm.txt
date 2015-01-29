@@ -10,6 +10,11 @@ Options:
   --no-control      Do not listen for local control messages.
 
 The process manager will be controllable via HTTP on the port specified. That
-port is also used for deployment with strong-deploy. It is also controllable
-using local domain sockets, which look like file paths, and the listen path
-can be changed or disabled.
+port is also used for deployment with strong-deploy. Basic authentication
+can be enabled for HTTP by setting the STRONGLOOP_PM_HTTP_AUTH environment
+variable to <user>:<pass> (eg. strong-pm:super-secret). This is the same format
+as used by the --http-auth option of pm-install.
+
+It is also controllable using local domain sockets, which look like file paths,
+and the listen path can be changed or disabled. These sockets do not support
+HTTP authentication.

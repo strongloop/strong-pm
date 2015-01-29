@@ -16,7 +16,9 @@ in this order:
 
 An HTTP URL is mandatory for remote process managers, but can also be used on
 localhost. It must specify at least the process manager's listen port, such as
-`http://example.com:7654`.
+`http://example.com:7654`. If the process manager is using HTTP authentication
+then valid credentials must be set in the URL directly, such as
+`http://user-here:pass-here@example.com:7654`.
 
 Commands:
   status                  Report status, the default command.
@@ -69,6 +71,10 @@ Commands:
         The environment variables are applied to the current application, and
         the application is hard restarted with the new environment after change
         (either set or unset).
+
+  log-dump [--follow]     Empty the log buffer, dumping the contents to stdout.
+                          If --follow is given the log buffer is continuously
+                          dumped to stdout.
 
 Worker `ID` is either a node cluster worker ID, or an operating system process
 ID. The special worker ID `0` can be used to identify the master.

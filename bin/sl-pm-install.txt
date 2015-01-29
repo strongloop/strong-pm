@@ -20,6 +20,11 @@ Options:
   --upstart VERSION   Specify the version of Upstart, 1.4 or 0.6
                       (default is 1.4)
   --systemd           Install as a systemd service, not an Upstart job.
+  --http-auth CREDS   Enable HTTP authentication using Basic auth,
+                      requiring the specified credentials for every
+                      request sent to the REST API where CREDS is
+                      given in the form of <user>:<pass>.
+
 
 OS Service support:
   The --systemd and --upstart VERSION options are mutually exclusive.

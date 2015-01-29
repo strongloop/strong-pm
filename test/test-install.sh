@@ -50,6 +50,9 @@ assert_file $TMP/upstart.conf "$(node -p process.execPath) $(which sl-pm.js)"
 # Should default to config relative to base
 assert_file $TMP/upstart.conf "--config $TMP/deeply/nested/sl-pm/config"
 
+# Should NOT add unwanted auth to config
+assert_not_file $TMP/upstart.conf "STRONG_PM_HTTP_AUTH"
+
 # Should create base for us
 assert_exit 0 test -d $TMP/deeply/nested/sl-pm
 
@@ -61,6 +64,23 @@ assert_file $TMP/deeply/nested/sl-pm/env.json '"FOO":"bar"'
 assert_file $TMP/deeply/nested/sl-pm/env.json '"BAR":"foo"'
 assert_file $TMP/deeply/nested/sl-pm/env.json '"MORE":"less"'
 assert_file $TMP/deeply/nested/sl-pm/env.json '"LESS":"more"'
+
+# Should fail to overwrite existing file
+assert_exit 1 $CMD --port 7777 --user `id -un` \
+                   --job-file $TMP/upstart.conf \
+                   --base $TMP/deeply/nested/sl-pm 2>&1 \
+
+# Should overwrite upstart job when --force specified
+assert_exit 0 $CMD --port 7777 \
+                   --job-file $TMP/upstart.conf \
+                   --user `id -un` \
+                   --base $TMP/deeply/nested/sl-pm \
+                   --force \
+                   --http-auth "myuser:mypass"
+
+# Should add auth to config, treating "myuser:mypass" as implied Basic auth
+assert_file $TMP/upstart.conf "STRONGLOOP_PM_HTTP_AUTH=basic:myuser:mypass"
+
 
 unset SL_PM_INSTALL_IGNORE_PLATFORM
 assert_report
