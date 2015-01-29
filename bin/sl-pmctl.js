@@ -319,7 +319,7 @@ function cmdEnvGet() {
 }
 
 function cmdLogDump() {
-  var repeat = (optionalOne('NOFOLLOW') === '--folow');
+  var repeat = (optionalOne('NOFOLLOW') === '--follow');
 
   return logDump();
 
