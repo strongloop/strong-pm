@@ -115,7 +115,7 @@ tap.test('service starts', function(t) {
         t.equal(_.id, '1');
         t.equal(_.executorId, '1');
         t.equal(_.serviceId, 1);
-        t.equal(_.groupId, 1);
+        t.equal(_.groupId, '1');
         t.equal(_.currentDeploymentId, commit.hash);
         t.equal(s._listenPort, 1234);
 
