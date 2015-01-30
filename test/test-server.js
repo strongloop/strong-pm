@@ -42,7 +42,7 @@ tap.test('new server', function(t) {
     m.Executor.findById(1, function(err, _) {
       debug('executor:', _);
       assert.ifError(err);
-      t.equal(_.id, 1);
+      t.equal(_.id, '1');
       t.equal(_.address, 'localhost');
     });
     m.ServerService.findById(1, function(err, _) {
@@ -108,8 +108,8 @@ tap.test('service starts', function(t) {
     m.ServiceInstance.findById(1, function(err, _) {
       debug('instance: %j next: %j', _, next.name);
       assert.ifError(err);
-      t.equal(_.id, 1);
-      t.equal(_.executorId, 1);
+      t.equal(_.id, '1');
+      t.equal(_.executorId, '1');
       t.equal(_.serverServiceId, 1);
       t.equal(_.groupId, 1);
       t.equal(_.currentDeploymentId, commit.hash);
