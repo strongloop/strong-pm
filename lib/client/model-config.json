@@ -25,7 +25,7 @@
     "dataSource": "remote",
     "public": false
   },
-  "ServerService": {
+  "Service": {
     "dataSource": "remote",
     "public": true
   },
@@ -41,6 +41,10 @@
     "dataSource": "remote",
     "public": false
   },
+  "ServiceContainer": {
+    "dataSource": "remote",
+    "public": true
+  },
   "ServiceProcess": {
     "dataSource": "remote",
     "public": false
@@ -49,7 +53,7 @@
     "dataSource": "remote",
     "public": false
   },
-  "InstanceAction": {
+  "Action": {
     "dataSource": "remote",
     "public": false
   }

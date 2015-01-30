@@ -1,9 +1,0 @@
-{
-  "name": "InstanceAction",
-  "base": "Action",
-  "properties": {},
-  "validations": [],
-  "relations": {},
-  "acls": [],
-  "methods": []
-}

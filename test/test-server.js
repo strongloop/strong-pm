@@ -1,3 +1,4 @@
+var Environment = require('../lib/env');
 var Server = require('../lib/server');
 var assert = require('assert');
 var async = require('async');
@@ -35,20 +36,21 @@ tap.test('new server', function(t) {
   t.plan(7);
 
   var s = new Server('pm', null, '_base', 0, null);
+  s._env = new Environment();
   s._loadModels(function() {
     var m = s._app.models;
     m.Executor.findById(1, function(err, _) {
       debug('executor:', _);
       assert.ifError(err);
-      t.equal(_.id, 1);
+      t.equal(_.id, '1');
       t.equal(_.address, 'localhost');
     });
-    m.ServerService.findById(1, function(err, _) {
+    m.Service.findById(1, function(err, _) {
       debug('service:', _);
       assert.ifError(err);
       t.equal(_.id, 1);
       t.equal(_.name, 'default');
-      t.equal(_._groups[0].id, 1);
+      t.equal(_._groups[0].id, '1');
       t.equal(_._groups[0].name, 'default');
       t.equal(_._groups[0].scale, 1);
     });
@@ -61,6 +63,7 @@ tap.test('service starts', function(t) {
   var m = s._app.models;
 
   s._isStarted = true; // Make server think its running.
+  s._env = new Environment();
   s._loadModels(firstRun);
 
   function firstRun() {
@@ -105,29 +108,32 @@ tap.test('service starts', function(t) {
     m.ServiceInstance.findById(1, function(err, _) {
       debug('instance: %j next: %j', _, next.name);
       assert.ifError(err);
-      t.equal(_.id, 1);
-      t.equal(_.executorId, 1);
-      t.equal(_.serverServiceId, 1);
-      t.equal(_.groupId, 1);
-      t.equal(_.currentDeploymentId, commit.hash);
-      t.assert(_.startTime < new Date());
-      t.equal(s._listenPort, 1234);
-      t.equal(_.PMPort, s._listenPort);
-
-      m.ServerService.findById(1, function(err, _) {
-        debug('service: %j', _);
+      t.equal(_.id, '1');
+      m.ServiceContainer.findById(1, function(err, _) {
+        debug('container: %j next: %j', _, next.name);
         assert.ifError(err);
-        t.equal(_.id, 1);
-        t.equal(_.deploymentInfo.hash, commit.hash);
-        t.equal(_.deploymentInfo.dir, commit.dir);
-        next();
+        t.equal(_.id, '1');
+        t.equal(_.executorId, '1');
+        t.equal(_.serviceId, 1);
+        t.equal(_.groupId, 1);
+        t.equal(_.currentDeploymentId, commit.hash);
+        t.equal(s._listenPort, 1234);
+
+        m.Service.findById(1, function(err, _) {
+          debug('service: %j', _);
+          assert.ifError(err);
+          t.equal(_.id, 1);
+          t.equal(_.deploymentInfo.hash, commit.hash);
+          t.equal(_.deploymentInfo.dir, commit.dir);
+          next();
+        });
       });
     });
   }
 
   function end() {
     var tasks = {
-      ServerService: 0,
+      Service: 0,
       Executor: 0,
       ServiceInstance: 0,
       Group: 0,

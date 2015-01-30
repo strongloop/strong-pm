@@ -156,7 +156,7 @@ function _fakeMetrics(server) {
   m.ServiceInstance.upsert({
     id: 1,
     executorId: 1,
-    serverServiceId: 1,
+    serviceId: 1,
     groupId: 1,
     currentDeploymentId: 'fake-sha',
     deploymentStartTime: new Date(),
