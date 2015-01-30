@@ -1,3 +1,4 @@
+var Environment = require('../lib/env');
 var Server = require('../lib/server');
 var assert = require('assert');
 var async = require('async');
@@ -39,6 +40,7 @@ tap.test('worker status update', function(t) {
     return runner._mockCurrent;
   }
 
+  s._env = new Environment();
   s._loadModels(emitRunning);
 
   function emitRunning() {
