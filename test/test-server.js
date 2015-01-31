@@ -1,3 +1,4 @@
+var Environment = require('../lib/env');
 var Server = require('../lib/server');
 var assert = require('assert');
 var async = require('async');
@@ -35,12 +36,13 @@ tap.test('new server', function(t) {
   t.plan(7);
 
   var s = new Server('pm', null, '_base', 0, null);
+  s._env = new Environment();
   s._loadModels(function() {
     var m = s._app.models;
     m.Executor.findById(1, function(err, _) {
       debug('executor:', _);
       assert.ifError(err);
-      t.equal(_.id, 1);
+      t.equal(_.id, '1');
       t.equal(_.address, 'localhost');
     });
     m.ServerService.findById(1, function(err, _) {
@@ -61,6 +63,7 @@ tap.test('service starts', function(t) {
   var m = s._app.models;
 
   s._isStarted = true; // Make server think its running.
+  s._env = new Environment();
   s._loadModels(firstRun);
 
   function firstRun() {
@@ -105,8 +108,8 @@ tap.test('service starts', function(t) {
     m.ServiceInstance.findById(1, function(err, _) {
       debug('instance: %j next: %j', _, next.name);
       assert.ifError(err);
-      t.equal(_.id, 1);
-      t.equal(_.executorId, 1);
+      t.equal(_.id, '1');
+      t.equal(_.executorId, '1');
       t.equal(_.serverServiceId, 1);
       t.equal(_.groupId, 1);
       t.equal(_.currentDeploymentId, commit.hash);
