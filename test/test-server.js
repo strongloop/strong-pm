@@ -29,7 +29,19 @@ MockCurrent.prototype.request = function request(req, cb) {
 
 tap.test('new server', function(t) {
   var s = new Server('pm', null, '_base', 0, null);
-  t.end();
+  s._env = new Environment();
+  s._env.set('PORT', '4500');
+  s._app.models();
+
+  var m = s._app.models;
+  s._loadModels(function() {
+    m.ServiceContainer.findOne(function(err, _) {
+      assert.ifError(err);
+      t.equal(_.applicationPort, 4500);
+      t.end();
+    });
+  });
+
 });
 
 tap.test('new server', function(t) {
