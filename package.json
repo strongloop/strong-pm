@@ -40,7 +40,7 @@
   "main": "index.js",
   "scripts": {
     "build": "echo BUILD SCRIPT",
-    "test": "tap --timeout=300 ./test/test-*"
+    "test": "tap --timeout=400 ./test/test-*"
   },
   "bin": {
     "sl-pm": "./bin/sl-pm.js",
