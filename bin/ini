@@ -1,8 +1,0 @@
-#!/usr/bin/env node
-// Reads a .ini file and prints is js object form... an ini debug utility, not
-// to be installed as part of this package!
-console.log(
-  require('ini').decode(
-    require('fs').readFileSync(process.argv[2], 'utf-8')
-    )
-  )
