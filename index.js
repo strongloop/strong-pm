@@ -40,7 +40,6 @@ function main(argv, callback) {
     argv);
 
   var base = '.strong-pm';
-  var config;
   var listen;
   var control = 'pmctl';
   var fake;
@@ -83,10 +82,6 @@ function main(argv, callback) {
   if (control)
     control = path.resolve(control);
 
-  if (config == null) {
-    config = path.resolve(base, 'config');
-  }
-
   if (parser.optind() !== argv.length) {
     console.error('Invalid usage (extra arguments), try `%s --help`.', $0);
     return callback(Error('usage'));
@@ -102,7 +97,7 @@ function main(argv, callback) {
   mkdirp(base);
   process.chdir(base);
 
-  var app = new Server($0, config, base, listen, control);
+  var app = new Server($0, base, listen, control);
 
   app.on('listening', function(listenAddr){
     console.log('%s: listen on %s, work base is `%s`',

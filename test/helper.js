@@ -70,7 +70,7 @@ var port;
 exports.listen = function() {
   var base = '../receive-base';
   mkdir('-p', base);
-  var app = new Server('test', path.resolve(base, 'config'), base, 0, 'pmctl');
+  var app = new Server('test', base, 0, 'pmctl');
   app.on('listening', function(listenAddr){
     port = listenAddr.port;
     console.log('git receive listening on  %d', port);

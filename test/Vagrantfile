@@ -58,7 +58,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "shell", inline: $setup, privileged: true
 
   # The module under test
-  config.vm.provision "file", source: $pkg_name, destination: "strong-pm.tgz"
+  unless $pkg_name.nil?
+    config.vm.provision "file", source: $pkg_name, destination: "strong-pm.tgz"
+  end
 
   # Install modules for tests
   config.vm.provision "shell", inline: $test, privileged: false

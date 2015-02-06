@@ -27,14 +27,14 @@ MockCurrent.prototype.request = function request(req, cb) {
 }
 
 tap.test('new server', function(t) {
-  var s = new Server('pm', null, '_base', 0, null);
+  var s = new Server('pm', '_base', 0, null);
   t.end();
 });
 
 tap.test('new server', function(t) {
   t.plan(7);
 
-  var s = new Server('pm', null, '_base', 0, null);
+  var s = new Server('pm', '_base', 0, null);
   s._loadModels(function() {
     var m = s._app.models;
     m.Executor.findById(1, function(err, _) {
@@ -57,7 +57,7 @@ tap.test('new server', function(t) {
 });
 
 tap.test('service starts', function(t) {
-  var s = new Server('pm', null, '_base', 1234, null);
+  var s = new Server('pm', '_base', 1234, null);
   var m = s._app.models;
 
   s._isStarted = true; // Make server think its running.
