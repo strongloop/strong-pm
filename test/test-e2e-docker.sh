@@ -20,6 +20,7 @@ port() {
 # run container and update variables
 # $1: image to run
 docker_run() {
+  rm -f sl-pm.docker.cid
   docker run -i -t -d \
     --expose 7777 --expose 8888 -P \
     --env DEBUG=strong-pm:* \
