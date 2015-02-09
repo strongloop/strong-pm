@@ -1,3 +1,9 @@
+2015-02-09, Version 1.7.1
+=========================
+
+ * Use process pid when filtering for model updates (Krishna Raman)
+
+
 2015-01-29, Version 1.7.0
 =========================
 
@@ -319,18 +325,15 @@
 
  * Use .gitignore, not .npmignore (Sam Roberts)
 
- * Npm ignore .strong* temporary files (Sam Roberts)
-
-
-2014-07-21, Version 0.1.2
-=========================
-
-
 
 2014-07-21, Version 0.1.3
 =========================
 
  * Npm ignore .strong* temporary files (Sam Roberts)
+
+
+2014-07-21, Version 0.1.2
+=========================
 
  * install: Improve --help output (Ryan Graham)
 
