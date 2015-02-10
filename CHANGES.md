@@ -1,4 +1,10 @@
-2015-02-09, Version 1.7.1
+2015-02-10, Version 1.7.2
+=========================
+
+ * install: remove duplicate error message (Ryan Graham)
+
+
+2015-02-08, Version 1.7.1
 =========================
 
  * Use process pid when filtering for model updates (Krishna Raman)
