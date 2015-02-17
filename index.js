@@ -31,7 +31,7 @@ function main(argv, callback) {
       ':v(version)',
       'h(help)',
       'b:(base)',
-      'c:(config)',
+      'c:(config)', // unused. left in so Upstart/systemd jobs don't crash
       'l:(listen)',
       'C:(control)',
       'N(no-control)',
@@ -40,7 +40,6 @@ function main(argv, callback) {
     argv);
 
   var base = '.strong-pm';
-  var config;
   var listen;
   var control = 'pmctl';
   var fake;
@@ -57,7 +56,7 @@ function main(argv, callback) {
         base = option.optarg;
         break;
       case 'c':
-        config = option.optarg;
+        console.error('Warning: ignoring config file: ', option.optarg);
         break;
       case 'l':
         listen = option.optarg;
@@ -83,10 +82,6 @@ function main(argv, callback) {
   if (control)
     control = path.resolve(control);
 
-  if (config == null) {
-    config = path.resolve(base, 'config');
-  }
-
   if (parser.optind() !== argv.length) {
     console.error('Invalid usage (extra arguments), try `%s --help`.', $0);
     return callback(Error('usage'));
@@ -102,11 +97,11 @@ function main(argv, callback) {
   mkdirp(base);
   process.chdir(base);
 
-  var app = new Server($0, config, base, listen, control);
+  var app = new Server($0, base, listen, control);
 
   app.on('listening', function(listenAddr){
-    console.log('%s: listen on %s, work base is `%s` with config `%s`',
-      $0, listenAddr.port, base, config);
+    console.log('%s: listen on %s, work base is `%s`',
+      $0, listenAddr.port, base);
     if (fake) _fakeMetrics(app);
   });
 

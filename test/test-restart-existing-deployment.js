@@ -34,7 +34,7 @@ server.on('listening', function(listenAddr) {
 // then stop it and trigger the restart via cli command
 server.on('commit', function(commit) {
   commit.env = server.env(process.env);
-  commit.config = app.configForCommit('', {});
+  commit.config = app.configForCommit({});
 
   commit.appPid = function() {
     var appFile = path.join(this.dir, 'app.pid');

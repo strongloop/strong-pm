@@ -19,7 +19,7 @@ function running() {
 function pushWithConfig(config, callback) {
   console.log('PUSH config %j', config);
 
-  config = util._extend(app.configForCommit('', {}), config);
+  config = util._extend(app.configForCommit({}), config);
 
   var repo = app.push();
 

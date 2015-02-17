@@ -20,9 +20,11 @@ port() {
 # run container and update variables
 # $1: image to run
 docker_run() {
+  rm -f sl-pm.docker.cid
   docker run -i -t -d \
     --expose 7777 --expose 8888 -P \
     --env DEBUG=strong-pm:* \
+    --env STRONGLOOP_CLUSTER=1 \
     --env STRONG_PM_LOCKED=$STRONG_PM_LOCKED \
     --env STRONGLOOP_PM_HTTP_AUTH=$STRONGLOOP_PM_HTTP_AUTH \
     --cidfile=sl-pm.docker.cid \

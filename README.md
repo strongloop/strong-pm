@@ -55,10 +55,6 @@ The following options are supported:
   It defaults to `.strong-pm` in the current working directory when
   run from the command line, but see `pm-install`.
 
-- `--config CFG`: the config file can be use to customize the behaviour of the
-  manager, if necessary, see below. It defaults to a file called `config` in the
-  `<BASE>` directory.
-
 ## Life-cycle
 
 When applications are deployed to the manager, it first prepares them. The
@@ -66,96 +62,9 @@ prepare commands default to `npm rebuild; npm install --production`. Since
 `npm install` is called, the preparation may be customized using npm scripts,
 if necessary.
 
-After preparation, the application is run. The run command defaults to `sl-run
---cluster=cpus`.  The start command is the only thing likely to need
-configuration.
+After preparation, the application is run.
 
-A hard stop is performed by killing the supervisor with `SIGTERM`. The signal
-is configurable, but we do not recommend changing it.
-
-A soft restart is performed by killing the supervisor with `SIGHUP`. The signal
-is configurable, and may be set to `"no"` to disable soft restart, but we do not
-recommend changing it.
-
-
-## Configuration
-
-The start command may be customized if necessary, see
-[strong-supervisor](http://github.com/strongloop/strong-supervisor) for
-supported options. Useful configuration options are those where the defaults may
-not reasonably work for all deployments: `--metrics`, timestamping, and perhaps
-cluster size.
-
-The config file is in [ini](https://www.npmjs.org/package/ini) format.
-
-Configurable items are:
-
-- prepare command: an array of commands, shell syntax is *not* supported
-- start command: a single command, shell syntax is *not* supported
-- stop signal
-- restart signal
-- files to add to application's working directory
-
-The configuration for each item is the last found of:
-
-1. the builtin defaults
-2. the global configuration section
-3. the specific configuration matching the `--config` option of
-   [slc deploy](http://github.com/strongloop/strong-deploy)
-
-
-Example:
-
-    ; these are the defaults
-    prepare[] = npm rebuild
-    prepare[] = npm install --production
-    start = sl-run --cluster=CPU
-    stop = SIGTERM
-    restart = SIGHUP
-
-    ; these are overrides for a particular repo, deploy to it like:
-    ;   slc deploy --config config-one http://example.com:7777
-    ; this configuration is valid, but probably not useful (pmctl, for
-    ; example, will not support many commands if the supervisor is not
-    ; used)
-    [config-one]
-    ; no prepare
-    prepare =
-    ; run with node
-    start = node .
-    ; single instance node doesn't support restart
-    restart = no
-
-### Files
-
-The manager can be configured to add files to the working directory of
-the application. This is useful to avoid deploy-time configuration being
-present in the application package. The files should be named in a specific
-`files` section of the config file. The allowed syntax is either
-
-- `dst = src`: the file `src` will be copied into the working copy, and named
-  `dst`
-- `src`: the file `src` will be copied into the working copy, and named
-  `src`
-
-If not qualified, the `src` filenames are resolved to the same directory as
-the config file.
-
-Example:
-
-```
-[files]
-strongloop.json  ; copy this file into every working directory
-
-[config-dev.files]
-.env=dev.env     ; copy dev.env to .env
-
-[config-prod.files]
-.env=prod.env    ; copy prod.env to .env
-```
-
-
-## Installation as a Service
+## Installing as a Service
 
 The process manager should be installed as a service, so it gets integration
 with the system process manager. This will ensure it is started on machine boot,
@@ -206,7 +115,6 @@ Options:
   -h,--help         Print this message and exit.
   -v,--version      Print version and exit.
   -b,--base BASE    Base directory to work in (default .strong-pm).
-  -c,--config CFG   Config file (default BASE/config).
   -l,--listen PORT  Listen on PORT for git pushes (no default).
   -C,--control CTL  Listen for local control messages on CTL (default `pmctl`).
   --no-control      Do not listen for local control messages.
@@ -234,7 +142,6 @@ Options:
   -m,--metrics STATS  Specify --metrics option for supervisor running
                       deployed applications.
   -b,--base BASE      Base directory to work in (default is .strong-pm).
-  -c,--config CONFIG  Config file (default BASE/config).
   -e,--set-env K=V... Initial application environment variables. If
                       setting multiple variables they must be quoted
                       into a single argument: "K1=V1 K2=V2 K3=V3".

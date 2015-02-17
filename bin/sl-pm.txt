@@ -4,7 +4,6 @@ Options:
   -h,--help         Print this message and exit.
   -v,--version      Print version and exit.
   -b,--base BASE    Base directory to work in (default .strong-pm).
-  -c,--config CFG   Config file (default BASE/config).
   -l,--listen PORT  Listen on PORT for git pushes (no default).
   -C,--control CTL  Listen for local control messages on CTL (default `pmctl`).
   --no-control      Do not listen for local control messages.

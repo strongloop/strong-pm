@@ -162,7 +162,7 @@ function cmdStatus() {
       fmt(2, 'files');
       Object.keys(files).sort().forEach(function(dst) {
         var src = files[dst];
-        var srcFull = path.resolve(config.configFile, '..', src);
+        var srcFull = path.resolve(config.base, src);
         fmt(3, dst, '(from) %s', srcFull)
       });
     }
