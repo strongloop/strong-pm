@@ -10,7 +10,7 @@ server.once('listening', function(addr) {
   assert.deepEqual(runConfig.configDefaults['start'], ['sl-run --cluster=CPU']);
 
   var url = util.format(
-    'http://127.0.0.1:%s/api/ServiceInstances/1',
+    'http://127.0.0.1:%s/api/Services/1',
     addr.port
   );
 
@@ -18,8 +18,8 @@ server.once('listening', function(addr) {
     method: 'PUT',
     uri: url,
     body: {
-      'cpus': 4,
-      'setSize': 21
+      _groups: [{id: 1, cpus: 4, name: 'bar'}],
+      name: 'foo'
     },
     json: true
   }, function(err, res) {
@@ -27,9 +27,11 @@ server.once('listening', function(addr) {
     assert(res.statusCode === 200);
     assert.deepEqual(runConfig.configDefaults['start'], ['sl-run --cluster=4']);
 
-    server._app.models.ServiceInstance.findOne(function(err, inst) {
+    server._app.models.Service.findOne(function(err, s) {
       assert.ifError(err);
-      assert.equal(inst.setSize, 0);
+      assert.equal(s.name, 'default', 'Server name should not change');
+      assert.equal(s._groups[0].name, 'default', 'Groupname should not change');
+      assert.equal(s._groups[0].cpus, 4, 'CPUs should change');
 
       app.ok = true;
       server.stop();

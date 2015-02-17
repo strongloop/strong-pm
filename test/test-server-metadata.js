@@ -41,16 +41,6 @@ function testInitialInstState(cb) {
     assert(instance.npmModules, 'NPM modules should be set');
     assert.equal(instance.restartCount, 0);
     assert.equal(instance.setSize, 1);
-    assert(instance.startTime, 'Start time should be set');
-    assert.equal(instance.started, true);
-    cb(err);
-  });
-}
-
-function testInstanceState(expected, cb) {
-  ServiceInstance.findOne(function(err, instance) {
-    assert.ifError(err);
-    assert.equal(instance.started, expected);
     cb(err);
   });
 }
@@ -172,9 +162,7 @@ server.once('running', function() {
     killClusterMaster,
     testRestartedInstState,
     testTotalWorkers,
-    testInstanceState.bind(null, true),
-    pmctl.bind(null, 'stop'),
-    testInstanceState.bind(null, false)
+    pmctl.bind(null, 'stop')
   ];
 
   if (process.platform === 'linux') {

@@ -444,7 +444,7 @@ function remoteRequest(pmctl, cmd, callback) {
 
   // XXX 'action' should be called 'cmd', IMO
   var ServiceInstance = lb.models.ServiceInstance;
-  var InstanceAction = lb.models.InstanceAction;
+  var Action = lb.models.Action;
 
   ServiceInstance.findById(1, function(err, instance) {
     if (err) {
@@ -456,7 +456,7 @@ function remoteRequest(pmctl, cmd, callback) {
       request: cmd,
     };
 
-    instance.actions.create(new InstanceAction(action), function(err, action) {
+    instance.actions.create(new Action(action), function(err, action) {
       checkError(err);
 
       debug('remote action result: %j', action);
