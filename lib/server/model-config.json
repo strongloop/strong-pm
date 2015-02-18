@@ -53,6 +53,10 @@
     "dataSource": "db",
     "public": false
   },
+  "ExpressUsageRecord": {
+    "dataSource": "db",
+    "public": true
+  },
   "InstanceAction": {
     "dataSource": "db",
     "public": false
