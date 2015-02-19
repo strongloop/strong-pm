@@ -12,6 +12,7 @@ var loopbackBoot = require('loopback-boot');
 var npmls = require('strong-npm-ls');
 var path = require('path');
 var sprintf = require('extsprintf').sprintf;
+var maybeTunnel = require('strong-tunnel');
 var url = require('url');
 var util = require('util');
 var _ = require('lodash');
@@ -38,6 +39,13 @@ var pmctl = process.env.STRONGLOOP_PM ?
     'pmctl' :
     '/var/lib/strong-pm/pmctl';
 var command = 'status';
+var sshOpts = {};
+if (process.env.SSH_USER) {
+  sshOpts.username = process.env.SSH_USER;
+}
+if (process.env.SSH_KEY) {
+  sshOpts.privateKey = fs.readFileSync(process.env.SSH_KEY);
+}
 
 while ((option = parser.getopt()) !== undefined) {
   switch (option.option) {
@@ -427,7 +435,20 @@ function remoteRequest(pmctl, cmd, callback) {
 
   if (!endpoint.protocol) {
     return client.request(pmctl, cmd, callback);
+  } else {
+    maybeTunnel(pmctl, sshOpts, function(err, url) {
+      if (err) {
+        console.error('Error setting up tunnel:', err);
+        return callback(err);
+      }
+      debug('Connecting to %s via %s', pmctl, url);
+      remoteHttpRequest(url, cmd, callback);
+    });
   }
+}
+
+function remoteHttpRequest(pmctl, cmd, callback) {
+  var endpoint = url.parse(pmctl);
 
   // Normalize the URI
   debug('normalize endpoint %j', endpoint);

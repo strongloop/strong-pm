@@ -85,6 +85,7 @@
     "strong-npm-ls": "^1.0.0",
     "strong-service-install": "^1.1.0",
     "strong-supervisor": "^1.4.0",
+    "strong-tunnel": "^1.1.1",
     "tar": "^1.0.0",
     "uid-number": "0.0.5"
   }
