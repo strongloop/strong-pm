@@ -60,5 +60,9 @@
   "InstanceAction": {
     "dataSource": "db",
     "public": false
+  },
+  "AgentTrace": {
+    "dataSource": "db",
+    "public": true
   }
 }
