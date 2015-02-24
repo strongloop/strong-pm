@@ -68,7 +68,7 @@ assert_file $TMP/deeply/nested/sl-pm/env.json '"LESS":"more"'
 # Should fail to overwrite existing file
 assert_exit 1 $CMD --port 7777 --user `id -un` \
                    --job-file $TMP/upstart.conf \
-                   --base $TMP/deeply/nested/sl-pm 2>&1 \
+                   --base $TMP/deeply/nested/sl-pm 2>&1
 
 # Should overwrite upstart job when --force specified
 assert_exit 0 $CMD --port 7777 \
@@ -81,6 +81,14 @@ assert_exit 0 $CMD --port 7777 \
 # Should add auth to config, treating "myuser:mypass" as implied Basic auth
 assert_file $TMP/upstart.conf "STRONGLOOP_PM_HTTP_AUTH=basic:myuser:mypass"
 
+# Should create an upstart job at the specified path
+assert_exit 0 $CMD --port 7777 \
+                   --job-file $TMP/upstart-with-basedir.conf \
+                   --user `id -un`
+
+# Should not be a subdir of $HOME, should be exactly $HOME
+assert_not_file $TMP/upstart-with-basedir.conf "--base $HOME/"
+assert_file $TMP/upstart-with-basedir.conf "--base $HOME"
 
 unset SL_PM_INSTALL_IGNORE_PLATFORM
 assert_report
