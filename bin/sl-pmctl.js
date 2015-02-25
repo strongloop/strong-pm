@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 var Parser = require('posix-getopt').BasicParser;
-var assert = require('assert');
 var client = require('strong-control-channel/client');
 var concat = require('concat-stream');
 var debug = require('debug')('strong-pm:pmctl');
@@ -20,8 +19,7 @@ var _ = require('lodash');
 function printHelp($0, prn) {
   var USAGE = fs.readFileSync(require.resolve('./sl-pmctl.txt'), 'utf-8')
     .replace(/%MAIN%/g, $0)
-    .trim()
-    ;
+    .trim();
 
   prn(USAGE);
 }
@@ -47,14 +45,17 @@ if (process.env.SSH_KEY) {
   sshOpts.privateKey = fs.readFileSync(process.env.SSH_KEY);
 }
 
+var option;
 while ((option = parser.getopt()) !== undefined) {
   switch (option.option) {
     case 'v':
       console.log(require('../package.json').version);
       process.exit(0);
+      break;
     case 'h':
       printHelp($0, console.log);
       process.exit(0);
+      break;
     case 'C':
       pmctl = option.optarg;
       break;
@@ -112,10 +113,11 @@ function cmdStatus() {
     function fmt(depth, tag /*...*/) {
       var value = util.format.apply(util, [].slice.call(arguments, 2));
       var width = 22 - 2 * depth;
+      var line;
       if (value.length > 0)
-        var line = sprintf(w(depth) + '%-' + width + 's%s', tag + ':', value);
+        line = sprintf(w(depth) + '%-' + width + 's%s', tag + ':', value);
       else
-        var line = w(depth) + tag + ':';
+        line = w(depth) + tag + ':';
       console.log(line);
       function w(depth) {
         return sprintf('%' + (2 * depth) + 's', '');
@@ -152,7 +154,7 @@ function cmdStatus() {
 
     fmt(1, 'worker count', '%d', workers ? workers.length : 0);
     if (workers) {
-      for(var i = 0; i < workers.length; i++) {
+      for (var i = 0; i < workers.length; i++) {
         var worker = workers[i];
         var id = worker.id;
         var pid = worker.pid;
@@ -171,7 +173,7 @@ function cmdStatus() {
       Object.keys(files).sort().forEach(function(dst) {
         var src = files[dst];
         var srcFull = path.resolve(config.base, src);
-        fmt(3, dst, '(from) %s', srcFull)
+        fmt(3, dst, '(from) %s', srcFull);
       });
     }
   });
@@ -204,7 +206,7 @@ function cmdSoftRestart() {
 function cmdClusterRestart() {
   checkExtra();
 
-  request(ofApp({cmd: 'restart'}), function(rsp) {
+  request(ofApp({cmd: 'restart'}), function(/*rsp*/) {
   });
 }
 
@@ -212,7 +214,7 @@ function cmdSetSize() {
   var arg = parseInt(checkOne('N'));
   checkExtra();
 
-  request(ofApp({cmd: 'set-size', size: arg}), function(rsp) {
+  request(ofApp({cmd: 'set-size', size: arg}), function(/*rsp*/) {
   });
 }
 
@@ -220,7 +222,7 @@ function cmdObjectsStart() {
   var t = checkOne('ID');
   checkExtra();
 
-  request(ofApp({cmd: 'start-tracking-objects', target: t}), function(rsp) {
+  request(ofApp({cmd: 'start-tracking-objects', target: t}), function(/*rsp*/) {
   });
 }
 
@@ -228,7 +230,7 @@ function cmdObjectsStop() {
   var t = checkOne('ID');
   checkExtra();
 
-  request(ofApp({cmd: 'stop-tracking-objects', target: t}), function(rsp) {
+  request(ofApp({cmd: 'stop-tracking-objects', target: t}), function(/*rsp*/) {
   });
 }
 
@@ -238,7 +240,7 @@ function cmdCpuStart() {
   checkExtra();
 
   request(ofApp({cmd: 'start-cpu-profiling', target: t, timeout: timeout}),
-    function(rsp) {
+    function(/*rsp*/) {
       console.log('Profiler started, use cpu-stop to get profile');
     });
 }
@@ -253,7 +255,7 @@ function cmdCpuStop() {
     target: t,
     filePath: path.resolve(name)
   };
-  request(ofApp(req), function(rsp) {
+  request(ofApp(req), function(/*rsp*/) {
     console.log('CPU profile written to `%s`, load into Chrome Dev Tools',
                 name);
   });
@@ -264,8 +266,8 @@ function cmdHeapSnapshot() {
   var name = optionalOne(util.format('node.%s', t)) + '.heapsnapshot';
   checkExtra();
 
-  var req = { cmd: 'heap-snapshot', target: t, filePath: path.resolve(name)};
-  request(ofApp(req), function(rsp) {
+  var req = {cmd: 'heap-snapshot', target: t, filePath: path.resolve(name)};
+  request(ofApp(req), function(/*rsp*/) {
     console.log('Heap snapshot written to `%s`, load into Chrome Dev Tools',
                 name);
   });
@@ -306,7 +308,7 @@ function cmdEnvUnset() {
   var nulledKeys = _.zipObject(keys, nulls);
 
   // unset is set, but with null values, which indicate delete
-  request({cmd: 'env-set', env: nulledKeys }, function(rsp) {
+  request({cmd: 'env-set', env: nulledKeys}, function(rsp) {
     console.log('Environment updated: %s', rsp.message);
   });
 }
@@ -332,7 +334,7 @@ function cmdLogDump() {
   return logDump();
 
   function logDump() {
-    request({ cmd: 'log-dump' }, function(rsp) {
+    request({cmd: 'log-dump'}, function(rsp) {
       if (rsp.message) {
         console.error(rsp.message);
       } else {
@@ -367,7 +369,8 @@ function request(cmd, display) {
     }
 
     if (rsp.error) {
-      console.log('Command `%s` failed with: %s', cmd.sub || cmd.cmd, rsp.error);
+      console.log('Command `%s` failed with: %s',
+        cmd.sub || cmd.cmd, rsp.error);
       process.exit(1);
     }
     var keepAlive = display(rsp);
@@ -435,16 +438,15 @@ function remoteRequest(pmctl, cmd, callback) {
 
   if (!endpoint.protocol) {
     return client.request(pmctl, cmd, callback);
-  } else {
-    maybeTunnel(pmctl, sshOpts, function(err, url) {
-      if (err) {
-        console.error('Error setting up tunnel:', err);
-        return callback(err);
-      }
-      debug('Connecting to %s via %s', pmctl, url);
-      remoteHttpRequest(url, cmd, callback);
-    });
   }
+  maybeTunnel(pmctl, sshOpts, function(err, url) {
+    if (err) {
+      console.error('Error setting up tunnel:', err);
+      return callback(err);
+    }
+    debug('Connecting to %s via %s', pmctl, url);
+    remoteHttpRequest(url, cmd, callback);
+  });
 }
 
 function remoteHttpRequest(pmctl, cmd, callback) {
@@ -510,7 +512,7 @@ function remoteHttpRequest(pmctl, cmd, callback) {
 
 function download(endpoint, path, file, callback) {
   endpoint.pathname = path;
-  location = url.format(endpoint);
+  var location = url.format(endpoint);
 
   // TODO: add support for Digest auth, which is probably easiest done by
   //       switching to the request module
@@ -518,9 +520,11 @@ function download(endpoint, path, file, callback) {
   var get = http.get(location, function(res) {
     debug('http.get: %d', res.statusCode);
 
+    var out;
+
     switch (res.statusCode) {
       case 200: {
-        var out = fs.createWriteStream(file);
+        out = fs.createWriteStream(file);
         res.once('error', callback);
         out.once('error', callback);
         out.once('finish', callback);
@@ -536,7 +540,7 @@ function download(endpoint, path, file, callback) {
       }
       default: {
         // Collect response stream to use as error message.
-        var out = concat(function(data) {
+        out = concat(function(data) {
           callback(Error(util.format('code %d/%s',
             res.statusCode, data)));
         });
