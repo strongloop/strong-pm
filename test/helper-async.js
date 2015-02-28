@@ -240,7 +240,9 @@ function failon(t, cmd, pattern, next) {
 function pmctl(cmd, callback) {
   var cli = require.resolve('../bin/sl-pmctl.js');
   var args = [cli].concat(cmd);
-  return cp.execFile(process.execPath, args, {env: { STRONGLOOP_PM: '' }}, function(er, stdout, stderr) {
+  var env = JSON.parse(JSON.stringify(process.env));
+  env.STRONGLOOP_PM = '';
+  return cp.execFile(process.execPath, args, {env: env}, function(er, stdout, stderr) {
     var out = {
       out: stdout.trim(),
       err: stderr.trim(),

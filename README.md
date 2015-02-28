@@ -196,6 +196,13 @@ localhost. It must specify at least the process manager's listen port, such as
 then valid credentials must be set in the URL directly, such as
 `http://user-here:pass-here@example.com:7654`.
 
+When using an HTTP URL, it can optionally be tunneled over ssh by changing the
+protocol to `http+ssh://`. The ssh username will default to your current user
+and authentication defaults to using your current ssh-agent. The username can be
+overridden by setting an `SSH_USER` environment variable. The authentication can
+be overridden to use an existing private key instead of an agent by setting the
+`SSH_KEY` environment variable to the path of the private key to be used.
+
 Commands:
   status                  Report status, the default command.
   shutdown                Stop the process manager.
@@ -248,6 +255,9 @@ Commands:
         the application is hard restarted with the new environment after change
         (either set or unset).
 
+  log-dump [--follow]     Empty the log buffer, dumping the contents to stdout.
+                          If --follow is given the log buffer is continuously
+                          dumped to stdout.
+
 Worker `ID` is either a node cluster worker ID, or an operating system process
 ID. The special worker ID `0` can be used to identify the master.
-```
