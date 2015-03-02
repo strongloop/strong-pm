@@ -5,24 +5,26 @@ tap.test('pmctl log', function(t) {
   process.env.STRONGLOOP_CLUSTER = 1;
 
   t.test('pmctl log using local socket', function(t) {
-    helper.pmWithApp([], { STRONGLOOP_PM: '' }, function(pm) {
+    helper.pmWithApp([], {STRONGLOOP_PM: ''}, function(pm) {
       var pmctl = helper.pmctlWithCtl(pm.pmctlPath);
       t = helper.queued(t);
       t.waiton(pmctl('status'), /worker count: *1/);
       t.expect(pmctl('log-dump'), /.+ worker:1 pid \d+ listening on \d+/);
       t.expect(pmctl('log-dump'), /.*/); // clear any output
+      t.expect(pmctl('log-dump'), /.*/); // once more, reduce timing noise
       t.expect(pmctl('log-dump'), /^\n$/); // no output
       t.shutdown(pm);
     });
   });
 
   t.test('pmctl log using REST API', function(t) {
-    helper.pmWithApp([], { STRONGLOOP_PM: 'x' }, function(pm) {
+    helper.pmWithApp([], {STRONGLOOP_PM: 'x'}, function(pm) {
       var pmctl = helper.pmctlWithCtl(pm.pmctlUrl);
       t = helper.queued(t);
       t.waiton(pmctl('status'), /worker count: *1/);
       t.expect(pmctl('log-dump'), /.+ worker:1 pid \d+ listening on \d+/);
       t.expect(pmctl('log-dump'), /.*/); // clear any output
+      t.expect(pmctl('log-dump'), /.*/); // once more, reduce timing noise
       t.expect(pmctl('log-dump'), /^\n$/); // no output
       t.shutdown(pm);
     });
