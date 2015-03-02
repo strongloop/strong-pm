@@ -1,3 +1,13 @@
+2015-03-02, Version 1.7.3
+=========================
+
+ * fix exclusive tmpdir assumption (Ryan Graham)
+
+ * Fix broken sendError in tgz pack receiver (Ryan Graham)
+
+ * test: split pmctl tests into smaller tests (Ryan Graham)
+
+
 2015-02-10, Version 1.7.2
 =========================
 
