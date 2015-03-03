@@ -15,9 +15,10 @@ ENV HOME /home/strong-pm
 USER strong-pm
 
 # pre-load node-gyp to speed up build time of apps pushed to strong-pm
+# and remove need to download node source in production
 RUN node-gyp install 2> /dev/null && npm cache clear
 
 # Expose strong-pm port
 EXPOSE 8701
 
-ENTRYPOINT ["/usr/bin/sl-pm", "--listen", "8701"]
+ENTRYPOINT ["/usr/bin/sl-pm", "--base", ".", "--listen", "8701"]
