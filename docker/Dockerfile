@@ -18,6 +18,6 @@ USER strong-pm
 RUN node-gyp install 2> /dev/null && npm cache clear
 
 # Expose strong-pm port
-EXPOSE 7000
+EXPOSE 8701
 
-ENTRYPOINT ["/usr/bin/sl-pm", "--listen", "7000"]
+ENTRYPOINT ["/usr/bin/sl-pm", "--listen", "8701"]

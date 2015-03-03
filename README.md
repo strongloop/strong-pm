@@ -78,11 +78,11 @@ repo on Docker Hub. You can get started as quickly as:
 
 ```sh
 $ docker pull strongloop/strong-pm
-$ docker run -d -p 7000:7000 -p 80:3000 --name strong-pm strongloop/strong-pm
+$ docker run -d -p 8701:8701 -p 80:3000 --name strong-pm strongloop/strong-pm
 ```
 
-And now you've got a strong-pm container up and running that you can deploy to
-with `slc deploy http://localhost:7000`.
+And now you've got a strong-pm container up and running. You can deploy
+to it with `slc deploy http://localhost:8701`.
 
 For more information on Docker and Docker Hub, see https://www.docker.com/
 
