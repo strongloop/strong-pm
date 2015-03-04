@@ -8,25 +8,22 @@ process.on('disconnect', function() {
 
 var Parser = require('posix-getopt').BasicParser;
 var assert = require('assert');
-var debug = require('debug')('strong-pm');
 var mkdirp = require('mkdirp').sync;
 var path = require('path');
 var fs = require('fs');
 
-var runner = require('./lib/run');
 var Server = require('./lib/server');
 
 function printHelp($0, prn) {
   var USAGE = fs.readFileSync(require.resolve('./bin/sl-pm.txt'), 'utf-8')
     .replace(/%MAIN%/g, $0)
-    .trim()
-    ;
+    .trim();
 
   prn(USAGE);
 }
 
 function main(argv, callback) {
-  var $0 = process.env.CMD ?  process.env.CMD : path.basename(argv[1]);
+  var $0 = process.env.CMD ? process.env.CMD : path.basename(argv[1]);
   var parser = new Parser([
       ':v(version)',
       'h(help)',
@@ -44,6 +41,7 @@ function main(argv, callback) {
   var control = 'pmctl';
   var fake;
 
+  var option;
   while ((option = parser.getopt()) !== undefined) {
     switch (option.option) {
       case 'v':
@@ -99,7 +97,7 @@ function main(argv, callback) {
 
   var app = new Server($0, base, listen, control);
 
-  app.on('listening', function(listenAddr){
+  app.on('listening', function(listenAddr) {
     console.log('%s: listen on %s, work base is `%s`',
       $0, listenAddr.port, base);
     if (fake) _fakeMetrics(app);
