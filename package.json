@@ -35,7 +35,7 @@
   "author": "engineering@strongloop.com",
   "license": {
     "name": "Dual Artistic/StrongLoop",
-    "url": "https://github.com/strongloop/strong-build/blob/master/LICENSE.md"
+    "url": "https://github.com/strongloop/strong-pm/blob/master/LICENSE.md"
   },
   "main": "index.js",
   "scripts": {
