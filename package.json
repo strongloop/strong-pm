@@ -40,8 +40,7 @@
   "main": "index.js",
   "scripts": {
     "build": "echo BUILD SCRIPT",
-    "eslint": "eslint bin lib",
-    "jscs": "jscs bin lib",
+    "lint": "eslint bin lib; jscs bin lib",
     "test": "tap --timeout=400 ./test/test-*"
   },
   "bin": {
