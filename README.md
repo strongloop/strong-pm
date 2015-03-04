@@ -12,55 +12,34 @@ It is recommend to install the process manager as a system service, see below,
 but if you are just trying the manager out to try it, it can be run directly
 from the command line.
 
-Run process manager on a free port, `7777` in this example:
+Run process manager:
 
-    sl-pm -l 7777
+    sl-pm
 
-Clone and push an app, the loopback example app in this example, but
+Install [strong-build](http://github.com/strongloop/strong-build) and
+[strong-deploy](http://github.com/strongloop/strong-deploy):
+
+    npm install -g strong-build
+    npm install -g strong-deploy
+
+Clone, build, and deploy an app, the loopback example app in this example, but
 any node application can be managed:
 
     git clone git@github.com:strongloop/loopback-example-app.git
     cd loopback-example-app
-    sl-deploy http://localhost:7777
-
-That was a non-production push, it installed all your dependencies on the
-server. You should always build your app so the dependencies are built-in, and
-not installed dynamically at run-time:
-
-    git clone git@github.com:strongloop/loopback-example-app.git
-    cd loopback-example-app
     sl-build
-    sl-deploy http://localhost:7777
-
-See [strong-build](https://github.com/strongloop/strong-build) and
-[strong-deploy](https://github.com/strongloop/strong-deploy) for more
-information.
-
-## Metrics
-
-Metrics-related features (`slc run --metrics`, `slc pmctl objects-start`, etc.),
-requires a license, please contact
-[sales@strongloop.com](mailto:sales@strongloop.com).
-
-## Options
-
-The following options are supported:
-
-- `--listen PORT`: the port to listen to for deployments, mandatory
-  (unfortunately, there are no reasonable defaults).
-
-- `--base BASE`: the base is the directory that strong-pm will use to save
-  applications deployed to it, both the git repos and npm packages, as
-  well as the working directories, and any other files it needs to create.
-  It defaults to `.strong-pm` in the current working directory when
-  run from the command line, but see `pm-install`.
+    sl-deploy
 
 ## Life-cycle
 
 When applications are deployed to the manager, it first prepares them. The
-prepare commands default to `npm rebuild; npm install --production`. Since
-`npm install` is called, the preparation may be customized using npm scripts,
-if necessary.
+prepare commands used are:
+
+- `npm rebuild`
+- `npm install --production`
+
+Since `npm install` is called, the preparation may be customized using npm
+install and pre-install scripts, if necessary.
 
 After preparation, the application is run.
 
@@ -73,21 +52,25 @@ logs are correctly aggregated, permissions are set correctly, etc.
 The pm-install tool does this installation for you, and supports the following
 init systems:
 
- * Upstart 0.6
- * Upstart 1.4 (default)
- * systemd
+- Upstart 0.6
+- Upstart 1.4 (default)
+- Systemd
 
-In it's typical usage, you would install strongloop globally on the deployment
-system (`npm install -g strongloop`), and then call `slc pm-install` with
-`--port` to set the deployment port to listen on. It will create a strong-pm
-user account with `/var/lib/strong-pm` set as its home directory. If deploying
-to a hosted service, there may already be a user account prepared that you want
-the manager to run as, you can specify it with the `--user` option.
+In it's typical usage, you would install the `strong-pm` package globally on
+the deployment system and then install it as a service:
 
-You can also `--job-file` to generate the service conf-file locally, and move
-it to the remote system.
+    npm install -g strong-pm
+    sl-pm-install
 
-## Docker Container
+It will create a strong-pm user account with `/var/lib/strong-pm` set as its
+home directory. If deploying to a hosted service, there may already be a user
+account prepared that you want the manager to run as, you can specify it with
+the `--user` option.
+
+You can also `--job-file` to generate the service file locally, and move it to
+the remote system manually.
+
+## Installing from Docker Hub
 
 This repository is also the source of the
 [strongloop/strong-pm](https://registry.hub.docker.com/u/strongloop/strong-pm/)
@@ -105,19 +88,27 @@ For more information on Docker and Docker Hub, see https://www.docker.com/
 
 ## Usage
 
-### slc pm
+These tools are also available as the `pm`, `pm-install`, and `pmctl`
+sub-commands of the [strongloop](http://github.com/strongloop/strongloop)
+package.
+
+### sl-pm
 
 ```
-usage: slc pm [options]
 usage: sl-pm [options]
+
+The Strongloop process manager.
 
 Options:
   -h,--help         Print this message and exit.
   -v,--version      Print version and exit.
-  -b,--base BASE    Base directory to work in (default .strong-pm).
-  -l,--listen PORT  Listen on PORT for git pushes (no default).
+  -b,--base BASE    Base directory to work in (default `.strong-pm`).
+  -l,--listen PORT  Listen on PORT for git pushes (default 8701).
   -C,--control CTL  Listen for local control messages on CTL (default `pmctl`).
   --no-control      Do not listen for local control messages.
+
+The base directory is used to save deployed applications, for working
+directories, and for any other files the process manager needs to create.
 
 The process manager will be controllable via HTTP on the port specified. That
 port is also used for deployment with strong-deploy. Basic authentication
@@ -133,7 +124,7 @@ HTTP authentication.
 ### slc pm-install
 
 ```
-usage: sl-pm-install.js [options]
+usage: sl-pm-install [options]
 
 Install the Strongloop process manager as a service.
 
@@ -148,7 +139,7 @@ Options:
                       multiple variables they must be quoted into a single
                       argument: "K1=V1 K2=V2 K3=V3".
   -u,--user USER      User to run manager as (default is strong-pm).
-  -p,--port PORT      Listen on PORT for application deployment (no default).
+  -p,--port PORT      Listen on PORT for application deployment (default 8701).
   -n,--dry-run        Don't write any files.
   -j,--job-file FILE  Path of Upstart job to create (default is
                       `/etc/init/strong-pm.conf`).
@@ -260,3 +251,4 @@ Commands:
 
 Worker `ID` is either a node cluster worker ID, or an operating system process
 ID. The special worker ID `0` can be used to identify the master.
+```

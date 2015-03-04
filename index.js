@@ -31,7 +31,7 @@ function main(argv, callback) {
     argv);
 
   var base = '.strong-pm';
-  var listen;
+  var listen = 8701;
   var control = 'pmctl';
   var fake;
 
