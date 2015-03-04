@@ -1,20 +1,17 @@
 #!/usr/bin/env node
 
+var Client = require('strong-mesh-models').Client;
 var Parser = require('posix-getopt').BasicParser;
-var client = require('strong-control-channel/client');
+var _ = require('lodash');
 var concat = require('concat-stream');
 var debug = require('debug')('strong-pm:pmctl');
 var fs = require('fs');
-var http = require('http');
-var loopback = require('loopback');
-var loopbackBoot = require('loopback-boot');
 var npmls = require('strong-npm-ls');
 var path = require('path');
 var sprintf = require('extsprintf').sprintf;
 var maybeTunnel = require('strong-tunnel');
 var url = require('url');
 var util = require('util');
-var _ = require('lodash');
 
 function printHelp($0, prn) {
   var USAGE = fs.readFileSync(require.resolve('./sl-pmctl.txt'), 'utf-8')
@@ -97,6 +94,10 @@ var commands = {
   'env-unset': cmdEnvUnset,
   'log-dump': cmdLogDump,
 };
+
+if (!url.parse(pmctl).protocol) {
+  pmctl = 'http+unix://' + path.resolve(pmctl);
+}
 
 (commands[command] || cmdInvalid)();
 
@@ -434,11 +435,6 @@ function extra() {
 }
 
 function remoteRequest(pmctl, cmd, callback) {
-  var endpoint = url.parse(pmctl);
-
-  if (!endpoint.protocol) {
-    return client.request(pmctl, cmd, callback);
-  }
   maybeTunnel(pmctl, sshOpts, function(err, url) {
     if (err) {
       console.error('Error setting up tunnel:', err);
@@ -450,76 +446,49 @@ function remoteRequest(pmctl, cmd, callback) {
 }
 
 function remoteHttpRequest(pmctl, cmd, callback) {
-  var endpoint = url.parse(pmctl);
+  var client = new Client(pmctl);
+  client.instanceList(1, function(err, instances) {
+    checkError(err);
+    var instance = instances[0];
+    debug('instance: %j', instance.action);
 
-  // Normalize the URI
-  debug('normalize endpoint %j', endpoint);
-  endpoint.pathname = '/api'; // Loopback is mounted here
-  endpoint.hostname = endpoint.hostname || 'localhost'; // Allow `http://:8888`
-  delete endpoint.host; // So .hostname and .port are used to construct URL
-  pmctl = url.format(endpoint);
-
-  debug('http endpoint `%s`', pmctl);
-
-  var lb = loopback();
-  lb.dataSource('remote', {'connector': 'remote', 'url': pmctl});
-  loopbackBoot(lb, {'appRootDir': path.join(__dirname, '..', 'lib', 'client')});
-
-  // XXX 'action' should be called 'cmd', IMO
-  var ServiceInstance = lb.models.ServiceInstance;
-  var InstanceAction = lb.models.InstanceAction;
-
-  ServiceInstance.findById(1, function(err, instance) {
-    if (err) {
-      console.error('Failed to find service at `%s`: %s', pmctl, err.message);
-      process.exit(1);
-    }
-
-    var action = {
-      request: cmd,
-    };
-
-    instance.actions.create(new InstanceAction(action), function(err, action) {
+    client.runCommand(instance, cmd, function(err, res) {
       checkError(err);
 
-      debug('remote action result: %j', action);
+      debug('remote action result: %j', res);
 
       switch (cmd.sub) {
         case 'stop-cpu-profiling':
         case 'heap-snapshot': {
-          download(endpoint, action.result.url, cmd.filePath, downloaded);
+          download(client, instance, res.profileId, cmd.filePath, downloaded);
           break;
         }
         default:
-          return callback(null, action.result);
+          return callback(null, res);
       }
 
       function downloaded(err) {
+        debug('downloaded: ' + err);
         checkError(err);
-        return callback(null, action.result);
-      }
-
-      function checkError(err) {
-        if (err) {
-          console.error('Command `%s` failed: %s',
-            cmd.sub || cmd.cmd, err.message);
-          process.exit(1);
-        }
+        return callback(null, res);
       }
     });
+
+    function checkError(err) {
+      if (err) {
+        console.error('Command `%s` failed: %s',
+          cmd.sub || cmd.cmd, err.message);
+        process.exit(1);
+      }
+    }
   });
 }
 
-function download(endpoint, path, file, callback) {
-  endpoint.pathname = path;
-  var location = url.format(endpoint);
+function download(client, instance, profileId, file, callback) {
+  client.downloadProfile(instance, profileId, function(err, res) {
+    if (err) return callback(err);
 
-  // TODO: add support for Digest auth, which is probably easiest done by
-  //       switching to the request module
-  //       see test/test-pmctl-rest-digest-auth.js
-  var get = http.get(location, function(res) {
     debug('http.get: %d', res.statusCode);
-
     var out;
 
     switch (res.statusCode) {
@@ -534,7 +503,7 @@ function download(endpoint, path, file, callback) {
       case 204: {
         // No content, keep polling until completed or errored
         setTimeout(function() {
-          download(endpoint, path, file, callback);
+          download(client, instance, profileId, file, callback);
         }, 200);
         break;
       }
@@ -550,6 +519,4 @@ function download(endpoint, path, file, callback) {
       }
     }
   });
-
-  get.once('error', callback);
 }
