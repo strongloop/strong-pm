@@ -29,12 +29,12 @@ MockCurrent.prototype.request = function request(req, cb) {
 var WORKER_PID = 1001;
 
 var USAGE_RECORD = {
-  timestamp: Date.now(),
-  client: { address: "::1" },
-  request: { method: "GET", url: "/" },
-  response: { status: 404, duration: 6 },
-  process: { pid: WORKER_PID },
-  data: { custom: 'value' }
+  timeStamp: Date.now(),
+  client: {address: '::1'},
+  request: {method: 'GET', url: '/'},
+  response: {status: 404, duration: 6},
+  process: {pid: WORKER_PID},
+  data: {custom: 'value'}
 };
 
 tap.test('ExpressUsageRecord', function(t) {
@@ -73,21 +73,21 @@ tap.test('ExpressUsageRecord', function(t) {
     },
     function emitTooOldUsageRecord(next) {
       var rec = util._extend({}, USAGE_RECORD);
-      rec.timestamp = Date.now() - 24 * 60 * 1000;
-      var message = { cmd: 'express:usage-record', record: rec };
+      rec.timeStamp = Date.now() - 24 * 60 * 1000;
+      var message = {cmd: 'express:usage-record', record: rec};
       runner.emit('request', message, next);
     },
     function checkUsageRecord(next) {
       m.ExpressUsageRecord.find(function(err, list) {
         if (err) return next(err);
-        assert.equal(list.length, 1);
+        assert.equal(list.length, 1, util.format('Found %j', list));
 
         var data = list[0].toObject();
 
         assert.ok(!!data.processId, 'Process ID should be set');
         assert.equal(data.workerId, 1);
-        assert.equal(+data.timestamp, +USAGE_RECORD.timestamp);
-        assert.deepEqual(data.usage, USAGE_RECORD);
+        assert.equal(+data.timeStamp, +USAGE_RECORD.timeStamp);
+        assert.deepEqual(data.detail, USAGE_RECORD);
         next();
       });
     }

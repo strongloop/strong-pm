@@ -81,22 +81,26 @@ function testCpuStart(cb) {
 function testCpuStop(cb) {
   if (!cpuProfilingSupported) return cb();
 
-  ServiceProcess.findOne({where: { workerId: 1 }}, function(err, proc) {
-    assert.ifError(err);
-    assert.equal(proc.isProfiling, false);
-    cb(err);
-  });
+  ServiceProcess.findOne({where: { workerId: 1, stopTime: null }},
+    function(err, proc) {
+      assert.ifError(err);
+      assert.equal(proc.isProfiling, false);
+      cb(err);
+    }
+  );
 }
 
 function testCpuWatchdogStart(cb) {
   if (!cpuProfilingSupported) return cb();
 
-  ServiceProcess.findOne({where: { workerId: 1 }}, function(err, proc) {
-    assert.ifError(err);
-    assert.equal(proc.isProfiling, true);
-    assert.equal(proc.watchdogTimeout, 1000);
-    cb(err);
-  });
+  ServiceProcess.findOne({where: { workerId: 1, stopTime: null }}, 
+    function(err, proc) {
+      assert.ifError(err);
+      assert.equal(proc.isProfiling, true);
+      assert.equal(proc.watchdogTimeout, 1000);
+      cb(err);
+    }
+  );
 }
 
 function testObjTrackingStart(cb) {
