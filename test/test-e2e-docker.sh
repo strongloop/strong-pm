@@ -151,6 +151,6 @@ done
 
 ../../bin/sl-pmctl.js -C $STRONGLOOP_PM_NOAUTH status \
   && echo 'not ok # pmctl status should fail without auth' \
-  || echo 'not # pmctl failed to run status without auth'
+  || echo 'ok # pmctl failed to run status without auth'
 
 docker stop $SL_PM
