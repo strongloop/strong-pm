@@ -8,6 +8,7 @@ var fmt = require('util').format;
 var fs = require('fs');
 var mktmpdir = require('mktmpdir');
 var partial = require('lodash').partial;
+var once = require('lodash').once;
 var path = require('path');
 var rimraf = require('rimraf');
 
@@ -76,6 +77,7 @@ function pm(args, env, callback) {
 
   return mktmpdir(function(err, tmpdir, cleanup) {
     console.log('pmcli:', pmcli, args);
+    cleanup = once(cleanup);
 
     pm = cp.spawn(pmcli, args, {
       stdio: ['ignore', process.stdout, process.stderr, 'ipc'],
@@ -171,14 +173,14 @@ function queued(t) {
   }
 
   function runTests(queue, t, server) {
-    console.log('# running queued tests...');
+    console.log('# running queued tests... (%d)', queue.length);
     async.series(queue, function() {
       if (server) {
         server.on('exit', function(code, signal) {
           t.equal(signal, 'SIGTERM', 'pm server shutdown by us');
           t.end();
-        })
-        server.kill('SIGTERM');
+        });
+        setTimeout(server.kill.bind(server, 'SIGTERM'), 2000);
       } else {
         t.end();
       }
