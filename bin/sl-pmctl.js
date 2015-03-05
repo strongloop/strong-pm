@@ -12,6 +12,7 @@ var path = require('path');
 var sprintf = require('extsprintf').sprintf;
 var maybeTunnel = require('strong-tunnel');
 var url = require('url');
+var urlDefaults = require('strong-url-defaults');
 var util = require('util');
 
 function printHelp($0, prn) {
@@ -76,6 +77,8 @@ if (optind < argv.length) {
   command = argv[optind++];
 }
 
+// XXX(sam) this no longer makes sense, it was used to jump between the HTTP and
+// unix-domain implementations, but now it all goes through Client.
 var remote = {
   request: remoteRequest,
 };
@@ -104,7 +107,11 @@ var commands = {
 
 if (!url.parse(pmctl).protocol) {
   pmctl = 'http+unix://' + path.resolve(pmctl);
+} else {
+  pmctl = urlDefaults(pmctl, {host: '127.0.0.1', port: 8701});
 }
+
+debug('using control %j', pmctl);
 
 (commands[command] || cmdInvalid)();
 
