@@ -19,7 +19,9 @@ PKG_NAME=$PKG NODE_VER=0.10.33 vagrant up --provision
 
 echo '# strong-pm running in VM'
 
-cd app
+# If this fails, bail out, otherwise we could do irreparable damage to the
+# parent strong-pm repo if run from the wrong directory
+cd app || exit 1
 rm -rf .git .strong-pm
 git clean -f -x -d .
 git init .

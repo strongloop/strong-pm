@@ -37,7 +37,7 @@ $test = <<SCRIPT
   report test -f /etc/init/strong-pm.conf
   report sudo start strong-pm
   report sudo status strong-pm
-  sleep 1
+  sleep 5
   sudo tail -20 /var/log/upstart/strong-pm.log
 SCRIPT
 
