@@ -1,8 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-VAGRANTFILE_API_VERSION = "2"
-
 $pkg_name = ENV['PKG_NAME'] || Dir["../strong-pm-*.tgz"].last
 $node_version = ENV['NODE_VER'] || "0.10.33"
 $NODE_URL = "http://nodejs.org/dist/v#{$node_version}/node-v#{$node_version}-linux-x64.tar.gz"
@@ -43,7 +41,7 @@ $test = <<SCRIPT
   sudo tail -20 /var/log/upstart/strong-pm.log
 SCRIPT
 
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+Vagrant.configure("2") do |config|
 
   # Ubuntu 12.04 is a reasonable starting point
   config.vm.box = "ubuntu/precise64"
