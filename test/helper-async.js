@@ -146,6 +146,7 @@ function queued(t) {
   var newT = {
     queue: queue,
     waiton: partial(addStep, queue, waiton, t),
+    wait: partial(addStep, queue, wait, t),
     expect: partial(addStep, queue, expect, t),
     failon: partial(addStep, queue, failon, t),
     shutdown: partial(runTests, queue, t),
@@ -233,6 +234,11 @@ function waiton(t, extra, cmd, pattern, next) {
       setTimeout(check, 1000);
     });
   }
+}
+
+function wait(t, extra, time, reason, next) {
+  t.ok(true, fmt('%dms pause: %', time, reason));
+  setTimeout(next, time);
 }
 
 function failon(t, extra, cmd, pattern, next) {
