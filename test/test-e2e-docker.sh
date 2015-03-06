@@ -63,7 +63,9 @@ make npm_config_registry=${npm_config_registry:-$(npm config get registry)} cont
 docker build -t strong-pm:test container
 docker_run strong-pm:test
 
-cd app
+# If this fails, bail out, otherwise we could do irreparable damage to the
+# parent strong-pm repo if run from the wrong directory
+cd app || exit 1
 rm -rf .git .strong-pm
 git clean -f -x -d .
 git init .
@@ -149,6 +151,6 @@ done
 
 ../../bin/sl-pmctl.js -C $STRONGLOOP_PM_NOAUTH status \
   && echo 'not ok # pmctl status should fail without auth' \
-  || echo 'not # pmctl failed to run status without auth'
+  || echo 'ok # pmctl failed to run status without auth'
 
 docker stop $SL_PM

@@ -5,7 +5,7 @@ helper.test('pmctl', function(t, pm) {
 
   t.waiton(pmctl('status'), /current:$/m);
 
-  t.test('env get/set/unset', function(t) {
+  t.test('env get/set/unset', function testEnv(t) {
     t.expect(pmctl('set-size', '1'));
     t.waiton(pmctl('status'), /worker count: *1/);
 
