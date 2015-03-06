@@ -4,6 +4,7 @@ var childctl = require('strong-control-channel/process');
 var cp = require('child_process');
 var debug = require('debug')('strong-pm:test');
 var defaults = require('lodash').defaults;
+var rest = require('lodash').rest;
 var fmt = require('util').format;
 var fs = require('fs');
 var mktmpdir = require('mktmpdir');
@@ -188,23 +189,28 @@ function queued(t) {
   }
 
   function addStep(queue, f, t, c, p) {
-    queue.push(partial(f, t, c, p));
+    var stack = Error().stack.split(/\n/);
+    // keep first line, skip 3, keep rest, recombine
+    stack = stack.slice(0, 1).concat(stack.slice(4)).join('\n');
+    queue.push(partial(f, t, {stack: stack}, c, p));
   }
 }
 
-function expect(t, cmd, pattern, next) {
+function expect(t, extra, cmd, pattern, next) {
   var name = fmt('pmctl %j =~ %s', cmd, new RegExp(pattern));
   console.log('# START expect %s', name);
   pmctl(cmd, function(out) {
+    var match = checkOutput(out, pattern);
+    extra = makeExtra(match, name, out.output, pattern, extra.stack);
     console.log('# expect %s against code: %j', name, out.code);
 
     t.equal(out.code, 0, name + ' exit code');
 
     if (out.code == 0) {
-      t.assert(checkOutput(out, pattern), name);
+      t.assert(match, name, extra);
     }
 
-    if (out.code != 0 || !checkOutput(out, pattern)) {
+    if (out.code != 0 || !match) {
       console.log('check failed against: <\n%>', out.output);
     }
 
@@ -212,7 +218,7 @@ function expect(t, cmd, pattern, next) {
   });
 }
 
-function waiton(t, cmd, pattern, next) {
+function waiton(t, extra, cmd, pattern, next) {
   var name = fmt('pmctl %j =~ %s', cmd, new RegExp(pattern));
   console.log('# START waiton %s', name);
   return check();
@@ -229,7 +235,7 @@ function waiton(t, cmd, pattern, next) {
   }
 }
 
-function failon(t, cmd, pattern, next) {
+function failon(t, extra, cmd, pattern, next) {
   var name = fmt('pmctl %j !~ %s', cmd, new RegExp(pattern));
   console.log('# START failon %s', name);
   pmctl(cmd, function(out) {
@@ -268,4 +274,18 @@ function pmctlWithCtl(ctlPath) {
     args = [].slice.call(arguments);
     return ['--control', ctlPath].concat(args);
   }
+}
+
+function makeExtra(ok, name, actual, expected, stack) {
+  var extra = {};
+  if (!ok) {
+    extra.error = Error();
+    extra.error.name = 'Failed expectation';
+    extra.error.stack = stack;
+    extra.actual = actual;
+    extra.expected = fmt('should match %s', expected);
+    delete extra.error.code;
+    delete extra.error.errno;
+  }
+  return extra;
 }
