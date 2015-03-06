@@ -6,11 +6,13 @@ var _ = require('lodash');
 var concat = require('concat-stream');
 var debug = require('debug')('strong-pm:pmctl');
 var fs = require('fs');
+var home = require('osenv').home();
 var npmls = require('strong-npm-ls');
 var path = require('path');
 var sprintf = require('extsprintf').sprintf;
 var maybeTunnel = require('strong-tunnel');
 var url = require('url');
+var urlDefaults = require('strong-url-defaults');
 var util = require('util');
 
 function printHelp($0, prn) {
@@ -21,6 +23,11 @@ function printHelp($0, prn) {
   prn(USAGE);
 }
 
+function exists(path) {
+  if (fs.existsSync(path))
+    return path;
+}
+
 var argv = process.argv;
 var $0 = process.env.CMD || path.basename(argv[1]);
 var parser = new Parser([
@@ -28,16 +35,17 @@ var parser = new Parser([
   'h(help)',
   'C:(control)',
 ].join(''), argv);
-var pmctl = process.env.STRONGLOOP_PM ?
-  process.env.STRONGLOOP_PM :
-  fs.existsSync('pmctl') ?
-    'pmctl' :
-    '/var/lib/strong-pm/pmctl';
+var pmctl = process.env.STRONGLOOP_PM ||
+  exists('pmctl') ||
+  exists(path.join(home, '.strong-pm', 'pmctl')) ||
+  '/var/lib/strong-pm/pmctl';
 var command = 'status';
 var sshOpts = {};
+
 if (process.env.SSH_USER) {
   sshOpts.username = process.env.SSH_USER;
 }
+
 if (process.env.SSH_KEY) {
   sshOpts.privateKey = fs.readFileSync(process.env.SSH_KEY);
 }
@@ -69,6 +77,8 @@ if (optind < argv.length) {
   command = argv[optind++];
 }
 
+// XXX(sam) this no longer makes sense, it was used to jump between the HTTP and
+// unix-domain implementations, but now it all goes through Client.
 var remote = {
   request: remoteRequest,
 };
@@ -97,7 +107,11 @@ var commands = {
 
 if (!url.parse(pmctl).protocol) {
   pmctl = 'http+unix://' + path.resolve(pmctl);
+} else {
+  pmctl = urlDefaults(pmctl, {host: '127.0.0.1', port: 8701});
 }
+
+debug('using control %j', pmctl);
 
 (commands[command] || cmdInvalid)();
 

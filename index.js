@@ -1,32 +1,23 @@
-// Exit on loss of parent process, if it had established an ipc control channel.
-// We do this ASAP because we don't want child processes to leak, outliving
-// their parent. If the parent has not established an 'ipc' channel to us, this
-// will be a no-op, the disconnect event will never occur.
-process.on('disconnect', function() {
-  process.exit(2);
-});
+'use strict';
 
 var Parser = require('posix-getopt').BasicParser;
 var assert = require('assert');
-var debug = require('debug')('strong-pm');
 var mkdirp = require('mkdirp').sync;
 var path = require('path');
 var fs = require('fs');
 
-var runner = require('./lib/run');
 var Server = require('./lib/server');
 
 function printHelp($0, prn) {
   var USAGE = fs.readFileSync(require.resolve('./bin/sl-pm.txt'), 'utf-8')
     .replace(/%MAIN%/g, $0)
-    .trim()
-    ;
+    .trim();
 
   prn(USAGE);
 }
 
 function main(argv, callback) {
-  var $0 = process.env.CMD ?  process.env.CMD : path.basename(argv[1]);
+  var $0 = process.env.CMD ? process.env.CMD : path.basename(argv[1]);
   var parser = new Parser([
       ':v(version)',
       'h(help)',
@@ -40,10 +31,11 @@ function main(argv, callback) {
     argv);
 
   var base = '.strong-pm';
-  var listen;
+  var listen = 8701;
   var control = 'pmctl';
   var fake;
 
+  var option;
   while ((option = parser.getopt()) !== undefined) {
     switch (option.option) {
       case 'v':
@@ -99,7 +91,7 @@ function main(argv, callback) {
 
   var app = new Server($0, base, listen, control);
 
-  app.on('listening', function(listenAddr){
+  app.on('listening', function(listenAddr) {
     console.log('%s: listen on %s, work base is `%s`',
       $0, listenAddr.port, base);
     if (fake) _fakeMetrics(app);

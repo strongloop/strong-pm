@@ -35,12 +35,12 @@
   "author": "engineering@strongloop.com",
   "license": {
     "name": "Dual Artistic/StrongLoop",
-    "url": "https://github.com/strongloop/strong-build/blob/master/LICENSE.md"
+    "url": "https://github.com/strongloop/strong-pm/blob/master/LICENSE.md"
   },
   "main": "index.js",
   "scripts": {
     "build": "echo BUILD SCRIPT",
-    "lint": "eslint bin lib; jscs bin lib",
+    "lint": "eslint bin lib index.js && jscs bin lib index.js",
     "test": "tap --timeout=400 ./test/test-*"
   },
   "bin": {
@@ -76,6 +76,7 @@
     "lodash": "^2.4.1",
     "mkdirp": "^0.5.0",
     "npm-path": "^1.0.1",
+    "osenv": "^0.1.0",
     "passwd-user": "^1.0.0",
     "posix-getopt": "^1.0.0",
     "serve-favicon": "^2.1.5",
@@ -86,6 +87,7 @@
     "strong-service-install": "^1.1.0",
     "strong-supervisor": "^1.4.0",
     "strong-tunnel": "^1.1.1",
+    "strong-url-defaults": "^1.0.0",
     "tar": "^1.0.0",
     "uid-number": "0.0.5"
   }
