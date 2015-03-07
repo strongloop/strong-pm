@@ -51,7 +51,7 @@ assert_file $TMP/upstart.conf "$(node -p process.execPath) $(which sl-pm.js)"
 assert_not_file $TMP/upstart.conf "--config"
 
 # Should NOT add unwanted auth to config
-assert_not_file $TMP/upstart.conf "STRONG_PM_HTTP_AUTH"
+assert_not_file $TMP/upstart.conf "STRONGLOOP_PM_HTTP_AUTH"
 
 # Should create base for us
 assert_exit 0 test -d $TMP/deeply/nested/sl-pm
