@@ -67,7 +67,7 @@
     "bl": "^0.9.4",
     "chownr": "0.0.1",
     "compression": "^1.1.0",
-    "concat-stream": "^1.4.6",
+    "concat-stream": "^1.4.7",
     "debug": "^2.0.0",
     "errorhandler": "^1.2.0",
     "express": "^4.12.0",
