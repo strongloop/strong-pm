@@ -86,6 +86,25 @@ to it with `slc deploy http://localhost:8701`.
 
 For more information on Docker and Docker Hub, see https://www.docker.com/
 
+## Installing as a Dockerized Service
+
+One of the things you can do with the
+[strongloop/strong-pm](https://registry.hub.docker.com/u/strongloop/strong-pm/)
+image is run it as an OS service without the need to install strong-pm, npm, or
+even node on your server. All you need is Docker!
+
+You can do this [the hard way](docker/README.md) and pull down the image, start
+a container, and write your own Upstart or systemd config file, or you can use
+our install script to do it for you:
+
+    curl -sO https://cdn.rawgit.com/strongloop/strong-pm/master/docker/install.sh | sudo sh
+
+The created service will use port 8701 for strong-pm's API, port 3000 for your
+app, and the container will be restarted if your server reboots.
+
+If you want to step through all the steps yourself, the script is based off of
+a guide in [docker/README.md](docker/README.md).
+
 ## Usage
 
 These tools are also available as the `pm`, `pm-install`, and `pmctl`
