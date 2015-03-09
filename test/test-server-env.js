@@ -12,6 +12,7 @@ test('new server', function(t) {
 
     var emptyEnv = {};
     var fullEnv = {FOO: 'foo', BAR: 'bar'};
+    var barOnly = {BAR: 'bar'};
 
     t.test('start server', function(tt) {
       s.start(function(err) {
@@ -35,6 +36,39 @@ test('new server', function(t) {
       svc.save(function(err, res) {
         tt.ifError(err, 'saves without error');
         tt.equivalent(res.env, fullEnv, 'saved env on model');
+        tt.end();
+      });
+    });
+
+    t.test('update reflected locally', function(tt) {
+      tt.equivalent(s.env({}), fullEnv, 'local env was updated');
+      tt.end();
+    });
+
+    t.test('refresh Service instance', function(tt) {
+      Service.findById(1, function(err, _svc) {
+        tt.ifError(err, 'finds Service instance');
+        svc = _svc;
+        tt.end();
+      });
+    });
+
+    t.test('update env with model#unsetEnv', function(tt) {
+      svc.unsetEnv('FOO', function(err, res) {
+        tt.ifError(err, 'unsetEnv does not fail');
+        tt.equivalent(res, barOnly, 'setEnv returns new env');
+        tt.end();
+      });
+    });
+
+    t.test('update reflected locally', function(tt) {
+      tt.equivalent(s.env({}), barOnly, 'local env was updated');
+      tt.end();
+    });
+
+    t.test('update env with model#setEnv', function(tt) {
+      svc.setEnv('FOO', 'foo', function(err, res) {
+        tt.equivalent(res, fullEnv, 'setEnv sets variable');
         tt.end();
       });
     });
