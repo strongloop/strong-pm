@@ -29,7 +29,7 @@ MockCurrent.prototype.request = function request(req, cb) {
 var WORKER_PID = 1001;
 
 var USAGE_RECORD = {
-  timeStamp: Date.now(),
+  timestamp: Date.now(),
   client: {address: '::1'},
   request: {method: 'GET', url: '/'},
   response: {status: 404, duration: 6},
@@ -73,7 +73,7 @@ tap.test('ExpressUsageRecord', function(t) {
     },
     function emitTooOldUsageRecord(next) {
       var rec = util._extend({}, USAGE_RECORD);
-      rec.timeStamp = Date.now() - 24 * 60 * 1000;
+      rec.timestamp = Date.now() - 24 * 60 * 1000;
       var message = {cmd: 'express:usage-record', record: rec};
       runner.emit('request', message, next);
     },
@@ -86,7 +86,7 @@ tap.test('ExpressUsageRecord', function(t) {
 
         assert.ok(!!data.processId, 'Process ID should be set');
         assert.equal(data.workerId, 1);
-        assert.equal(+data.timeStamp, +USAGE_RECORD.timeStamp);
+        assert.equal(+data.timeStamp, +USAGE_RECORD.timestamp);
         assert.deepEqual(data.detail, USAGE_RECORD);
         next();
       });
