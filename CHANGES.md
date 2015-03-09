@@ -1,3 +1,135 @@
+2015-03-09, Version 3.0.0
+=========================
+
+ * make usage-record consistent with mesh models (Ryan Graham)
+
+ * deps: upgrade eslint (Ryan Graham)
+
+ * fix unsetEnv handler returning modified env (Ryan Graham)
+
+ * deps: update tap dependency (Ryan Graham)
+
+ * lint: fix warnings introduced by #138 (Ryan Graham)
+
+ * local-deploy: use concat-stream, and adjust debug (Sam Roberts)
+
+ * lint: update eslint to 0.15.1 (Sam Roberts)
+
+ * docker: don't create extra .strong-pm directory (Ryan Graham)
+
+ * docker: use strong-pm default port, 8701 (Ryan Graham)
+
+ * pmctl: use model API for env-set/env-unset (Ryan Graham)
+
+ * test: add wait to async test helper (Ryan Graham)
+
+ * test: improve debugging of pmctl tests (Ryan Graham)
+
+ * test: make async tests more resilient (Ryan Graham)
+
+ * pm-install: fix debug message going to stderr (Ryan Graham)
+
+ * test: fix typo in docker test (Ryan Graham)
+
+ * test: make vagrant and docker tests safer (Ryan Graham)
+
+ * test: make vagrant vm easier to manipulate (Ryan Graham)
+
+ * test: simplify pmctl-log tests (Ryan Graham)
+
+ * server: Use/expose env provided by Service model (Ryan Graham)
+
+ * server: initialize environment store earlier (Ryan Graham)
+
+ * Send reply back to client before shutdown (Krishna Raman)
+
+ * pmctl: refactor to use strong-url-defaults (Sam Roberts)
+
+ * package: correct typo in lint script (Sam Roberts)
+
+ * package: correct license link (Sam Roberts)
+
+ * pm: listen port defaults to 8701 (Sam Roberts)
+
+ * pm-install: wrap usage to 80 columns and punctuate (Sam Roberts)
+
+ * pm: remove duplicate check for parent-death (Sam Roberts)
+
+ * lint: add the index.js (Sam Roberts)
+
+ * require strong-mesh-models@4 after model refactor (Ryan Graham)
+
+ * Fix metadata test to test properties of non-stopped processes (Krishna Raman)
+
+ * Move handling of fork notification (Krishna Raman)
+
+ * Move handling of started notification (Krishna Raman)
+
+ * Move handling of exit notification (Krishna Raman)
+
+ * Collect additional data for events (Krishna Raman)
+
+ * Move handling of express:usage-record notification (Krishna Raman)
+
+ * Move handling of profile notifications (Krishna Raman)
+
+ * Move handling of agent:trace notification (Krishna Raman)
+
+ * Move handling of metrics notification (Krishna Raman)
+
+ * Move handling of listening notification (Krishna Raman)
+
+ * Rename express usage metric fields (Krishna Raman)
+
+ * Modify to use server and models from mesh-models (Krishna Raman)
+
+ * Move models, boot scripts & config to mesh-models (Krishna Raman)
+
+ * package: passes `npm run lint` (Sam Roberts)
+
+ * test: add wiggle room to pmctl log tests (Ryan Graham)
+
+ * package: add eslint and jscs scripts (Sam Roberts)
+
+ * fix exclusive tmpdir assumption (Ryan Graham)
+
+ * Fix broken sendError in tgz pack receiver (Ryan Graham)
+
+ * pmctl: support http+ssh:// for using http over ssh (Ryan Graham)
+
+ * test: fix broken pmctl environment (Ryan Graham)
+
+ * test: use official version of tap (Ryan Graham)
+
+ * install: don't always chown -r the basedir (Ryan Graham)
+
+ * install: replace chown loop with chownr module (Ryan Graham)
+
+ * install: extract uid/gid lookup step (Ryan Graham)
+
+ * install: use HOME as pm's basedir (Ryan Graham)
+
+ * Expose http trace data via PM API (Krishna Raman)
+
+ * Expose "ExpressUsageRecord" (Miroslav Bajtoš)
+
+ * test: clear sl-pm.docker.cid file before test (Ryan Graham)
+
+ * test: bump test timeout (Ryan Graham)
+
+ * test: constrain docker tests to cluster=1 (Ryan Graham)
+
+ * Remove internal references to config file (Ryan Graham)
+
+ * config: remove config file loading and ini support (Ryan Graham)
+
+ * Remove config file support from all commands (Ryan Graham)
+
+ * Bump major for upcoming breaking changes (Ryan Graham)
+
+ * test: split pmctl tests into smaller tests (Ryan Graham)
+
+
 2015-02-10, Version 1.7.2
 =========================
 
