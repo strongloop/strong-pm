@@ -142,7 +142,6 @@ function cmdStatus() {
     fmt(1, 'pid', '%s', rsp.pid);
     fmt(1, 'port', '%s', rsp.port);
     fmt(1, 'base', '%s', rsp.base);
-    fmt(1, 'config', '%s', rsp.config);
 
     var current = rsp.current;
 
