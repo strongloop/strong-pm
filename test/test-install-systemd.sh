@@ -18,6 +18,7 @@ assert_exit 0 $CMD --port 7777 \
 # Simple lines that should be in the service file for this config
 assert_file $TMP/systemd.service "ExecStart=$(node -p process.execPath)"
 assert_file $TMP/systemd.service "WorkingDirectory=$HOME"
+assert_file $TMP/systemd.service "Description=StrongLoop Process Manager"
 
 unset SL_PM_INSTALL_IGNORE_PLATFORM
 assert_report
