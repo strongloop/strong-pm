@@ -158,7 +158,7 @@ is specified, the service is installed as an Upstart job using a template that
 assumes Upstart 1.4 or higher.
 ```
 
-The URL formats supported by `--meetrics STATS` are defined by strong-supervisor.
+The URL formats supported by `--metrics STATS` are defined by strong-supervisor.
 
 ### slc pmctl
 
