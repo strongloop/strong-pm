@@ -489,8 +489,8 @@ function remoteHttpRequest(pmctl, cmd, callback) {
 
     function checkError(err) {
       if (err) {
-        console.error('Command `%s` failed: %s',
-          cmd.sub || cmd.cmd, err.message);
+        console.error('Command `%s` to `%s` failed: %s',
+          cmd.sub || cmd.cmd, pmctl, err.message);
         process.exit(1);
       }
     }
