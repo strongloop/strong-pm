@@ -179,6 +179,8 @@ in this order:
 1. `STRONGLOOP_PM` in environment: may be a local domain path, or an HTTP URL.
 2. `./pmctl`: a process manager running in the current working directory.
 3. `/var/lib/strong-pm/pmctl`: a process manager installed by pm-install.
+4. `/var/lib/strong-pm/pmctl`: a process manager installed by pm-install.
+5. `http://localhost:8701`: a process manager running on localhost
 
 An HTTP URL is mandatory for remote process managers, but can also be used on
 localhost. It must specify at least the process manager's listen port, such as

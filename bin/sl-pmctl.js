@@ -38,7 +38,8 @@ var parser = new Parser([
 var pmctl = process.env.STRONGLOOP_PM ||
   exists('pmctl') ||
   exists(path.join(home, '.strong-pm', 'pmctl')) ||
-  '/var/lib/strong-pm/pmctl';
+  exists('/var/lib/strong-pm/pmctl') ||
+  'http://127.0.0.1:8701';
 var command = 'status';
 var sshOpts = {};
 
