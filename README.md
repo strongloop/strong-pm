@@ -92,10 +92,13 @@ These tools are also available as the `pm`, `pm-install`, and `pmctl`
 sub-commands of the [strongloop](http://github.com/strongloop/strongloop)
 package.
 
-### sl-pm
+### pm
+
+The process manager is not usually used stand-alone, its usually installed
+as a system service, see `pm-install`, below.
 
 ```
-usage: sl-pm [options]
+usage: pm [options]
 
 The Strongloop process manager.
 
@@ -121,10 +124,10 @@ and the listen path can be changed or disabled. These sockets do not support
 HTTP authentication.
 ```
 
-### slc pm-install
+### pm-install
 
 ```
-usage: sl-pm-install [options]
+usage: pm-install [options]
 
 Install the Strongloop process manager as a service.
 
@@ -160,11 +163,10 @@ assumes Upstart 1.4 or higher.
 
 The URL formats supported by `--metrics STATS` are defined by strong-supervisor.
 
-### slc pmctl
+### pmctl
 
 ```
-usage: slc pmctl [options] [command]
-usage: sl-pmctl [options] [command ...]
+usage: pmctl [options] [command]
 
 Run-time control of the process manager.
 
