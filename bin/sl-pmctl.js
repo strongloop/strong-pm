@@ -38,7 +38,8 @@ var parser = new Parser([
 var pmctl = process.env.STRONGLOOP_PM ||
   exists('pmctl') ||
   exists(path.join(home, '.strong-pm', 'pmctl')) ||
-  '/var/lib/strong-pm/pmctl';
+  exists('/var/lib/strong-pm/pmctl') ||
+  'http://127.0.0.1:8701';
 var command = 'status';
 var sshOpts = {};
 
@@ -142,7 +143,6 @@ function cmdStatus() {
     fmt(1, 'pid', '%s', rsp.pid);
     fmt(1, 'port', '%s', rsp.port);
     fmt(1, 'base', '%s', rsp.base);
-    fmt(1, 'config', '%s', rsp.config);
 
     var current = rsp.current;
 
@@ -490,8 +490,8 @@ function remoteHttpRequest(pmctl, cmd, callback) {
 
     function checkError(err) {
       if (err) {
-        console.error('Command `%s` failed: %s',
-          cmd.sub || cmd.cmd, err.message);
+        console.error('Command `%s` to `%s` failed: %s',
+          cmd.sub || cmd.cmd, pmctl, err.message);
         process.exit(1);
       }
     }
