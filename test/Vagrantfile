@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 $pkg_name = ENV['PKG_NAME'] || Dir["../strong-pm-*.tgz"].last
-$node_version = ENV['NODE_VER'] || "0.10.33"
+$node_version = ENV['NODE_VER'] || "0.10.36"
 $NODE_URL = "http://nodejs.org/dist/v#{$node_version}/node-v#{$node_version}-linux-x64.tar.gz"
 npm_config_registry = ENV['npm_config_registry'] ||
                       `npm config get registry`.strip ||
@@ -64,8 +64,8 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: $test, privileged: false
 
   # expose manager's port
-  config.vm.network "forwarded_port", guest: 7777, host: 7777
+  config.vm.network "forwarded_port", guest: 7777, host: 8702
   # expose sample app's port
-  config.vm.network "forwarded_port", guest: 8888, host: 8888
+  config.vm.network "forwarded_port", guest: 8888, host: 8889
 
 end
