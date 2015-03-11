@@ -2,8 +2,7 @@ FROM nodesource/node
 
 # Ensure git is installed (used by strong-pm)
 # Create "strong-pm" user
-RUN apt-get install -yq git && apt-get clean \
-    && npm install --unsafe-perm --global strongloop/strong-pm#production \
+RUN npm install --unsafe-perm --global strongloop/strong-pm#production \
     && npm cache clean \
     && useradd -ms /bin/bash strong-pm
 
