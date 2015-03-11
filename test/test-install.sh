@@ -86,9 +86,14 @@ assert_exit 0 $CMD --port 7777 \
                    --job-file $TMP/upstart-with-basedir.conf \
                    --user `id -un`
 
-# Should not be a subdir of $HOME, should be exactly $HOME
-assert_not_file $TMP/upstart-with-basedir.conf "--base $HOME/"
-assert_file $TMP/upstart-with-basedir.conf "--base $HOME"
+# TODO: find another way to test his without depending on the real $HOME
+if [ -d $HOME/.strong-pm ]; then
+  assert_file $TMP/upstart-with-basedir.conf "--base $HOME/.strong-pm"
+else
+  # Should not be a subdir of $HOME, should be exactly $HOME
+  assert_not_file $TMP/upstart-with-basedir.conf "--base $HOME/"
+  assert_file $TMP/upstart-with-basedir.conf "--base $HOME"
+fi
 
 unset SL_PM_INSTALL_IGNORE_PLATFORM
 assert_report
