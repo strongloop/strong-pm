@@ -44,10 +44,11 @@
     "test": "tap --timeout=400 ./test/test-*"
   },
   "bin": {
+    "pm": "./bin/sl-pm.js",
+    "pm-install": "./bin/sl-pm-install.js",
+    "pmctl": "./bin/sl-pmctl.js",
     "sl-pm": "./bin/sl-pm.js",
     "sl-pmctl": "./bin/sl-pmctl.js",
-    "slpm": "./bin/sl-pm.js",
-    "slpmctl": "./bin/sl-pmctl.js",
     "sl-pm-install": "./bin/sl-pm-install.js"
   },
   "devDependencies": {
