@@ -1,3 +1,33 @@
+2015-03-16, Version 3.1.0
+=========================
+
+ * docker: add simple dockerized strong-pm installer (Ryan Graham)
+
+ * docker: guide for manually installing docker image (Ryan Graham)
+
+ * docker: use existing git installation (Ryan Graham)
+
+ * test: tidy up Vagrant e2e tests (Ryan Graham)
+
+ * pm-install: preserve basedir during upgrade (Ryan Graham)
+
+ * test: fix typo in pm-install auth test (Ryan Graham)
+
+ * Pass description option when installing service (braincomb)
+
+ * lint: add .eslintignore (Sam Roberts)
+
+ * pmctl: final control default is localhost:8701 (Sam Roberts)
+
+ * pmctl: report control URL on failure (Sam Roberts)
+
+ * pmctl: remove `config` from status (Sam Roberts)
+
+ * lint: exclude files via config, not npm script (Sam Roberts)
+
+ * Typo: "meetrics" (Rand McKinney)
+
+
 2015-03-09, Version 3.0.0
 =========================
 
@@ -140,10 +170,6 @@
 =========================
 
  * Use process pid when filtering for model updates (Krishna Raman)
-
-
-2015-01-29, Version 1.7.0
-=========================
 
  * fix 'pmctl log-dump --follow' option parsing (Ryan Graham)
 
