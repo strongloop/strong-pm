@@ -97,7 +97,7 @@ You can do this [the hard way](docker/README.md) and pull down the image, start
 a container, and write your own Upstart or systemd config file, or you can use
 our install script to do it for you:
 
-    curl -sO https://cdn.rawgit.com/strongloop/strong-pm/master/docker/install.sh | sudo sh
+    curl -s https://cdn.rawgit.com/strongloop/strong-pm/master/docker/install.sh | sudo sh
 
 The created service will use port 8701 for strong-pm's API, port 3000 for your
 app, and the container will be restarted if your server reboots.
