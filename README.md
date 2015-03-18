@@ -182,10 +182,9 @@ The URL formats supported by `--metrics STATS` are defined by strong-supervisor.
 ### slc pmctl
 
 ```
-usage: slc pmctl [options] [command]
 usage: sl-pmctl [options] [command ...]
 
-Run-time control of the process manager.
+Run-time control of the Strongloop process manager.
 
 Options:
   -h,--help               Print help and exit.
@@ -197,13 +196,12 @@ in this order:
 
 1. `STRONGLOOP_PM` in environment: may be a local domain path, or an HTTP URL.
 2. `./pmctl`: a process manager running in the current working directory.
-3. `/var/lib/strong-pm/pmctl`: a process manager installed by pm-install.
+3. `~/.strong-pm/pmctl`: a process manager running in the user's home directory.
 4. `/var/lib/strong-pm/pmctl`: a process manager installed by pm-install.
 5. `http://localhost:8701`: a process manager running on localhost
 
 An HTTP URL is mandatory for remote process managers, but can also be used on
-localhost. It must specify at least the process manager's listen port, such as
-`http://example.com:7654`. If the process manager is using HTTP authentication
+localhost. If the process manager is using HTTP authentication
 then valid credentials must be set in the URL directly, such as
 `http://user-here:pass-here@example.com:7654`.
 
