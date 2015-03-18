@@ -1,3 +1,9 @@
+2015-03-18, Version 3.1.3
+=========================
+
+ * package: update strong-mesh-models to 5.x (Sam Roberts)
+
+
 2015-03-18, Version 3.1.2
 =========================
 
