@@ -1,3 +1,9 @@
+2015-03-18, Version 3.1.1
+=========================
+
+ * Update pmctl usage in README (Sam Roberts)
+
+
 2015-03-16, Version 3.1.0
 =========================
 
