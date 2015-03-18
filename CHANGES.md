@@ -1,3 +1,13 @@
+2015-03-18, Version 3.1.2
+=========================
+
+ * Update pmctl usage in README (Sam Roberts)
+
+ * docs: fix typo in docker install instructions (Ryan Graham)
+
+ * Make sl-pmctl a wrapper around meshctl (Krishna Raman)
+
+
 2015-03-16, Version 3.1.0
 =========================
 
