@@ -71,8 +71,12 @@ function main(argv, callback) {
 
   base = path.resolve(base);
 
-  if (control)
+  if (control) {
     control = path.resolve(control);
+
+    if (process.platform === 'win32' && !/^[\/\\]{2}/.test(control))
+      control = '\\\\?\\pipe\\' + control;
+  }
 
   if (parser.optind() !== argv.length) {
     console.error('Invalid usage (extra arguments), try `%s --help`.', $0);
