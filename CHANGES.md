@@ -1,3 +1,9 @@
+2015-03-20, Version 3.1.4
+=========================
+
+ * Fix windows support (Bert Belder)
+
+
 2015-03-18, Version 3.1.3
 =========================
 
@@ -186,6 +192,10 @@
 =========================
 
  * Use process pid when filtering for model updates (Krishna Raman)
+
+
+2015-01-29, Version 1.7.0
+=========================
 
  * fix 'pmctl log-dump --follow' option parsing (Ryan Graham)
 
