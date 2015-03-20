@@ -1,3 +1,9 @@
+2015-03-20, Version 3.1.5
+=========================
+
+ * server: report pm and API version at startup (Sam Roberts)
+
+
 2015-03-20, Version 3.1.4
 =========================
 
@@ -192,10 +198,6 @@
 =========================
 
  * Use process pid when filtering for model updates (Krishna Raman)
-
-
-2015-01-29, Version 1.7.0
-=========================
 
  * fix 'pmctl log-dump --follow' option parsing (Ryan Graham)
 
