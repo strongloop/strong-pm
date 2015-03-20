@@ -16,7 +16,7 @@ die() {
 }
 
 require_docker() {
-  if test ! -x $DOCKER; then
+  if test -z "$DOCKER" || test ! -x $DOCKER; then
     die "Unable to find docker. Is it installed?"
   fi
   $DOCKER info > /dev/null || service docker start
