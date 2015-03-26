@@ -1,5 +1,0 @@
-deploy: url is not valid when the port is closed from strong-deploy, bad
-deploy: host required for url when its git, but not for pack, bad
-pm: protocol, remove current, put sub in command, but if target is present,
- assume it goes to supervisor... will make things nicer
-deploy: need to give a weird URL... we should be able to construct that
