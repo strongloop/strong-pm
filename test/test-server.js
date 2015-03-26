@@ -3,7 +3,6 @@ var assert = require('assert');
 var async = require('async');
 var debug = require('debug')('strong-pm:test');
 var path = require('path');
-var runner = require('../lib/run');
 var tap = require('tap');
 var events = require('events');
 var util = require('util');
@@ -59,6 +58,7 @@ tap.test('new server', function(t) {
 tap.test('service starts', function(t) {
   var s = new Server('pm', '_base', 1234, null);
   var m = s._app.models;
+  var runner = s._container;
 
   s._isStarted = true; // Make server think its running.
   s._loadModels(firstRun);
@@ -67,11 +67,8 @@ tap.test('service starts', function(t) {
     debug('first run');
     var commit = {hash: 'hash1', dir: 'dir1'};
 
-    runner._mockCurrent = new MockCurrent();
-    runner._mockCurrent.commit = commit;
-    runner.current = function() {
-      return runner._mockCurrent;
-    }
+    runner.current = new MockCurrent();
+    runner.current.commit = commit;
 
     // mock started event from runner
     s._onMasterStart({
@@ -86,11 +83,8 @@ tap.test('service starts', function(t) {
     debug('second run');
     var commit = {hash: 'hash2', dir: 'dir2'};
 
-    runner._mockCurrent = new MockCurrent();
-    runner._mockCurrent.commit = commit;
-    runner.current = function() {
-      return runner._mockCurrent;
-    }
+    runner.current = new MockCurrent();
+    runner.current.commit = commit;
 
     // mock started event from runner
     s._onMasterStart({
