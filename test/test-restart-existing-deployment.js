@@ -3,13 +3,13 @@ var assert = require('assert');
 var child_process = require('child_process');
 var fs = require('fs');
 var path = require('path');
-var run = require('../lib/run');
 var slPM = require('../index.js');
 var util = require('util');
 
 require('shelljs/global');
 
 var server = app.listen();
+var run = server._container;
 
 // Remove default commit listener. Test provides custom implementation
 server.removeAllListeners('commit');
@@ -18,7 +18,7 @@ var REPO = 'some-repo-name';
 var listeningPort = 0;
 
 function running() {
-  var current = run.current();
+  var current = run.current;
   return current ? current.child : null;
 }
 
