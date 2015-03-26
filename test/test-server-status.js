@@ -3,7 +3,6 @@ var assert = require('assert');
 var async = require('async');
 var debug = require('debug')('strong-pm:test');
 var path = require('path');
-var runner = require('../lib/run');
 var tap = require('tap');
 var events = require('events');
 var util = require('util');
@@ -31,13 +30,11 @@ tap.test('worker status update', function(t) {
   var s = new Server('pm', '_base', 1234, null);
   var m = s._app.models;
   var commit = {hash: 'hash1', dir: 'dir1'};
+  var runner = s._container;
 
   s._isStarted = true; // Make server think its running.
 
-  runner._mockCurrent = new MockCurrent();
-  runner.current = function() {
-    return runner._mockCurrent;
-  }
+  runner.current = new MockCurrent();
 
   s._loadModels(emitRunning);
 

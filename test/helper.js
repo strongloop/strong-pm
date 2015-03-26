@@ -6,11 +6,16 @@ var util = require('util');
 
 require('shelljs/global');
 
+console.error('test/helper... start');
+
+// So dev deps, like sl-build, are in the path.
+process.env.PATH += path.delimiter
+  + path.resolve(__dirname, '../node_modules/.bin');
+
 exports.configForCommit = require('../lib/config').configForCommit;
 exports.main = require('../').main;
 exports.prepare = require('../lib/prepare').prepare;
-exports.run = require('../lib/run').run;
-exports.stop = require('../lib/run').stop;
+exports.stop = stop;
 
 function ex(cmd, async) {
   console.log('exec `%s`', cmd);
@@ -48,6 +53,8 @@ exports.APPNAME = APPNAME;
 
 assert.equal(package().name, APPNAME, 'cwd is ' + APPNAME);
 
+assert(which('sl-build'), 'sl-build should be in path');
+
 rm('-rf', '../receive-base');
 rm('-rf', '.git', '.strong-pm');
 ex('git clean -f -d -x .');
@@ -60,7 +67,6 @@ ex('sl-build --install --commit');
 assert(!test('-e', 'node_modules/debug'), 'dev dep not installed');
 assert(test('-e', 'node_modules/buffertools'), 'prod dep installed');
 assert(!test('-e', 'node_modules/buffertools/build'), 'addons not built');
-assert(which('sl-build'), 'sl-build not in path');
 
 console.log('test/app built succesfully');
 
@@ -70,15 +76,21 @@ var port;
 exports.listen = function() {
   var base = '../receive-base';
   mkdir('-p', base);
-  var app = new Server('test', base, 0, 'pmctl');
-  app.on('listening', function(listenAddr){
+  server = new Server('test', base, 0, 'pmctl');
+  server.on('listening', function(listenAddr){
     port = listenAddr.port;
     console.log('git receive listening on  %d', port);
   });
 
-  app.start();
-  return app;
+  server.start();
+  return server;
 };
+
+function stop(callback) {
+  if (!server) return callback();
+  server._container.stop(callback);
+};
+
 
 // Pushes don't work if we have already pushed... so force a new repo name for
 // each push.
@@ -138,3 +150,5 @@ exports.localDeploy = function(dirPath, repo, callback) {
     if (callback) return callback();
   });
 };
+
+console.error('test/helper... done');
