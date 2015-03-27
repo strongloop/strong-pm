@@ -8,7 +8,7 @@ StrongLoop PM is a production process manager for Node.js applications with
 built-in load balancing, monitoring, multi-host deployment, and a graphical
 console.
 
-For more details, see http://strong-pm.io.
+For more details, see http://strong-pm.io
 
 
 ## Installation
