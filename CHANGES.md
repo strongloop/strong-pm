@@ -1,3 +1,9 @@
+2015-03-27, Version 3.1.8
+=========================
+
+ * package: add PM logo to README (Sam Roberts)
+
+
 2015-03-27, Version 3.1.7
 =========================
 
