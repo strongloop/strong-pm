@@ -1,3 +1,5 @@
+[![strong-pm Logo](http://strong-pm.io/images/slpm%20logo.png)](http://strong-pm.io/)
+
 # strong-pm - Process Manager
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/strongloop/chat?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -5,6 +7,55 @@
 StrongLoop PM is a production process manager for Node.js applications with
 built-in load balancing, monitoring, multi-host deployment, and a graphical
 console.
+
+For more details, see http://strong-pm.io.
+
+
+## Installation
+
+Install the client-side [CLI](https://github.com/strongloop/strongloop) and
+[GUI](https://github.com/strongloop/strong-arc) (`slc arc`):
+
+    npm install -g strongloop
+    slc -h
+
+Run app
+
+    slc start app.js
+
+Or to deploy and manage remotely, install the manager on a production server using npm:
+
+    npm install -g strong-pm && sl-pm-install
+
+Or using docker:
+
+    curl -sO http://strong-pm.io/docker.sh | sudo /bin/sh
+
+
+## Quick Start
+
+Under production, you will install the process manager as a system service, see
+http://strong-pm.io/prod, but if you are just trying the manager out locally,
+you can run an app directly from the command line.
+
+Get a sample app (or use your own app):
+
+    git clone git@github.com:strongloop/express-example-app.git
+    cd express-example-app
+    npm install
+
+Start the app under the process manager:
+
+    slc start
+
+Interact with the app using the StrongLoop GUI:
+
+    slc arc
+
+See http://strong-pm.io for more information.
+
+
+## Features
 
 - Build, package, and deploy your Node application to a local or remote system
 - Aggregate & rotate logs
@@ -15,10 +66,6 @@ console.
 - View performance metrics on your application
 - Use graphical tool or CLI
 - Docker support
-
-For more details, see http://strong-pm.io.
-
-## Features
 
 ## Great for production!
 
@@ -68,27 +115,6 @@ For more details, see http://strong-pm.io.
   and so on.
 
 
-## Installation
-
-Install the client-side [CLI](https://github.com/strongloop/strongloop) and
-[GUI](https://github.com/strongloop/strong-arc) (`slc arc`):
-
-    npm install -g strongloop
-    slc -h
-
-Run app
-
-    slc start app.js
-
-Or to deploy and manage remotely, install the manager on a production server using npm:
-
-    npm install -g strong-pm && sl-pm-install
-
-Or using docker:
-
-    curl -sO http://strong-pm.io/docker.sh | sudo /bin/sh
-
-
 ## Docs & Community
 
 - [StrongLoop Documentation](http://docs.strongloop.com/display/SLC/Operating+Node+applications)
@@ -101,29 +127,6 @@ Or using docker:
 
 For more resources, including links to blogs, see
 http://strong-pm.io/resources/.
-
-
-## Quick Start
-
-Under production, you will install the process manager as a system service, see
-http://strong-pm.io/prod, but if you are just trying the manager out locally,
-you can run an app directly from the command line.
-
-Get a sample app (or use your own app):
-
-    git clone git@github.com:strongloop/express-example-app.git
-    cd express-example-app
-    npm install
-
-Start the app under the process manager:
-
-    slc start
-
-Interact with the app using the StrongLoop GUI:
-
-    slc arc
-
-See http://strong-pm.io for more information.
 
 
 ## License
