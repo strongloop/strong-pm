@@ -8,7 +8,7 @@ StrongLoop PM is a production process manager for Node.js applications with
 built-in load balancing, monitoring, multi-host deployment, and a graphical
 console.
 
-For more details, see http://strong-pm.io
+For more details, see [http://strong-pm.io](http://strong-pm.io)
 
 
 ## Installation
@@ -35,7 +35,7 @@ Or using docker:
 ## Quick Start
 
 Under production, you will install the process manager as a system service, see
-http://strong-pm.io/prod, but if you are just trying the manager out locally,
+[http://strong-pm.io/prod](http://strong-pm.io/prod), but if you are just trying the manager out locally,
 you can run an app directly from the command line.
 
 Get a sample app (or use your own app):
@@ -52,7 +52,7 @@ Interact with the app using the StrongLoop GUI:
 
     slc arc
 
-See http://strong-pm.io for more information.
+See [http://strong-pm.io](http://strong-pm.io) for more information.
 
 
 ## Features
@@ -126,7 +126,7 @@ See http://strong-pm.io for more information.
 - [Application life-cycle](./LIFE-CYCLE.md)
 
 For more resources, including links to blogs, see
-http://strong-pm.io/resources/.
+[http://strong-pm.io/resources/](http://strong-pm.io/resources/).
 
 
 ## License
