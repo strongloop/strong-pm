@@ -1,3 +1,11 @@
+2015-03-27, Version 3.1.6
+=========================
+
+ * ctl: report versions in status response (Sam Roberts)
+
+ * docker: fix docker detection in installer (Ryan Graham)
+
+
 2015-03-20, Version 3.1.5
 =========================
 
