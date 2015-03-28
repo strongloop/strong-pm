@@ -1,4 +1,6 @@
-FROM nodesource/node
+FROM nodesource/trusty:iojs-1.5.1
+
+RUN apt-get update && apt-get install -y git
 
 # Ensure git is installed (used by strong-pm)
 # Create "strong-pm" user
