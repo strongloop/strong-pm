@@ -1,3 +1,11 @@
+2015-03-28, Version 3.1.9
+=========================
+
+ * Fix markdown for links in README.md (Krishna Raman)
+
+ * Update README.md (chandadharap)
+
+
 2015-03-27, Version 3.1.8
 =========================
 
@@ -214,6 +222,10 @@
 =========================
 
  * Use process pid when filtering for model updates (Krishna Raman)
+
+
+2015-01-29, Version 1.7.0
+=========================
 
  * fix 'pmctl log-dump --follow' option parsing (Ryan Graham)
 
