@@ -12,15 +12,16 @@ var cpuProfilingSupported = require('semver').gt(process.version, '0.11.0');
 
 var REPO = 'some-repo-name';
 
-function pmctl(/* cmd, arguments..., callback*/) {
+function pmctl(/*arguments..., callback*/) {
   var cli = require.resolve('../bin/sl-pmctl.js');
   var args = Array.prototype.slice.call(arguments);
   var callback = args.pop();
 
   var cmd = cli + ' ' + util.format.apply(util, args);
-  var out = exec(cmd, function(error, stdout, stderr) {
+  var out = exec(cmd, function(err, stdout, stderr) {
     output = stdout.trim() + stderr.trim();
-    console.log('Run: %s => %s ', cmd, output.replace(/\n/g, '$\n'));
+    console.log('Run: %s => %j err: %j', cmd, output.replace(/\n/g, '$\n'), err);
+    assert.ifError(err);
     setImmediate(callback);
   });
 }
