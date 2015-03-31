@@ -1,63 +1,68 @@
-var assert = require('assert');
-var async = require('async');
 var debug = require('debug')('strong-pm:test');
-
-console.log('working dir for %s is %s', process.argv[1], process.cwd());
-
+var fmt = require('util').format;
+var fs = require('fs');
+var path = require('path');
 var prepare = require('../lib/prepare').prepare;
+var rmrf = require('rimraf');
+var tap = require('tap');
 
-// Check for node silently exiting with code 0 when tests have not passed.
-var ok = false;
+var DIR = path.resolve(__dirname, 'app-prepare');
+var DEPS = path.resolve(DIR, 'node_modules');
+var ADDON = path.resolve(DEPS, 'buffertools'); // Any compiled add-on.
+var BUILD = path.resolve(ADDON, 'build');
+var DEV = path.resolve(DEPS, 'debug'); // Any dev dependency.
 
-process.on('exit', function(code) {
-  if (code === 0) {
-    assert(ok);
-  }
+var commit = {
+  env: {},
+  dir: DIR,
+};
+
+tap.test('app has no installed deps', function(t) {
+  t.plan(1);
+  rmrf(DEPS, function() {
+    try {
+      fs.readdirSync(DEPS);
+      t.assert(false);
+    } catch (er) {
+      t.assert(er);
+    }
+  });
 });
 
-function test(config) {
-  return function(callback) {
-    console.log('test config: %j', config);
-    var commit = {
-      config: {
-        files: {},
-        prepare: config,
-      },
-      hash: 'HASH',
-      commands: [],
-      env: process.env,
-      spawn: function(cmd, options) {
-        assert.deepEqual(options.env, process.env);
-        assert.equal(options.stdio, 'inherit');
-        this.commands.push(cmd);
-        return this;
-      },
-      on: function(event, callback) {
-        assert.equal(event, 'exit');
-        process.nextTick(function() {
-          callback(0);
-        });
-      },
-    };
+tap.test('raw app is prepared', function(t) {
+  prepare(commit, invariant.bind(null, t));
+});
 
-    prepare(commit, function(err) {
-      console.log('commands: %j', err || commit.commands);
-      assert.ifError(err);
-      assert.deepEqual(config, commit.commands);
-      return callback();
-    });
-  };
+tap.test('uninstalled app is prepared', function(t) {
+  prepare(commit, invariant.bind(null, t));
+});
+
+tap.test('installed but uncompiled app is prepared', function(t) {
+  rmrf.sync(BUILD);
+  prepare(commit, invariant.bind(null, t));
+});
+
+tap.test('installed and compiled app is prepared', function(t) {
+  prepare(commit, invariant.bind(null, t));
+});
+
+function invariant(t, err) {
+  t.ifError(err);
+  exists(t, DEPS);
+  exists(t, ADDON);
+  exists(t, BUILD);
+  notExists(t, DEV);
+  t.end();
 }
 
-async.series([
-  test(require('../lib/config').configDefaults.prepare),
-  test([]),
-  test(['some command']),
-  test(['some command', 'some other command', 'an another']),
-], function(er, results) {
-  debug('error=%s:', er, results);
-  assert.ifError(er);
-  ok = true;
-});
+function exists(t, path) {
+  t.assert(_exists(path), fmt('path %s should exist', path));
+}
 
-ok = true;
+function notExists(t, path) {
+  t.assert(!_exists(path), fmt('path %s should not exist', path));
+}
+
+function _exists(path) {
+  return fs.existsSync(path);
+}

@@ -22,13 +22,13 @@ port() {
 docker_run() {
   rm -f sl-pm.docker.cid
   docker run -i -t -d \
-    --expose 7777 --expose 8888 -P \
+    --expose 8701 --expose 3000-3005 -P \
     --env DEBUG=strong-pm:* \
     --env STRONGLOOP_CLUSTER=1 \
     --env STRONG_PM_LOCKED=$STRONG_PM_LOCKED \
     --env STRONGLOOP_PM_HTTP_AUTH=$STRONGLOOP_PM_HTTP_AUTH \
     --cidfile=sl-pm.docker.cid \
-    $1 --listen 7777
+    $1 --listen 8701
 
   SL_PM=$(cat sl-pm.docker.cid)
   rm sl-pm.docker.cid
@@ -51,9 +51,12 @@ docker_run() {
     LOCALHOST="$STRONGLOOP_PM_HTTP_AUTH@$LOCALHOST"
   fi
 
-  export STRONGLOOP_PM=http://$LOCALHOST:$(port $(docker port $SL_PM 7777/tcp))
-  export STRONGLOOP_PM_NOAUTH=http://$LOCALHOST_NOAUTH:$(port $(docker port $SL_PM 7777/tcp))
-  export APP=http://$LOCALHOST:$(port $(docker port $SL_PM 8888/tcp))
+  export STRONGLOOP_PM=http://$LOCALHOST:$(port $(docker port $SL_PM 8701/tcp))
+  export STRONGLOOP_PM_NOAUTH=http://$LOCALHOST_NOAUTH:$(port $(docker port $SL_PM 8701/tcp))
+  export APP1=http://$LOCALHOST:$(port $(docker port $SL_PM 3001/tcp))
+  export APP2=http://$LOCALHOST:$(port $(docker port $SL_PM 3002/tcp))
+  export APP1_GIT=$STRONGLOOP_PM/api/Services/1/deploy
+  export APP2_GIT=$STRONGLOOP_PM/api/Services/2/deploy
   echo "# strong-pm URL: $STRONGLOOP_PM"
   echo "# app URL: $APP"
 }
@@ -69,45 +72,46 @@ cd app || exit 1
 rm -rf .git .strong-pm
 git clean -f -x -d .
 git init .
-echo "PORT=8888" > .env
 git add .
 git commit --author="sl-pm-test <nobody@strongloop.com>" -m "initial"
 sl-build --install --commit
-git push --quiet $STRONGLOOP_PM/repo HEAD
+echo "# creating Service 1 to we can deploy to it"
+curl -s -X POST -d'{"name":"default"}' -H "Content-Type: application/json" $STRONGLOOP_PM/api/Services
+git push --quiet $APP1_GIT HEAD
 
 echo "# waiting for manager to deploy our app..."
 sleep 5
 echo "# polling...."
-while ! curl -sI $APP/this/is/a/test; do
+while ! curl -sI $APP1/this/is/a/test; do
   echo "# nothing yet, sleeping for 5s..."
   sleep 5
 done
 
-curl -s $APP/this/is/a/test \
+curl -s $APP1/this/is/a/test \
   | grep -F -e '/this/is/a/test' \
   && echo 'ok # echo server responded' \
   || echo 'not ok # echo server failed to respond'
 
-../../bin/sl-pmctl.js -C $STRONGLOOP_PM env-set foo=success bar=foo \
-  | grep -F -e 'Environment updated' \
+../../bin/sl-pmctl.js -C $STRONGLOOP_PM env-set 1 foo=success bar=foo \
+  | grep -F -e 'environment updated' \
   && echo 'ok # pmctl env-set command ran without error' \
   || echo 'not ok # failed to run env-set foo=success'
 
 sleep 5 # Long enough for app to restart
 
-curl -s $APP/env \
+curl -s $APP1/env \
   | grep -F -e '"foo": "success"' \
   && echo 'ok # set foo=success via pmctl' \
   || echo 'not ok # failed to set foo=success via pmctl'
 
-../../bin/sl-pmctl.js -C $STRONGLOOP_PM env-unset foo \
-  | grep -F -e 'Environment updated' \
+../../bin/sl-pmctl.js -C $STRONGLOOP_PM env-unset 1 foo \
+  | grep -F -e 'environment updated' \
   && echo 'ok # pmctl env-set command ran without error' \
   || echo 'not ok # failed to run env-set foo=success'
 
 sleep 5 # Long enough for app to restart
 
-curl -s $APP/env \
+curl -s $APP1/env \
   | grep -F -e '"foo": "success"' \
   && echo 'not ok # failed to unset foo via pmctl' \
   || echo 'ok # unset foo via pmctl'
@@ -122,12 +126,12 @@ STRONG_PM_LOCKED=1 docker_run strong-pm:test-deployed
 echo "# waiting for manager to deploy our app..."
 sleep 5
 echo "# polling...."
-while ! curl -sI $APP/this/is/a/test; do
+while ! curl -sI $APP1/this/is/a/test; do
   echo "# nothing yet, sleeping for 5s..."
   sleep 5
 done
 
-git push --quiet $STRONGLOOP_PM/repo HEAD \
+git push --quiet $APP1_GIT HEAD \
   && echo 'not ok # git push should be rejected' \
   || echo 'ok # git push rejected'
 
@@ -139,17 +143,17 @@ STRONGLOOP_PM_HTTP_AUTH=user:pass docker_run strong-pm:test-deployed
 echo "# waiting for manager to deploy our app..."
 sleep 5
 echo "# polling...."
-while ! curl -sI $APP/this/is/a/test; do
+while ! curl -sI $APP1/this/is/a/test; do
   echo "# nothing yet, sleeping for 5s..."
   sleep 5
 done
 
-../../bin/sl-pmctl.js -C $STRONGLOOP_PM status \
+../../bin/sl-pmctl.js -C $STRONGLOOP_PM status 1 \
   && echo 'ok # pmctl status command ran with auth' \
   || echo 'not ok # failed to run status with auth'
 
 
-../../bin/sl-pmctl.js -C $STRONGLOOP_PM_NOAUTH status \
+../../bin/sl-pmctl.js -C $STRONGLOOP_PM_NOAUTH status 1 \
   && echo 'not ok # pmctl status should fail without auth' \
   || echo 'ok # pmctl failed to run status without auth'
 

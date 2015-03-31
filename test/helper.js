@@ -12,7 +12,6 @@ console.error('test/helper... start');
 process.env.PATH += path.delimiter
   + path.resolve(__dirname, '../node_modules/.bin');
 
-exports.configForCommit = require('../lib/config').configForCommit;
 exports.main = require('../').main;
 exports.prepare = require('../lib/prepare').prepare;
 exports.stop = stop;
@@ -64,10 +63,6 @@ ex('git add .');
 ex('git commit --author="sl-pm-test <nobody@strongloop.com>" -m initial');
 ex('sl-build --install --commit');
 
-assert(!test('-e', 'node_modules/debug'), 'dev dep not installed');
-assert(test('-e', 'node_modules/buffertools'), 'prod dep installed');
-assert(!test('-e', 'node_modules/buffertools/build'), 'addons not built');
-
 console.log('test/app built succesfully');
 
 var server;
@@ -76,7 +71,12 @@ var port;
 exports.listen = function() {
   var base = '../receive-base';
   mkdir('-p', base);
-  server = new Server('test', base, 0, 'pmctl');
+  server = new Server({
+    cmdName: 'test',
+    baseDir: base,
+    listenPort: 0,
+    controlPath: 'pmctl',
+  });
   server.on('listening', function(listenAddr){
     port = listenAddr.port;
     console.log('git receive listening on  %d', port);
@@ -106,7 +106,7 @@ exports.push = function(repo, callback) {
   if (!repo) {
     repo = repoN();
   }
-  var cmd = util.format('git push http://127.0.0.1:%d/%s master:master', port, repo);
+  var cmd = util.format('sl-deploy http://127.0.0.1:%d master', port);
   // Must be async... or we block ourselves from receiving
   ex(cmd, function() {
     if (callback) {
@@ -121,9 +121,13 @@ exports.pushTarball = function(repo, callback) {
     repo = repoN();
   }
 
-  var cmd = "npm pack";
-  ex(cmd, function() {
-    cmd = util.format('curl -X PUT --data-binary @test-app-0.0.0.tgz http://127.0.0.1:%d/%s ', port, repo);
+  ex('npm pack', function() {
+    var api = 'api/Services/1/deploy';
+
+    // XXX(sam) this won't work on win32
+    cmd = util.format(
+      'curl -X PUT --data-binary @test-app-0.0.0.tgz http://127.0.0.1:%d/%s ',
+      port, api);
 
     ex(cmd, function() {
       if (callback) {
@@ -136,6 +140,7 @@ exports.pushTarball = function(repo, callback) {
 };
 
 exports.localDeploy = function(dirPath, repo, callback) {
+  var api = 'api/Services/1/deploy';
   var cmd = [
       'curl',
       '-H "Content-Type: application/x-pm-deploy"',
@@ -143,7 +148,7 @@ exports.localDeploy = function(dirPath, repo, callback) {
       '--data \'{ "local-directory": "' +
       dirPath +
       '" }\'',
-      util.format('http://127.0.0.1:%d/%s', port, repo)
+      util.format('http://127.0.0.1:%d/%s', port, api)
     ].join(' ');
 
   ex(cmd, function() {

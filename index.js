@@ -1,5 +1,6 @@
 'use strict';
 
+var DirectDriver = require('./lib/drivers/direct/direct-driver');
 var Parser = require('posix-getopt').BasicParser;
 var mkdirp = require('mkdirp').sync;
 var path = require('path');
@@ -72,9 +73,6 @@ function main(argv, callback) {
 
   if (control) {
     control = path.resolve(control);
-
-    if (process.platform === 'win32' && !/^[\/\\]{2}/.test(control))
-      control = '\\\\?\\pipe\\' + control;
   }
 
   if (parser.optind() !== argv.length) {
@@ -92,7 +90,15 @@ function main(argv, callback) {
   mkdirp(base);
   process.chdir(base);
 
-  var app = new Server($0, base, listen, control, enableTracing);
+  var app = new Server({
+    // Choose driver based on cli options/env once we have alternate drivers.
+    Driver: DirectDriver,
+    cmdName: $0,
+    baseDir: base,
+    listenPort: listen,
+    controlPath: control,
+    enableTracing: enableTracing,
+  });
 
   app.on('listening', function(listenAddr) {
     console.log('%s: listen on %s, work base is `%s`',
@@ -115,7 +121,10 @@ function main(argv, callback) {
   return app;
 }
 
-function stopWhenDone($0, app) {
+function stopWhenDone(/*$0, app*/) {
+  /*
+  // XXX(sam) I can't rember why we do this, especially since we don't wait for
+  // stop to complete, and just kill ourself right away.
   function dieBy(signal) {
     console.log('%s: stopped with %s', $0, signal);
     app.stop();
@@ -135,6 +144,7 @@ function stopWhenDone($0, app) {
   process.on('exit', function() {
     app.stop();
   });
+  */
 }
 
 exports.main = main;

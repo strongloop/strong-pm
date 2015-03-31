@@ -54,10 +54,10 @@
     "jscs": "^1.11.3",
     "mktmpdir": "^0.1.1",
     "request": "^2.45.0",
-    "rimraf": "^2.2.8",
     "semver": "^4.1.0",
     "shelljs": "^0.3.0",
     "strong-build": "^1.0.0",
+    "strong-deploy": "^2.0.0",
     "tap": "^0.7.0"
   },
   "dependencies": {
@@ -76,6 +76,7 @@
     "osenv": "^0.1.0",
     "passwd-user": "^1.0.0",
     "posix-getopt": "^1.0.0",
+    "rimraf": "^2.3.2",
     "serve-favicon": "^2.1.5",
     "strong-control-channel": "^1",
     "strong-fork-cicada": "^1.1.2",
@@ -83,6 +84,7 @@
     "strong-npm-ls": "^1.0.0",
     "strong-runner": "^1.0.0",
     "strong-service-install": "^1.1.0",
+    "strong-spawn-npm": "^1.0.0",
     "strong-tunnel": "^1.1.1",
     "strong-url-defaults": "^1.0.0",
     "tar": "^1.0.0",
