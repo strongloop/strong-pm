@@ -26,7 +26,7 @@ MockCurrent.prototype.request = function request(req, cb) {
 }
 
 tap.test('metrics update', function(t) {
-  var s = new Server('pm', '_base', 1234, null);
+  var s = new Server();
   var m = s._meshApp.models;
   var commit = {hash: 'hash1', dir: 'dir1'};
   var runner = s._container;
