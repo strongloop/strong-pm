@@ -10,7 +10,7 @@ console.log('ENV.PATH:', env.PATH);
 console.log('ENV.PWD:', env.PWD);
 
 // Check PWD is a symlink to our current working directory.
-assert(env.PWD !== process.cwd());
+assert.notEqual(env.PWD, process.cwd(), 'PWD should not be cwd()');
 assert.equal(fs.realpathSync(env.PWD), process.cwd());
 
 // Check binary dependencies were compiled
