@@ -38,7 +38,6 @@ function testInitialInstState(cb) {
     assert(instance.agentVersion, 'Agent version should be set');
     assert.equal(instance.applicationName, 'test-app');
     assert(instance.containerVersionInfo, 'Container info should be set');
-    assert(instance.npmModules, 'NPM modules should be set');
     assert.equal(instance.restartCount, 0);
     assert.equal(instance.setSize, 1);
     assert(instance.startTime, 'Start time should be set');
