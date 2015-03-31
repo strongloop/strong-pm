@@ -7,7 +7,7 @@ test('new server', function(t) {
     t.on('end', cleanup);
 
     var s = new Server('pm', tmpdir, 0, null);
-    var Service = s._app.models.ServerService;
+    var Service = s._meshApp.models.ServerService;
     var svc = null;
 
     var emptyEnv = {};

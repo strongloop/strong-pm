@@ -3,7 +3,6 @@ var assert = require('assert');
 var async = require('async');
 var debug = require('debug')('strong-pm:test');
 var path = require('path');
-var runner = require('../lib/run');
 var tap = require('tap');
 var events = require('events');
 var util = require('util');
@@ -89,14 +88,12 @@ var TRACE_RECORD = {
 
 tap.test('Trace record', function(t) {
   var s = new Server('pm', '_base', 1234, null);
-  var m = s._app.models;
+  var m = s._meshApp.models;
   var commit = {hash: 'hash1', dir: 'dir1'};
+  var runner = s._container;
 
-  runner._mockCurrent = new MockCurrent();
-  runner._mockCurrent.commit = commit;
-  runner.current = function() {
-    return runner._mockCurrent;
-  }
+  runner.current = new MockCurrent();
+  runner.current.commit = commit;
 
   s._isStarted = true; // Make server think its running.
 
