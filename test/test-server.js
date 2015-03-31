@@ -35,7 +35,7 @@ tap.test('new server', function(t) {
 
   var s = new Server('pm', '_base', 0, null);
   s._loadModels(function() {
-    var m = s._app.models;
+    var m = s._meshApp.models;
     m.Executor.findById(1, function(err, _) {
       debug('executor:', _);
       assert.ifError(err);
@@ -57,7 +57,7 @@ tap.test('new server', function(t) {
 
 tap.test('service starts', function(t) {
   var s = new Server('pm', '_base', 1234, null);
-  var m = s._app.models;
+  var m = s._meshApp.models;
   var runner = s._container;
 
   s._isStarted = true; // Make server think its running.
