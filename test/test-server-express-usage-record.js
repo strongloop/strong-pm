@@ -38,7 +38,7 @@ var USAGE_RECORD = {
 
 tap.test('ExpressUsageRecord', function(t) {
   var s = new Server('pm', '_base', 1234, null);
-  var m = s._app.models;
+  var m = s._meshApp.models;
   var commit = {hash: 'hash1', dir: 'dir1'};
   var runner = s._container;
 
