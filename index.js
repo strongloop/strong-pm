@@ -1,7 +1,6 @@
 'use strict';
 
 var Parser = require('posix-getopt').BasicParser;
-var assert = require('assert');
 var mkdirp = require('mkdirp').sync;
 var path = require('path');
 var fs = require('fs');
@@ -32,7 +31,6 @@ function main(argv, callback) {
   var base = '.strong-pm';
   var listen = 8701;
   var control = 'pmctl';
-  var fake;
 
   var option;
   while ((option = parser.getopt()) !== undefined) {
