@@ -1,7 +1,6 @@
 'use strict';
 
 var Parser = require('posix-getopt').BasicParser;
-var assert = require('assert');
 var mkdirp = require('mkdirp').sync;
 var path = require('path');
 var fs = require('fs');
