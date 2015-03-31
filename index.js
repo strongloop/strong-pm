@@ -26,7 +26,6 @@ function main(argv, callback) {
       'l:(listen)',
       'C:(control)',
       'N(no-control)',
-      'F',
     ].join(''),
     argv);
 
@@ -58,9 +57,6 @@ function main(argv, callback) {
         break;
       case 'N':
         control = undefined;
-        break;
-      case 'F':
-        fake = true;
         break;
       default:
         console.error('Invalid usage (near option \'%s\'), try `%s --help`.',
@@ -98,7 +94,6 @@ function main(argv, callback) {
   app.on('listening', function(listenAddr) {
     console.log('%s: listen on %s, work base is `%s`',
       $0, listenAddr.port, base);
-    if (fake) _fakeMetrics(app);
   });
 
   app.start();
@@ -137,62 +132,6 @@ function stopWhenDone($0, app) {
   process.on('exit', function() {
     app.stop();
   });
-}
-
-function _fakeMetrics(server) {
-  console.error('start faking metrics');
-
-  var m = server._app.models;
-
-  m.ServiceInstance.upsert({
-    id: 1,
-    executorId: 1,
-    serverServiceId: 1,
-    groupId: 1,
-    currentDeploymentId: 'fake-sha',
-    deploymentStartTime: new Date(),
-    PMPort: server._listenPort,
-  }, function(err, obj) {
-    console.error('fake upsert ServiceInstance: %j', err || obj);
-  });
-
-  m.ServiceProcess.upsert({
-    id: 1, pid: 42, workerId: 0
-  }, function(err, obj) {
-    console.error('fake upsert ServerProcess:', err || obj);
-    assert.ifError(err);
-    assert.equal(obj.id, 1);
-  });
-
-  function getRandomArbitrary(min, max) {
-    return Math.random() * (max - min) + min;
-  }
-  function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min)) + min;
-  }
-
-  setInterval(function() {
-    m.ServiceMetric.upsert({
-      processId: 1,
-      timeStamp: new Date(),
-      counters: {},
-      gauges: {
-        'cpu.system': getRandomArbitrary(1.1, 89.4),
-        'cpu.user': getRandomArbitrary(1.1, 9.4),
-        'cpu.total': getRandomArbitrary(12.3, 99.1),
-        'heap.total': getRandomInt(1000, 99999),
-        'heap.used': getRandomInt(225, 989),
-        'loop.count': getRandomInt(100, 500),
-        'loop.maximum': getRandomInt(78, 100),
-        'loop.minimum': getRandomInt(1, 12),
-        'loop.average': getRandomInt(13, 78)
-      }
-    }, function(err, obj) {
-      console.error('fake upser ServiceMetric:', err || obj);
-    });
-  }, 15 * 1000);
-
-  return;
 }
 
 exports.main = main;
