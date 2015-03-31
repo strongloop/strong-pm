@@ -64,10 +64,6 @@ ex('git add .');
 ex('git commit --author="sl-pm-test <nobody@strongloop.com>" -m initial');
 ex('sl-build --install --commit');
 
-assert(!test('-e', 'node_modules/debug'), 'dev dep not installed');
-assert(test('-e', 'node_modules/buffertools'), 'prod dep installed');
-assert(!test('-e', 'node_modules/buffertools/build'), 'addons not built');
-
 console.log('test/app built succesfully');
 
 var server;

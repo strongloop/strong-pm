@@ -34,10 +34,9 @@ Commands:
   start                   Start the current application.
   stop                    Hard stop the current application.
   soft-stop               Soft stop the current application.
-  restart                 Hard stop and restart the current application with
-                            new config.
-  soft-restart            Soft stop and restart the current application with
-                            new config.
+  restart                 Hard stop and restart the current application.
+  soft-restart            Soft stop and restart the current application.
+
         "Soft" stops notify workers they are being disconnected, and give them
         a grace period for any existing connections to finish. "Hard" stops
         kill the supervisor and its workers with `SIGTERM`.
