@@ -30,8 +30,8 @@ server.on('listening', function() {
   app.push(REPO);
 });
 
-var ServiceProcess = server._app.models.ServiceProcess;
-var ServiceInstance = server._app.models.ServiceInstance;
+var ServiceProcess = server._meshApp.models.ServiceProcess;
+var ServiceInstance = server._meshApp.models.ServiceInstance;
 
 function testInitialInstState(cb) {
   ServiceInstance.findOne(function(err, instance) {

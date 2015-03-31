@@ -26,7 +26,7 @@ server.once('listening', function(addr) {
     assert(res.statusCode === 200);
     assert.deepEqual(server.getStartCommand(), 'sl-run --cluster=4');
 
-    server._app.models.ServiceInstance.findOne(function(err, inst) {
+    server._meshApp.models.ServiceInstance.findOne(function(err, inst) {
       assert.ifError(err);
       assert.equal(inst.setSize, 0);
 
