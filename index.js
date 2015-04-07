@@ -26,11 +26,13 @@ function main(argv, callback) {
       'l:(listen)',
       'C:(control)',
       'N(no-control)',
+      'T(trace)',
       'F',
     ].join(''),
     argv);
 
   var base = '.strong-pm';
+  var enableTracing = false;
   var listen = 8701;
   var control = 'pmctl';
   var fake;
@@ -61,6 +63,9 @@ function main(argv, callback) {
         break;
       case 'F':
         fake = true;
+        break;
+      case 'T':
+        enableTracing = true;
         break;
       default:
         console.error('Invalid usage (near option \'%s\'), try `%s --help`.',
@@ -93,7 +98,7 @@ function main(argv, callback) {
   mkdirp(base);
   process.chdir(base);
 
-  var app = new Server($0, base, listen, control);
+  var app = new Server($0, base, listen, control, enableTracing);
 
   app.on('listening', function(listenAddr) {
     console.log('%s: listen on %s, work base is `%s`',
