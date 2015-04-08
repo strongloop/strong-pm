@@ -52,7 +52,6 @@
   "devDependencies": {
     "eslint": "^0.18.0",
     "jscs": "^1.11.3",
-    "loopback-sdk-angular": "1.3.3",
     "mktmpdir": "^0.1.1",
     "request": "^2.45.0",
     "rimraf": "^2.2.8",
