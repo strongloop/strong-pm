@@ -79,7 +79,7 @@
     "serve-favicon": "^2.1.5",
     "strong-control-channel": "^1",
     "strong-fork-cicada": "^1.1.2",
-    "strong-mesh-models": "^5.0.0",
+    "strong-mesh-models": "^6.0.0",
     "strong-npm-ls": "^1.0.0",
     "strong-runner": "^1.0.0",
     "strong-service-install": "^1.1.0",
