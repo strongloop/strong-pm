@@ -8,7 +8,7 @@ RUN npm install --unsafe-perm --global strongloop/strong-pm#production \
 
 # Set up some semblance of an environment
 WORKDIR /home/strong-pm
-ENV HOME /home/strong-pm
+ENV HOME=/home/strong-pm PORT=3000
 
 # Run as non-privileged user inside container
 USER strong-pm
@@ -18,6 +18,6 @@ USER strong-pm
 RUN node-gyp install 2> /dev/null && npm cache clear
 
 # Expose strong-pm port
-EXPOSE 8701
+EXPOSE 8701 3000
 
 ENTRYPOINT ["/usr/bin/sl-pm", "--base", ".", "--listen", "8701"]
