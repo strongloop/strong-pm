@@ -10,3 +10,9 @@ stdout is logged twice (the colors are different, can't be seen here):
   strong-runner:stdio:stdout 2015-03-30T02:57:56.838Z pid:12757 worker:0 INFO strong-agent API key not found, StrongOps dashboard reporting disabled.
   strong-runner:stdio:stdout 2015-03-30T02:57:56.841Z pid:12757 worker:0 Generate configuration with:
   strong-runner:stdio:stdout 2015-03-30T02:57:56.841Z pid:12757 worker:0 Generate configuration with:
+
+should strong-deploy be reworked to use the strong-mesh-client client? Is it?
+
+lib/client, do we need?
+
+move index.js to bin/sl-pm.js

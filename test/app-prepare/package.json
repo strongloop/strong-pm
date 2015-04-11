@@ -8,5 +8,11 @@
   },
   "author": "",
   "license": "MIT",
-  "repository": "http://github.com/strongloop/strong-pm"
+  "repository": "http://github.com/strongloop/strong-pm",
+  "dependencies": {
+    "buffertools": "^2.1.2"
+  },
+  "devDependencies": {
+    "debug": "^1.0.1"
+  }
 }
