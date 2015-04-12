@@ -2,33 +2,3 @@ deploy: url is not valid when the port is closed from strong-deploy, bad
 
 pm: protocol, remove current, put sub in command, but if target is present,
  assume it goes to supervisor... will make things nicer
-
-BUG: npm-ls seems to cause .size to be reset on instance update
-
-stdout is logged twice (the colors are different, can't be seen here):
-  strong-runner:stdio:stdout 2015-03-30T02:57:56.838Z pid:12757 worker:0 INFO strong-agent API key not found, StrongOps dashboard reporting disabled.
-  strong-runner:stdio:stdout 2015-03-30T02:57:56.838Z pid:12757 worker:0 INFO strong-agent API key not found, StrongOps dashboard reporting disabled.
-  strong-runner:stdio:stdout 2015-03-30T02:57:56.841Z pid:12757 worker:0 Generate configuration with:
-  strong-runner:stdio:stdout 2015-03-30T02:57:56.841Z pid:12757 worker:0 Generate configuration with:
-
-lib/client, do we need?
-
-move index.js to bin/sl-pm.js
-
-having log-dump not have a default SRV_ID is hostile
-
-the usage should be `SVCID`, I think
-
-when current svc is restored on restart, mesh models isn't informed
-
-stop/stat either isn't working, or isn't logging anything...
-
-I'm losing runner processes... which end up busy-looping, looks like an iojs
-bug.
-
-Run request for commit "undefined/undefined in /home/sam/w/sn/strong-pm/.strong-pm/svc/2/work/
-... ^--- repo/commit SHA isn't being read out of directory name?
-
-started message should have PWD in it
-
-debug for notifications should contain svcId
