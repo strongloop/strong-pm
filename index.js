@@ -1,5 +1,6 @@
 'use strict';
 
+var DirectDriver = require('./lib/direct-driver');
 var Parser = require('posix-getopt').BasicParser;
 var mkdirp = require('mkdirp').sync;
 var path = require('path');
@@ -92,7 +93,15 @@ function main(argv, callback) {
   mkdirp(base);
   process.chdir(base);
 
-  var app = new Server($0, base, listen, control, enableTracing);
+  var app = new Server({
+    // Choose driver based on cli options/env once we have alternate drivers.
+    Driver: DirectDriver,
+    cmdName: $0,
+    baseDir: base,
+    listenPort: listen,
+    controlPath: control,
+    enableTracing: enableTracing,
+  });
 
   app.on('listening', function(listenAddr) {
     console.log('%s: listen on %s, work base is `%s`',
