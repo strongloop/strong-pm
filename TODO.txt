@@ -8,3 +8,5 @@ create/ls/remove should be svc-create, svc-list, svc-remove
 you can create any number of services with the same name... its confusing
 
 how to disable metrics?
+
+strong-pm start with no deploy: `sl-meshctl status 1` asserts
