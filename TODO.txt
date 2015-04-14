@@ -10,3 +10,5 @@ you can create any number of services with the same name... its confusing
 how to disable metrics?
 
 strong-pm start with no deploy: `sl-meshctl status 1` asserts
+
+Service default hard stopped <--- quote the svc name
