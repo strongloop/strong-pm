@@ -12,3 +12,14 @@ how to disable metrics?
 strong-pm start with no deploy: `sl-meshctl status 1` asserts
 
 Service default hard stopped <--- quote the svc name
+
+3:58 PM] Ben Noordhuis: sam: a debug build probably won't reveal much more. the stack frames below Runtime_OwnKeys are javascript frames that gdb can't decode
+
+[4:00 PM]  githubBOT:
+[strongloop/strong-pm] Issue closed: #167 windows-issues: Arc app controller does not work by cgole
+
+[4:01 PM] Ben Noordhuis: sam: you could try building with `./configure --gdbjit` but you also need to pass `--gdbjit` to the worker process
+
+[4:02 PM] Ben Noordhuis: or --gdbjit_dump, that writes a core file to /tmp/elfdump
+
+[4:02 PM] Ben Noordhuis: sorry, that's /tmp/elfdump${num}.o
