@@ -73,7 +73,7 @@ tap.test('ExpressUsageRecord', function(t) {
     },
     function emitTooOldUsageRecord(next) {
       var rec = util._extend({}, USAGE_RECORD);
-      rec.timestamp = Date.now() - 24 * 60 * 1000;
+      rec.timestamp = Date.now() - 25 * 60 * 60 * 1000;
       var message = {cmd: 'express:usage-record', record: rec};
       runner.emit('request', message, next);
     },
