@@ -93,6 +93,25 @@ tap.test('non-default service initialization', function(t) {
   };
 
   sm.loadModels(meshApp, start);
+  /* XXX(sam) integrate these assertions after loadModels()
+    var m = s._meshApp.models;
+    m.Executor.findById(1, function(err, _) {
+      debug('executor:', _);
+      assert.ifError(err);
+      t.equal(_.id, 1);
+      t.equal(_.address, 'localhost');
+    });
+    m.ServerService.findById(1, function(err, _) {
+      debug('service:', _);
+      assert.ifError(err);
+      t.equal(_.id, 1);
+      t.equal(_.name, 'default');
+      t.equal(_._groups[0].id, 1);
+      t.equal(_._groups[0].name, 'default');
+      t.equal(_._groups[0].scale, 1);
+    });
+  */
+
 
   function start() {
     svcId = 7;

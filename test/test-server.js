@@ -9,6 +9,9 @@ var util = require('util');
 
 var BASE = path.resolve(__dirname, '.strong-pm');
 
+function MockDriver() {
+};
+
 function MockCurrent() {
   this.child = {
     pid: 59312
@@ -25,43 +28,177 @@ MockCurrent.prototype.request = function request(req, cb) {
   }
 }
 
-tap.test('new server', function(t) {
-  var s = new Server('pm', '_base', 0, null);
+tap.test('full server construction', function(t) {
+  var s = new Server({
+    cmdName: 'pm',
+    baseDir: '_base',
+    listenPort: 0,
+    controlPath: null,
+  });
   t.end();
 });
 
-tap.test('new server', function(t) {
-  t.plan(7);
+tap.test('mocked server construction', function(t) {
+  var serviceManager = {};
+  var options = {
+    cmdName: 'pm',
+    baseDir: '_base',
+    listenPort: 0,
+    controlPath: null,
+    // Environment: XXX(sam) don't bother, this is about to be rewritten
+    Driver: function(o) {
+      driver = o;
+      return {on: function(event) { t.equal(event, 'request'); }};
+    },
+    ServiceManager: function(o) {
+      serviceManagerOptions = o;
+      return serviceManager;
+    },
+    MeshServer: function(_serviceManager, o) {
+      t.equal(_serviceManager, serviceManager);
+      t.deepEqual(o, {});
+      return function(req, res, next) {};
+    },
+  };
+  var driver;
+  var serviceManagerOptions;
 
-  var s = new Server('pm', '_base', 0, null);
-  s._loadModels(function() {
-    var m = s._meshApp.models;
-    m.Executor.findById(1, function(err, _) {
-      debug('executor:', _);
-      assert.ifError(err);
-      t.equal(_.id, 1);
-      t.equal(_.address, 'localhost');
-    });
-    m.ServerService.findById(1, function(err, _) {
-      debug('service:', _);
-      assert.ifError(err);
-      t.equal(_.id, 1);
-      t.equal(_.name, 'default');
-      t.equal(_._groups[0].id, 1);
-      t.equal(_._groups[0].name, 'default');
-      t.equal(_._groups[0].scale, 1);
-    });
-    // FIXME ServerInstance should exist
-  });
+  t.plan(6);
+
+  var s = new Server(options);
+  t.equal(driver.baseDir, options.baseDir);
+  t.equal(driver.server, s);
+  t.equal(serviceManagerOptions, s);
+  t.end();
 });
 
+tap.test('mocked server construction with tracing', function(t) {
+  process.env.STRONGLOOP_DEBUG_MINKELITE = 'YES';
+  t.on('end', function() {
+    delete process.env.STRONGLOOP_DEBUG_MINKELITE;
+  });
+
+  var serviceManager = {};
+  var options = {
+    cmdName: 'pm',
+    baseDir: '_base',
+    listenPort: 0,
+    controlPath: null,
+    enableTracing: true,
+    // Environment: XXX(sam) don't bother, this is about to be rewritten
+    Driver: function(o) {
+      return {on: function() {}};
+    },
+    ServiceManager: function(o) {
+      return serviceManager;
+    },
+    MeshServer: function(_serviceManager, o) {
+      console.error('MeshServer options: %j', o);
+      t.equal(_serviceManager, serviceManager);
+      t.equal(o['trace.enable'], true);
+      t.equal(o['trace.db.path'], options.baseDir);
+      t.equal(o['trace.enableDebugServer'], 'YES');
+
+      return function(req, res, next) {};
+    },
+  };
+
+  t.plan(4);
+
+  var s = new Server(options);
+});
+
+tap.test('driver methods are forwarded', function(t) {
+  var svcId = 7;
+  var startOptions = {};
+  var req = {};
+  var res = {};
+  var options = {
+    cmdName: 'pm',
+    baseDir: '_base',
+    listenPort: 0,
+    controlPath: null,
+    enableTracing: true,
+    // Environment: XXX(sam) don't bother, this is about to be rewritten
+    Driver: function(o) {
+      return driver;
+    },
+    ServiceManager: function(o) {
+      return serviceManager;
+    },
+    MeshServer: function(_serviceManager, o) {
+      return function(req, res, next) {};
+    },
+  };
+  var serviceManager = {
+    setServiceState: function(_svcId, started, callback) {
+      t.equal(_svcId, svcId);
+      t.equal(started, true);
+      setImmediate(callback);
+    },
+  };
+  var driver = {
+    on: function() {},
+    setStartOptions: function(_svcId, _startOptions) {
+      t.equal(_svcId, svcId);
+      t.equal(_startOptions, startOptions);
+    },
+    deployService: function(_svcId, _req, _res) {
+      t.equal(_svcId, svcId);
+      t.equal(_req, req);
+      t.equal(_res, res);
+    },
+    dumpServiceLog: function(_svcId) {
+      t.equal(_svcId, svcId);
+      return 'LOG';
+    },
+    startService: function(_svcId, callback) {
+      t.equal(_svcId, svcId);
+      setImmediate(callback);
+    },
+    stopService: function(_svcId, callback) {
+      t.equal(_svcId, svcId);
+      setImmediate(callback);
+    },
+  };
+
+  t.plan(13);
+
+  var s = new Server(options);
+  s.setStartOptions(svcId, startOptions);
+
+  s.deployService(svcId, req, res);
+
+  t.equal(s.dumpServiceLog(svcId), 'LOG');
+
+  s.startService(svcId, function(err) {
+    t.ifError(err);
+  });
+
+  s.stopService(svcId, function(err) {
+    t.ifError(err);
+  });
+
+  // TODO cover the rest of the methods. Could also cover the error branches,
+  // I wish I had code coverage metrics :-(
+});
+
+// XXX(sam) test below needs re-writing into a unit test against public APIs,
+// right now it depends on private methods of Driver, Container, and
+// ServiceManager.
+
 tap.test('service starts', function(t) {
-  var s = new Server('pm', '_base', 1234, null);
+  var s = new Server({
+    cmdName: 'pm',
+    baseDir: '_base',
+    listenPort: 1234,
+    controlPath: null,
+  });
   var m = s._meshApp.models;
-  var runner = s._container;
+  var runner = s._driver._containerById(1);
 
   s._isStarted = true; // Make server think its running.
-  s._loadModels(firstRun);
+  s._serviceManager.loadModels(s._meshApp, firstRun);
 
   function firstRun() {
     debug('first run');
@@ -71,7 +208,7 @@ tap.test('service starts', function(t) {
     runner.current.commit = commit;
 
     // mock started event from runner
-    s._onMasterStart({
+    s._onContainerStarted(runner, {
       cmd: 'started',
       appName: 'test-app',
       agentVersion: '1.0.0',
@@ -87,7 +224,7 @@ tap.test('service starts', function(t) {
     runner.current.commit = commit;
 
     // mock started event from runner
-    s._onMasterStart({
+    s._onContainerStarted(runner, {
       cmd: 'started',
       appName: 'test-app',
       agentVersion: '1.0.0',
