@@ -1,0 +1,36 @@
+{
+  "name": "express-example-app",
+  "version": "1.0.0",
+  "description": "express example app for strong-pm",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint . && jscs .",
+    "test": "tap test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/strongloop/express-example-app.git"
+  },
+  "keywords": [
+    "strongloop",
+    "StrongLoop",
+    "strong-pm",
+    "express",
+    "expressjs"
+  ],
+  "author": "StrongLoop <engineering@strongloop.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/strongloop/express-example-app/issues"
+  },
+  "homepage": "https://github.com/strongloop/express-example-app",
+  "dependencies": {
+    "express": "^4.12.3"
+  },
+  "devDependencies": {
+    "eslint": "^0.17.1",
+    "jscs": "^1.11.3",
+    "request": "^2.53.0",
+    "tap": "^0.7.1"
+  }
+}
