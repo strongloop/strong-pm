@@ -73,7 +73,7 @@ tap.test('ExpressUsageRecord', function(t) {
     },
     function emitTooOldUsageRecord(next) {
       var rec = util._extend({}, USAGE_RECORD);
-      rec.timestamp = Date.now() - 24 * 60 * 1000;
+      rec.timestamp = Date.now() - 25 * 60 * 60 * 1000;
       var message = {cmd: 'express:usage-record', record: rec};
       runner.emit('request', message, next);
     },
@@ -87,7 +87,7 @@ tap.test('ExpressUsageRecord', function(t) {
         assert.ok(!!data.processId, 'Process ID should be set');
         assert.equal(data.workerId, 1);
         assert.equal(+data.timeStamp, +USAGE_RECORD.timestamp);
-        assert.deepEqual(data.detail, USAGE_RECORD);
+        assert.ok(data.detail, 'includes a detail record');
         next();
       });
     }
