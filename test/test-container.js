@@ -1,6 +1,6 @@
 'use strict';
 
-var Container = require('../lib/container');
+var Container = require('../lib/drivers/direct/container');
 var path = require('path');
 var tap = require('tap');
 
