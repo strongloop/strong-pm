@@ -40,14 +40,14 @@ tap.test('driver mandatory options', function(t) {
   t.end();
 });
 
-/* XXX kraman, broken by your change to start
 tap.test('start runs last services', function(t) {
   var server = {};
-  var services = [
-    '11111',
-    'a3f55e8c-de43-11e4-9b68-b3b7dd588a5b',
-    'aaaa',
-  ];
+  var instanceMetas = {
+    '11111': {data: 'some metadata'},
+    'a3f55e8c-de43-11e4-9b68-b3b7dd588a5b': {data: 'some metadata'},
+    'aaaa': {data: 'some metadata'},
+  };
+  var instanceIds = Object.keys(instanceMetas);
   var d = new Driver({
     Container: Container,
     baseDir: path.resolve(__dirname, 'direct-driver-workdir'),
@@ -58,8 +58,11 @@ tap.test('start runs last services', function(t) {
     return {
       on: function() {},
       runCurrent: function(callback) {
-        t.assert(_.indexOf(services, options.svcId) >= 0, 'run each svc once');
-        _.pull(services, options.svcId);
+        t.assert(
+          _.indexOf(instanceIds, options.instanceId) >= 0,
+          'run each svc once'
+        );
+        _.pull(instanceIds, options.instanceId);
         return callback();
       },
     }
@@ -67,7 +70,7 @@ tap.test('start runs last services', function(t) {
 
   t.plan(5);
 
-  d.start(function(er) {
+  d.start(instanceMetas, function(er) {
     t.ifError(er);
     t.equal(Object.keys(d._containers).length, 3);
   });
@@ -90,13 +93,12 @@ tap.test('start does nothing with no last services', function(t) {
 
     t.plan(2);
 
-    d.start(function(er) {
+    d.start({}, function(er) {
       t.ifError(er);
       t.equal(Object.keys(d._containers).length, 0);
     });
   });
 });
-*/
 
 tap.test('stop applied to all services', function(t) {
   var server = {};
