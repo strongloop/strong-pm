@@ -41,7 +41,7 @@ with `slc deploy http://localhost:8701`.
 This image can be run as an OS service without the need to install strong-pm,
 npm, or even node on your server. All you need is Docker and curl!
 
-    curl -sO http://strong-pm.io/docker.sh | sudo /bin/sh
+    curl -sSL http://strong-pm.io/docker.sh | sudo /bin/sh
 
 The created service will use port 8701 for strong-pm's API, port 3000 for your
 app, and the container will be restarted if your server reboots.

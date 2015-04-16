@@ -29,7 +29,7 @@ Or to deploy and manage remotely, install the manager on a production server usi
 
 Or using docker:
 
-    curl -sO http://strong-pm.io/docker.sh | sudo /bin/sh
+    curl -sSL http://strong-pm.io/docker.sh | sudo /bin/sh
 
 
 ## Quick Start
