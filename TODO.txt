@@ -11,6 +11,8 @@ strong-pm start with no deploy: `sl-meshctl status 1` asserts
 
 how to disable metrics?
 
+cluster-restart has no log response
+
 
 
 3:58 PM] Ben Noordhuis: sam: a debug build probably won't reveal much more. the stack frames below Runtime_OwnKeys are javascript frames that gdb can't decode
