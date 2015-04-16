@@ -28,10 +28,6 @@ tap.test('container start options', function(t) {
   t.end();
 });
 
-// TODO:
-// - remove
-// - runCurrent: repo + hash parsing
-
 tap.test('run with empty current services', function(t) {
   var c = new Container({
     instanceId: 'does-not-exist',
@@ -87,6 +83,8 @@ tap.test('run with current service', function(t) {
   });
 });
 
+// TODO:
+// - remove
 // - onDeployment
 // - updateEnv
 // - readableLogSnapshot
