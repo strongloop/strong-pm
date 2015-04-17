@@ -73,9 +73,6 @@ function main(argv, callback) {
 
   if (control) {
     control = path.resolve(control);
-
-    if (process.platform === 'win32' && !/^[\/\\]{2}/.test(control))
-      control = '\\\\?\\pipe\\' + control;
   }
 
   if (parser.optind() !== argv.length) {
