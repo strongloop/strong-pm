@@ -121,9 +121,13 @@ exports.pushTarball = function(repo, callback) {
     repo = repoN();
   }
 
-  var cmd = "npm pack";
-  ex(cmd, function() {
-    cmd = util.format('curl -X PUT --data-binary @test-app-0.0.0.tgz http://127.0.0.1:%d/%s ', port, repo);
+  ex('npm pack', function() {
+    var api = 'api/Services/1/deploy';
+
+    // XXX(sam) this won't work on win32
+    cmd = util.format(
+      'curl -X PUT --data-binary @test-app-0.0.0.tgz http://127.0.0.1:%d/%s ',
+      port, api);
 
     ex(cmd, function() {
       if (callback) {
@@ -136,6 +140,7 @@ exports.pushTarball = function(repo, callback) {
 };
 
 exports.localDeploy = function(dirPath, repo, callback) {
+  var api = 'api/Services/1/deploy';
   var cmd = [
       'curl',
       '-H "Content-Type: application/x-pm-deploy"',
@@ -143,7 +148,7 @@ exports.localDeploy = function(dirPath, repo, callback) {
       '--data \'{ "local-directory": "' +
       dirPath +
       '" }\'',
-      util.format('http://127.0.0.1:%d/%s', port, repo)
+      util.format('http://127.0.0.1:%d/%s', port, api)
     ].join(' ');
 
   ex(cmd, function() {
