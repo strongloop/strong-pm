@@ -87,7 +87,11 @@ var TRACE_RECORD = {
 };
 
 tap.test('Trace record', function(t) {
-  var s = new Server('pm', '_base', 1234, null);
+  var s = new Server({
+    cmdName: 'pm',
+    baseDir: '_base',
+    listenPort: 1234,
+  });
   var m = s._meshApp.models;
   var commit = {hash: 'hash1', dir: 'dir1'};
   var runner = s._container;

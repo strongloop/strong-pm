@@ -37,7 +37,10 @@ var USAGE_RECORD = {
 };
 
 tap.test('ExpressUsageRecord', function(t) {
-  var s = new Server('pm', '_base', 1234, null);
+  var s = new Server({
+    baseDir: '_base',
+    listenPort: 1234, // XXX should be 0, so tests can run in parallel
+  });
   var m = s._meshApp.models;
   var commit = {hash: 'hash1', dir: 'dir1'};
   var runner = s._container;

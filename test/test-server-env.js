@@ -6,7 +6,11 @@ test('new server', function(t) {
   mktmpdir(function(err, tmpdir, cleanup) {
     t.on('end', cleanup);
 
-    var s = new Server('pm', tmpdir, 0, null);
+    var s = new Server({
+      cmdName: 'pm',
+      baseDir: tmpdir,
+      listenPort: 0,
+    });
     var Service = s._meshApp.models.ServerService;
     var svc = null;
 
