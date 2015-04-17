@@ -12,7 +12,6 @@ console.error('test/helper... start');
 process.env.PATH += path.delimiter
   + path.resolve(__dirname, '../node_modules/.bin');
 
-exports.configForCommit = require('../lib/config').configForCommit;
 exports.main = require('../').main;
 exports.prepare = require('../lib/prepare').prepare;
 exports.stop = stop;
