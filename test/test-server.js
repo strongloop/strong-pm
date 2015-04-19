@@ -1,3 +1,4 @@
+var EventEmitter = require('events').EventEmitter;
 var Server = require('../lib/server');
 var assert = require('assert');
 var async = require('async');
@@ -6,276 +7,331 @@ var path = require('path');
 var tap = require('tap');
 var events = require('events');
 var util = require('util');
+var shell = require('shelljs');
 
 var BASE = path.resolve(__dirname, '.strong-pm');
+process.env.STRONGLOOP_MESH_DB = 'memory://';
 
-function MockDriver() {
-};
-
-function MockCurrent() {
-  this.child = {
-    pid: 59312
-  };
-}
-util.inherits(MockCurrent, events.EventEmitter);
-
-MockCurrent.prototype.request = function request(req, cb) {
-  if (req.cmd === 'status') {
-    cb({ master: { setSize: 1 } });
-  }
-  if (req.cmd === 'npm-ls') {
-    cb({});
-  }
-}
-
-tap.test('full server construction', function(t) {
-  var s = new Server({
-    cmdName: 'pm',
-    baseDir: '_base',
-    listenPort: 0,
-    controlPath: null,
-  });
-  t.end();
-});
-
-tap.test('mocked server construction', function(t) {
-  var serviceManager = {};
-  var options = {
-    cmdName: 'pm',
-    baseDir: '_base',
-    listenPort: 0,
-    controlPath: null,
-    // Environment: XXX(sam) don't bother, this is about to be rewritten
-    Driver: function(o) {
-      driver = o;
-      return {on: function(event) { t.equal(event, 'request'); }};
-    },
-    ServiceManager: function(o) {
-      serviceManagerOptions = o;
-      return serviceManager;
-    },
-    MeshServer: function(_serviceManager, o) {
-      t.equal(_serviceManager, serviceManager);
-      t.deepEqual(o, {});
-      return function(req, res, next) {};
-    },
-  };
-  var driver;
-  var serviceManagerOptions;
-
-  t.plan(6);
-
-  var s = new Server(options);
-  t.equal(driver.baseDir, options.baseDir);
-  t.equal(driver.server, s);
-  t.equal(serviceManagerOptions, s);
-  t.end();
-});
-
-tap.test('mocked server construction with tracing', function(t) {
-  process.env.STRONGLOOP_DEBUG_MINKELITE = 'YES';
-  t.on('end', function() {
-    delete process.env.STRONGLOOP_DEBUG_MINKELITE;
-  });
-
-  var serviceManager = {};
-  var options = {
-    cmdName: 'pm',
-    baseDir: '_base',
-    listenPort: 0,
-    controlPath: null,
-    enableTracing: true,
-    // Environment: XXX(sam) don't bother, this is about to be rewritten
-    Driver: function(o) {
-      return {on: function() {}};
-    },
-    ServiceManager: function(o) {
-      return serviceManager;
-    },
-    MeshServer: function(_serviceManager, o) {
-      console.error('MeshServer options: %j', o);
-      t.equal(_serviceManager, serviceManager);
-      t.equal(o['trace.enable'], true);
-      t.equal(o['trace.db.path'], options.baseDir);
-      t.equal(o['trace.enableDebugServer'], 'YES');
-
-      return function(req, res, next) {};
-    },
-  };
-
-  t.plan(4);
-
-  var s = new Server(options);
-});
-
-tap.test('driver methods are forwarded', function(t) {
-  var svcId = 7;
-  var startOptions = {};
-  var req = {};
-  var res = {};
-  var options = {
-    cmdName: 'pm',
-    baseDir: '_base',
-    listenPort: 0,
-    controlPath: null,
-    enableTracing: true,
-    // Environment: XXX(sam) don't bother, this is about to be rewritten
-    Driver: function(o) {
-      return driver;
-    },
-    ServiceManager: function(o) {
-      return serviceManager;
-    },
-    MeshServer: function(_serviceManager, o) {
-      return function(req, res, next) {};
-    },
-  };
-  var serviceManager = {
-    setServiceState: function(_svcId, started, callback) {
-      t.equal(_svcId, svcId);
-      t.equal(started, true);
-      setImmediate(callback);
-    },
-  };
-  var driver = {
-    on: function() {},
-    setStartOptions: function(_svcId, _startOptions) {
-      t.equal(_svcId, svcId);
-      t.equal(_startOptions, startOptions);
-    },
-    deployService: function(_svcId, _req, _res) {
-      t.equal(_svcId, svcId);
-      t.equal(_req, req);
-      t.equal(_res, res);
-    },
-    dumpServiceLog: function(_svcId) {
-      t.equal(_svcId, svcId);
-      return 'LOG';
-    },
-    startService: function(_svcId, callback) {
-      t.equal(_svcId, svcId);
-      setImmediate(callback);
-    },
-    stopService: function(_svcId, callback) {
-      t.equal(_svcId, svcId);
-      setImmediate(callback);
-    },
-  };
-
-  t.plan(13);
-
-  var s = new Server(options);
-  s.setStartOptions(svcId, startOptions);
-
-  s.deployService(svcId, req, res);
-
-  t.equal(s.dumpServiceLog(svcId), 'LOG');
-
-  s.startService(svcId, function(err) {
-    t.ifError(err);
-  });
-
-  s.stopService(svcId, function(err) {
-    t.ifError(err);
-  });
-
-  // TODO cover the rest of the methods. Could also cover the error branches,
-  // I wish I had code coverage metrics :-(
-});
-
-// XXX(sam) test below needs re-writing into a unit test against public APIs,
-// right now it depends on private methods of Driver, Container, and
-// ServiceManager.
-
-tap.test('service starts', function(t) {
-  var s = new Server({
-    cmdName: 'pm',
-    baseDir: '_base',
-    listenPort: 1234,
-    controlPath: null,
-  });
-  var m = s._meshApp.models;
-  var runner = s._driver._containerById(1);
-
-  s._isStarted = true; // Make server think its running.
-  s._serviceManager.loadModels(s._meshApp, firstRun);
-
-  function firstRun() {
-    debug('first run');
-    var commit = {hash: 'hash1', dir: 'dir1'};
-
-    runner.current = new MockCurrent();
-    runner.current.commit = commit;
-
-    // mock started event from runner
-    s._onContainerStarted(runner, {
-      cmd: 'started',
-      appName: 'test-app',
-      agentVersion: '1.0.0',
-      pid: 1234
-    }, checkInstance.bind(null, commit, secondRun));
-  }
-
-  function secondRun() {
-    debug('second run');
-    var commit = {hash: 'hash2', dir: 'dir2'};
-
-    runner.current = new MockCurrent();
-    runner.current.commit = commit;
-
-    // mock started event from runner
-    s._onContainerStarted(runner, {
-      cmd: 'started',
-      appName: 'test-app',
-      agentVersion: '1.0.0',
-      pid: 1234
-    }, checkInstance.bind(null, commit, end));
-  }
-
-  function checkInstance(commit, next) {
-    m.ServiceInstance.findById(1, function(err, _) {
-      debug('instance: %j next: %j', _, next.name);
-      assert.ifError(err);
-      t.equal(_.id, 1);
-      t.equal(_.executorId, 1);
-      t.equal(_.serverServiceId, 1);
-      t.equal(_.groupId, 1);
-      t.equal(_.currentDeploymentId, commit.hash);
-      t.assert(_.startTime < new Date());
-      t.equal(s._listenPort, 1234);
-      t.equal(_.PMPort, s._listenPort);
-
-      m.ServerService.findById(1, function(err, _) {
-        debug('service: %j', _);
-        assert.ifError(err);
-        t.equal(_.id, 1);
-        t.equal(_.deploymentInfo.hash, commit.hash);
-        t.equal(_.deploymentInfo.dir, commit.dir);
-        next();
-      });
+tap.test('server test', function(t) {
+  t.test('full server construction', function(tt) {
+    var s = new Server({
+      cmdName: 'pm',
+      baseDir: BASE,
+      listenPort: 0,
+      controlPath: null,
     });
-  }
+    tt.end();
+  });
 
-  function end() {
-    var tasks = {
-      ServerService: 0,
-      Executor: 0,
-      ServiceInstance: 0,
-      Group: 0,
+  t.test('mocked server construction', function(tt) {
+    var driver;
+    function MockDriver(o) {
+      this.options = o;
+      driver = this;
     };
-    for (var type in tasks) {
-      tasks[type] = function(callback) {
-        m[type].count(callback);
-      };
+
+    MockDriver.prototype.on = function(event) {
+      tt.equal(event, 'request', 'event handler must be registered');
     }
 
-    async.parallel(tasks, function(counts) {
-      debug('counts: %j', counts);
+    var serviceManager;
+    function MockServiceManager(o) {
+      this.options = o;
+      serviceManager = this;
+    }
 
-      for (var type in counts) {
-        t.equal(counts[type], 1, type);
+    var server;
+    function MockMeshServerFactory(_serviceManager, o) {
+      tt.equal(_serviceManager, serviceManager, 'service manager must match');
+      tt.deepEqual(o, {}, 'mesh server options must match');
+      server = function(req, res, next) {};
+      return server;
+    }
+
+    var options = {
+      cmdName: 'pm',
+      baseDir: BASE,
+      listenPort: 0,
+      controlPath: null,
+      Driver: MockDriver,
+      ServiceManager: MockServiceManager,
+      MeshServer: MockMeshServerFactory
+    };
+
+    tt.plan(6);
+
+    var s = new Server(options);
+    tt.equal(driver.options.baseDir, options.baseDir, 'base dir must match');
+    tt.equal(driver.options.server, s, 'driver.server must match');
+    tt.equal(serviceManager.options, s,
+      'serviceManager options must match');
+    tt.end();
+  });
+
+  t.test('driver methods are forwarded', function(tt) {
+    var startOptions = {};
+    var req = {};
+    var res = {};
+
+    var svcId = 10;
+    var instId = 10;
+
+    function MockDriver(o) {
+      this.options = o;
+      driver = this;
+    }
+
+    MockDriver.prototype.on = function(event) {
+      tt.equal(event, 'request', 'event handler must be registered');
+    };
+
+    MockDriver.prototype.setStartOptions = function(_instId, _startOptions) {
+      tt.equal(_instId, instId, 'setStartOptions: instId must match');
+      tt.equal(_startOptions, startOptions,
+        'setStartOptions: start actions must match');
+    };
+
+    MockDriver.prototype.deployInstance = function(_instId, _req, _res) {
+      tt.equal(_instId, instId, 'deployInstance: instId must match');
+      tt.equal(_req, req, 'deployInstance: req must match');
+      tt.equal(_res, res, 'deployInstance: res must match');
+    };
+
+    MockDriver.prototype.dumpInstanceLog = function(_instId) {
+      tt.equal(_instId, instId, 'dumpInstanceLog: instId must match');
+      return 'LOG';
+    };
+
+    MockDriver.prototype.startInstance = function(_instId, callback) {
+      tt.equal(_instId, instId, 'startInstance: instId must match');
+      setImmediate(callback);
+    };
+
+    MockDriver.prototype.stopInstance = function(_instId, callback) {
+      tt.equal(_instId, instId, 'stopInstance: instId must match');
+      setImmediate(callback);
+    };
+
+    var serviceManager;
+    function MockServiceManager(o) {
+      this.options = o;
+      serviceManager = this;
+    }
+
+    var server;
+    function MockMeshServerFactory(_serviceManager, o) {
+      tt.equal(_serviceManager, serviceManager, 'service manager must match');
+      server = function(req, res, next) {};
+      return server;
+    }
+
+    var options = {
+      cmdName: 'pm',
+      baseDir: BASE,
+      listenPort: 0,
+      controlPath: null,
+      enableTracing: true,
+      Driver: MockDriver,
+      ServiceManager: MockServiceManager,
+      MeshServer: MockMeshServerFactory
+    };
+
+    tt.plan(11);
+
+    var s = new Server(options);
+    s.setStartOptions(svcId, startOptions);
+    s.deployInstance(instId, req, res);
+    tt.equal(s.dumpInstanceLog(instId), 'LOG',
+      'dumpInstanceLog: log must match');
+
+    // TODO cover the rest of the methods. Could also cover the error branches,
+    // I wish I had code coverage metrics :-(
+    async.series([
+      s.startInstance.bind(s, instId),
+      s.stopInstance.bind(s, instId),
+    ], tt.end.bind(tt));
+  });
+
+  // XXX(sam) test below needs re-writing into a unit test against public APIs,
+  // right now it depends on private methods of Driver, Container, and
+  // ServiceManager.
+
+  t.test('service starts', function(tt) {
+    var svcId = -1;
+    var instId = -1;
+    var commit = {hash: '123', dir: '/some/dir'};
+
+    function MockContainer() {
+      this.current = new events.EventEmitter();
+      this.current.commit = commit;
+    }
+    util.inherits(MockContainer, events.EventEmitter);
+    MockContainer.prototype.request = function request(req, cb) {
+      if (req.cmd === 'status') {
+        cb({ master: { setSize: 1 } });
       }
-      t.end();
-    });
-  }
+      if (req.cmd === 'npm-ls') {
+        cb({});
+      }
+    };
+
+    function MockDriver(o) {
+      this.options = o;
+      EventEmitter.call(this);
+      this._containers = {};
+    }
+    util.inherits(MockDriver, EventEmitter);
+    MockDriver.prototype.start = function(callback) {
+      this.emit('request', instId, {
+        cmd: 'started',
+        appName: 'test-app',
+        agentVersion: '1.0.0',
+        pid: 1234
+      });
+      callback();
+    };
+    MockDriver.prototype._containerById = function(instanceId) {
+      var container = this._containers[instanceId];
+      if (!container) {
+        container = this._containers[instanceId] = new MockContainer();
+      }
+      return container;
+    };
+    MockDriver.prototype.requestOfInstance = function(instanceId, req, cb) {
+      var container = this._containerById(instId);
+      container.request(req, cb);
+    }
+    MockDriver.prototype.updateInstanceEnv =
+      function(instanceId, env, callback) {
+        callback();
+      };
+
+    var options = {
+      cmdName: 'pm',
+      baseDir: BASE,
+      listenPort: 1234,
+      controlPath: null,
+      enableTracing: false,
+      Driver: MockDriver,
+    };
+
+    var s = new Server(options);
+    var m = s._meshApp.models;
+    var serviceManager = s._serviceManager;
+
+    // Make server think its running.
+    s._isStarted = true;
+    async.series([
+      serviceManager.initOrUpdateDb.bind(serviceManager, s._meshApp),
+      createService,
+      findInstance,
+      firstRun,
+      checkInstance,
+      secondRun,
+      checkInstance,
+      end
+    ], tt.end.bind(tt));
+
+    function createService(callback) {
+      debug('create service');
+      m.ServerService.create({
+        name: 'default',
+        _groups: [m.Group({name: 'default', id: 1, scale: 1})],
+      }, function(err, service) {
+        tt.ifError(err);
+        svcId = service.id;
+
+        // Use setImmediate instead of nextTick so that hooks are run before
+        // callback is invoked
+        setImmediate(callback);
+      });
+    }
+
+    function findInstance(callback) {
+      m.ServiceInstance.findOne(
+        {where: {serverServiceId: svcId}},
+        function(err, inst) {
+          tt.ifError(err);
+          instId = inst.id;
+          debug('instance assigned. Id: %s', instId);
+          callback();
+        }
+      );
+    }
+
+    function firstRun(callback) {
+      s._driver.start(function(err) {
+        if (err) return callback(err);
+
+        // Use setImmediate instead of nextTick so that hooks are run before
+        // callback is invoked
+        setImmediate(callback.bind(null, err));
+      });
+    }
+
+    function secondRun(callback) {
+      debug('second run');
+      commit = {hash: 'hash2', dir: 'dir2'};
+
+      // remove old container so new one is created
+      s._driver._containers = {};
+
+      s._driver.start(function(err) {
+        // Use setImmediate instead of nextTick so that hooks are run before
+        // callback is invoked
+        setImmediate(callback.bind(null, err));
+      });
+    }
+
+    function checkInstance(callback) {
+      m.ServiceInstance.findById(instId, function(err, _inst) {
+        debug('instance: %j', _inst);
+        assert.ifError(err);
+        t.equal(_inst.id, instId);
+        t.equal(_inst.executorId, 1);
+        t.equal(_inst.serverServiceId, svcId);
+        t.equal(_inst.groupId, 1);
+        t.equal(_inst.currentDeploymentId, commit.hash);
+        t.assert(_inst.startTime < new Date());
+        t.equal(s._listenPort, 1234);
+        t.equal(_inst.PMPort, s._listenPort);
+
+        m.ServerService.findById(svcId, function(err, _srv) {
+          debug('service: %j', _srv);
+          assert.ifError(err);
+          t.equal(_srv.id, 1);
+
+          t.equal(_srv.deploymentInfo.hash, commit.hash);
+          t.equal(_srv.deploymentInfo.dir, commit.dir);
+          callback();
+        });
+      });
+    }
+
+    function end(callback) {
+      var tasks = {
+        ServerService: 0,
+        Executor: 0,
+        ServiceInstance: 0,
+        Group: 0,
+      };
+      for (var type in tasks) {
+        tasks[type] = function(callback) {
+          m[type].count(callback);
+        };
+      }
+
+      async.parallel(tasks, function(counts) {
+        debug('counts: %j', counts);
+
+        for (var type in counts) {
+          tt.equal(counts[type], 1, type);
+        }
+
+        callback();
+      });
+    }
+  });
+
+  t.end();
 });

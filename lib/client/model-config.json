@@ -5,6 +5,10 @@
       "../../node_modules/strong-mesh-models/models"
     ]
   },
+  "Api": {
+    "dataSource": "remote",
+    "public": false
+  },
   "User": {
     "dataSource": "remote",
     "public": false
