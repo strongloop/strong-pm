@@ -1,92 +1,96 @@
 var Server = require('../lib/server');
 var mktmpdir = require('mktmpdir');
+var fs = require('fs');
+var path = require('path');
 var test = require('tap').test;
 
-test('new server', function(t) {
+process.env.STRONGLOOP_MESH_DB = 'memory://';
+test('service environment', function(t) {
   mktmpdir(function(err, tmpdir, cleanup) {
     t.on('end', cleanup);
 
-    var s = new Server({
-      cmdName: 'pm',
-      baseDir: tmpdir,
-      listenPort: 0,
-    });
-    var Service = s._meshApp.models.ServerService;
-    var svc = null;
+    function MockDriver(o) {
+      this.options = o;
+      driver = this;
+    };
+    MockDriver.prototype.on = function() {};
 
-    var emptyEnv = {};
-    var fullEnv = {FOO: 'foo', BAR: 'bar'};
-    var barOnly = {BAR: 'bar'};
+    function matchEnv(tt, env, expectedEnv) {
+      // PORT env is auto assigned so it should exist but we can exclude it when
+      // checking for a match
+      var envCopy = JSON.parse(JSON.stringify(env));
+      tt.assert(envCopy.PORT);
+      delete envCopy.PORT;
+      tt.deepEqual(envCopy, expectedEnv);
+    }
 
-    t.test('start server', function(tt) {
-      s.start(function(err) {
+    t.test('empty initial environment', function(tt) {
+      fs.writeFileSync(path.join(tmpdir, 'env.json'), '{}');
+
+      var s = new Server({
+        cmdName: 'pm',
+        baseDir: tmpdir,
+        listenPort: 0,
+        Driver: MockDriver,
+      });
+      var Service = s._meshApp.models.ServerService;
+      s._serviceManager.initOrUpdateDb(s._meshApp, function(err) {
         tt.ifError(err);
-        tt.end();
+        tt.deepEqual(s.getDefaultEnv(), {});
+        MockDriver.prototype.updateInstanceEnv =
+          function(instanceId, env, callback) {
+            matchEnv(tt, env, {});
+            callback();
+          };
+        Service.create({name: 'Service 1'}, function(err, service) {
+          tt.ifError(err);
+          matchEnv(tt, service.env, {});
+          setImmediate(tt.end.bind(tt));
+        });
       });
     });
 
     t.test('initial environment', function(tt) {
-      Service.findById(1, function(err, _svc) {
-        tt.ifError(err, 'finds Service instance');
-        svc = _svc;
-        tt.equivalent(svc.env, emptyEnv, 'model env is empty');
-        tt.equivalent(s.env({}), emptyEnv, 'local env is empty');
-        tt.end();
+      var defEnv = {FOO: 'foo', BAR: 'bar'};
+      var newEnv = {BAR: 'bar'};
+      fs.writeFileSync(path.join(tmpdir, 'env.json'), JSON.stringify(defEnv));
+
+      var s = new Server({
+        cmdName: 'pm',
+        baseDir: tmpdir,
+        listenPort: 0,
+        Driver: MockDriver,
       });
-    });
-
-    t.test('update env on model', function(tt) {
-      svc.env = fullEnv;
-      svc.save(function(err, res) {
-        tt.ifError(err, 'saves without error');
-        tt.equivalent(res.env, fullEnv, 'saved env on model');
-        tt.end();
+      var Service = s._meshApp.models.ServerService;
+      s._serviceManager.initOrUpdateDb(s._meshApp, function(err) {
+        tt.ifError(err);
+        tt.deepEqual(s.getDefaultEnv(), defEnv);
+        MockDriver.prototype.updateInstanceEnv =
+          function(instanceId, env, callback) {
+            matchEnv(tt, env, defEnv);
+            callback();
+          };
+        Service.create({name: 'Service 1'}, function(err, service) {
+          tt.ifError(err);
+          matchEnv(tt, service.env, defEnv);
+          setImmediate(updateEnv.bind(null, service));
+        });
       });
+
+      function updateEnv(service) {
+        MockDriver.prototype.updateInstanceEnv =
+          function(instanceId, env, callback) {
+            matchEnv(tt, env, newEnv);
+            callback();
+          };
+        service.env = JSON.parse(JSON.stringify(newEnv));
+        service.save(function(err) {
+          tt.ifError(err);
+          setImmediate(tt.end.bind(tt));
+        });
+      }
     });
 
-    t.test('update reflected locally', function(tt) {
-      tt.equivalent(s.env({}), fullEnv, 'local env was updated');
-      tt.end();
-    });
-
-    t.test('refresh Service instance', function(tt) {
-      Service.findById(1, function(err, _svc) {
-        tt.ifError(err, 'finds Service instance');
-        svc = _svc;
-        tt.end();
-      });
-    });
-
-    t.test('update env with model#unsetEnv', function(tt) {
-      svc.unsetEnv('FOO', function(err, res) {
-        tt.ifError(err, 'unsetEnv does not fail');
-        tt.equivalent(res, barOnly, 'setEnv returns new env');
-        tt.end();
-      });
-    });
-
-    t.test('update reflected locally', function(tt) {
-      tt.equivalent(s.env({}), barOnly, 'local env was updated');
-      tt.end();
-    });
-
-    t.test('update env with model#setEnv', function(tt) {
-      svc.setEnv('FOO', 'foo', function(err, res) {
-        tt.equivalent(res, fullEnv, 'setEnv sets variable');
-        tt.end();
-      });
-    });
-
-    t.test('update reflected locally', function(tt) {
-      tt.equivalent(s.env({}), fullEnv, 'local env was updated');
-      tt.end();
-    });
-
-    t.test('shutdown server', function(tt) {
-      s.stop(function(err) {
-        tt.ifError(err, 'server shutdown without error');
-        tt.end();
-      });
-    });
+    t.end();
   });
 });
