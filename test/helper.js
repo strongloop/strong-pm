@@ -106,7 +106,7 @@ exports.push = function(repo, callback) {
   if (!repo) {
     repo = repoN();
   }
-  var cmd = util.format('git push http://127.0.0.1:%d/%s master:master', port, repo);
+  var cmd = util.format('sl-deploy http://127.0.0.1:%d master', port, repo);
   // Must be async... or we block ourselves from receiving
   ex(cmd, function() {
     if (callback) {

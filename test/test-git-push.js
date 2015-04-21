@@ -20,7 +20,7 @@ tap.test('without auth', function(t) {
         t.end();
       });
       cp.exec(fmt('sl-deploy %s master', pmurl), function(er) {
-        t.ifError(er, 'git push succeeds');
+        t.ifError(er, 'deploy succeeds');
         pm.kill('SIGTERM');
       });
     });
@@ -40,7 +40,7 @@ tap.test('with basic auth and valid credentials', function(t) {
         t.end();
       });
       cp.exec(fmt('sl-deploy %s master', pmurl), function(er) {
-        t.ifError(er, 'git push succeeds');
+        t.ifError(er, 'deploy succeeds');
         pm.kill('SIGTERM');
       });
     });
@@ -61,7 +61,7 @@ tap.test('with digest auth and valid credentials', function(t) {
       });
 
       cp.exec(fmt('sl-deploy %s master', pmurl), function(er) {
-        t.ifError(er, 'git push succeeds');
+        t.ifError(er, 'deploy succeeds');
         pm.kill('SIGTERM');
       });
     });
@@ -81,7 +81,7 @@ tap.test('with auth and invalid credentials', function(t) {
         t.end();
       });
       cp.exec(fmt('sl-deploy %s master', pmurl), function(er) {
-        t.assert(er, 'git push fails');
+        t.assert(er, 'deploy fails');
         pm.kill('SIGTERM');
       });
     });

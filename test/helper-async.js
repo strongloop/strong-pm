@@ -133,7 +133,7 @@ function pmWithApp(args, env, callback) {
   reset(function() {
     pm(args, env, function(pm) {
       console.log('pmurl: %s', pm.pmurl);
-      cp.exec(fmt('git push %s master:master', pm.pmurl), function(er) {
+      cp.exec(fmt('sl-deploy %s master', pm.pmurl), function(er) {
         assert.ifError(er, 'git push succeeds when auth not required');
         callback(pm);
       });
