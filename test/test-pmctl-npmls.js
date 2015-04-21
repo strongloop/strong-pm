@@ -6,9 +6,8 @@ helper.test('pmctl', function(t, pm) {
 
   t.waiton(pmctl('status'), /Processes:$/m);
 
-  /* XXX(sam) pm PID/port is no longer available? */
-  t.test('status has pm pid', function(t) {
-    t.expect(pmctl('status'), fmt('pid: *%d', pm.pid));
+  t.test('app dependencies', function(t) {
+    t.expect(pmctl('npmls', '1'), /test-app@/);
   });
 
   t.shutdown(pm);
