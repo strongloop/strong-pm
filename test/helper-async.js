@@ -205,14 +205,14 @@ function expect(t, extra, cmd, pattern, next) {
     extra = makeExtra(match, name, out.output, pattern, extra.stack);
     console.log('# expect %s against code: %j', name, out.code);
 
-    t.equal(out.code, 0, name + ' exit code');
+    t.equal(out.code, 0, 'exit status non-zero for: ' + name);
 
     if (out.code == 0) {
       t.assert(match, name, extra);
     }
 
     if (out.code != 0 || !match) {
-      console.log('check failed against: <\n%>', out.output);
+      console.log('check failed against code %d <\n%>', out.code, out.output);
     }
 
     next();
