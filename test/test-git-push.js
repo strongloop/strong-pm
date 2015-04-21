@@ -5,11 +5,13 @@ var tap = require('tap');
 
 process.env.STRONGLOOP_CLUSTER = 1;
 
+// XXX(sam) cut-n-paste test code should be refactored into functions
+// XXX(sam) each test should be its own file, its to hard to debug like this
 tap.test('without auth', function(t) {
   helper.reset(function() {
     helper.pm([], { STRONGLOOP_PM_HTTP_AUTH: '' }, function(pm) {
       var port = pm.port;
-      var pmurl = fmt('http://127.0.0.1:%d/default', port);
+      var pmurl = pm.pmurlNoAuth;
       console.log('pmurl: %s', pmurl);
 
       t.assert(port, 'pm started on port ' + port);
@@ -17,8 +19,8 @@ tap.test('without auth', function(t) {
         t.equal(signal, 'SIGTERM', 'killed by us');
         t.end();
       });
-      cp.exec(fmt('git push %s master:master', pm.pmurlNoAuth), function(er) {
-        t.ifError(er, 'git push succeeds when auth not required');
+      cp.exec(fmt('sl-deploy %s master', pmurl), function(er) {
+        t.ifError(er, 'git push succeeds');
         pm.kill('SIGTERM');
       });
     });
@@ -29,7 +31,7 @@ tap.test('with basic auth and valid credentials', function(t) {
   helper.reset(function() {
     helper.pm([], { STRONGLOOP_PM_HTTP_AUTH: 'basic:user:pass' }, function(pm) {
       var port = pm.port;
-      var pmurl = fmt('http://user:pass@127.0.0.1:%d/default', port);
+      var pmurl = fmt('http://user:pass@127.0.0.1:%d', port);
       console.log('pmurl: %s', pmurl);
 
       t.assert(port, 'pm started on port ' + port);
@@ -37,8 +39,8 @@ tap.test('with basic auth and valid credentials', function(t) {
         t.equal(signal, 'SIGTERM', 'killed by us');
         t.end();
       });
-      cp.exec(fmt('git push %s master:master', pmurl), function(er) {
-        t.ifError(er, 'git push succeeds with basic auth');
+      cp.exec(fmt('sl-deploy %s master', pmurl), function(er) {
+        t.ifError(er, 'git push succeeds');
         pm.kill('SIGTERM');
       });
     });
@@ -49,7 +51,7 @@ tap.test('with digest auth and valid credentials', function(t) {
   helper.reset(function() {
     helper.pm([], { STRONGLOOP_PM_HTTP_AUTH: 'digest:user:pass' }, function(pm) {
       var port = pm.port;
-      var pmurl = fmt('http://user:pass@127.0.0.1:%d/default', port);
+      var pmurl = fmt('http://user:pass@127.0.0.1:%d', port);
       console.log('pmurl: %s', pmurl);
 
       t.assert(port, 'pm started on port ' + port);
@@ -58,20 +60,19 @@ tap.test('with digest auth and valid credentials', function(t) {
         t.end();
       });
 
-      cp.exec(fmt('git push %s master:master', pmurl), function(er) {
-        t.ifError(er, 'git push succeeds with digest auth');
+      cp.exec(fmt('sl-deploy %s master', pmurl), function(er) {
+        t.ifError(er, 'git push succeeds');
         pm.kill('SIGTERM');
       });
     });
   });
 });
 
-
 tap.test('with auth and invalid credentials', function(t) {
   helper.reset(function() {
     helper.pm([], { STRONGLOOP_PM_HTTP_AUTH: 'basic:user:pass' }, function(pm) {
       var port = pm.port;
-      var pmurl = fmt('http://baduser:badpass@127.0.0.1:%d/default', port);
+      var pmurl = fmt('http://baduser:badpass@127.0.0.1:%d', port);
       console.log('pmurl: %s', pmurl);
 
       t.assert(port, 'pm started on port ' + port);
@@ -79,8 +80,8 @@ tap.test('with auth and invalid credentials', function(t) {
         t.equal(signal, 'SIGTERM', 'killed by us');
         t.end();
       });
-      cp.exec(fmt('git push %s master:master', pmurl), function(er) {
-        t.assert(er, 'git push fails with bad credentials');
+      cp.exec(fmt('sl-deploy %s master', pmurl), function(er) {
+        t.assert(er, 'git push fails');
         pm.kill('SIGTERM');
       });
     });
