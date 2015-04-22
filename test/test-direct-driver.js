@@ -3,41 +3,19 @@
 var Driver = require('../lib/drivers/direct/direct-driver');
 var _ = require('lodash');
 var debug = require('debug')('strong-pm:test');
+var driverHelpers = require('./driver-helpers');
 var fmt = require('util').format;
 var mktmpdir = require('mktmpdir');
 var path = require('path');
 var tap = require('tap');
 
-tap.test('driver mandatory options', function(t) {
-  var baseDir = 'BASE';
-  var server = {};
-  var logger = {};
-  t.doesNotThrow(function() {
-    new Driver({
-      baseDir: baseDir,
-      console: logger,
-      server: server,
-    });
-  });
-  t.throws(function() {
-    new Driver({
-      console: logger,
-      server: server,
-    });
-  });
-  t.throws(function() {
-    new Driver({
-      baseDir: baseDir,
-      server: server,
-    });
-  });
-  t.throws(function() {
-    new Driver({
-      baseDir: baseDir,
-      console: logger,
-    });
-  });
-  t.end();
+tap.test('DirectDriver constructor API', function(t) {
+  driverHelpers.testConstructor(t, Driver);
+});
+
+tap.test('DirectDriver instance API', function(t) {
+  var driver = new Driver({baseDir: 'BASE', console: {}, server: {}});
+  driverHelpers.testInstance(t, driver);
 });
 
 tap.test('start runs last services', function(t) {
