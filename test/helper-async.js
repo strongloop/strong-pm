@@ -197,8 +197,15 @@ function queued(t) {
   }
 }
 
+function testname(cmd, pattern) {
+  if (cmd[0] === '--control')
+    cmd = cmd.slice(2);
+  cmd = cmd.join(' ');
+  return fmt('cmd %j pattern %s', cmd, new RegExp(pattern));
+}
+
 function expect(t, extra, cmd, pattern, next) {
-  var name = fmt('pmctl %j =~ %s', cmd, new RegExp(pattern));
+  var name = testname(cmd, pattern);
   console.log('# START expect %s', name);
   pmctl(cmd, function(out) {
     var match = checkOutput(out, pattern);
@@ -220,7 +227,7 @@ function expect(t, extra, cmd, pattern, next) {
 }
 
 function waiton(t, extra, cmd, pattern, next) {
-  var name = fmt('pmctl %j =~ %s', cmd, new RegExp(pattern));
+  var name = testname(cmd, pattern);
   console.log('# START waiton %s', name);
   return check();
 
@@ -242,7 +249,7 @@ function wait(t, extra, time, reason, next) {
 }
 
 function failon(t, extra, cmd, pattern, next) {
-  var name = fmt('pmctl %j !~ %s', cmd, new RegExp(pattern));
+  var name = testname(cmd, pattern);
   console.log('# START failon %s', name);
   pmctl(cmd, function(out) {
     console.log('# failon %s against code: %j', name, out.code);
@@ -272,7 +279,10 @@ function pmctl(cmd, callback) {
 function checkOutput(out, pattern) {
   // undefined and '' become /(?:)/
   // RegExp's become themselves
-  return new RegExp(pattern).test(out.output);
+  var match = new RegExp(pattern).test(out.output);
+  //debug('pattern match: %j', match);
+  //debug('out <\n%s>', out.output);
+  return match;
 }
 
 function pmctlWithCtl(ctlPath) {
