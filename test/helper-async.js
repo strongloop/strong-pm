@@ -212,14 +212,14 @@ function expect(t, extra, cmd, pattern, next) {
     extra = makeExtra(match, name, out.output, pattern, extra.stack);
     console.log('# expect %s against code: %j', name, out.code);
 
-    t.equal(out.code, 0, 'exit status non-zero for: ' + name);
+    t.equal(out.code, 0, 'exit status should be zero for: ' + name);
 
     if (out.code == 0) {
       t.assert(match, name, extra);
     }
 
     if (out.code != 0 || !match) {
-      console.log('check failed against code %d <\n%>', out.code, out.output);
+      console.log('check failed against code %d <\n%s>', out.code, out.output);
     }
 
     next();
@@ -252,8 +252,20 @@ function failon(t, extra, cmd, pattern, next) {
   var name = testname(cmd, pattern);
   console.log('# START failon %s', name);
   pmctl(cmd, function(out) {
+    var match = checkOutput(out, pattern);
+    extra = makeExtra(match, name, out.output, pattern, extra.stack);
     console.log('# failon %s against code: %j', name, out.code);
-    t.notEqual(out.code, 0, name);
+
+    t.notEqual(out.code, 0, 'exit status should not be zero for: ' + name);
+
+    if (out.code != 0) {
+      t.assert(match, name, extra);
+    }
+
+    if (out.code == 0 || !match) {
+      console.log('check failed against code %d <\n%s>', out.code, out.output);
+    }
+
     return next();
   });
 }
