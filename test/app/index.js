@@ -13,9 +13,6 @@ console.log('ENV.PWD:', env.PWD);
 assert.notEqual(env.PWD, process.cwd(), 'PWD should not be cwd()');
 assert.equal(fs.realpathSync(env.PWD), process.cwd());
 
-// Check binary dependencies were compiled
-require('buffertools');
-
 http.createServer(onRequest)
     .listen(process.env.PORT || 0, function() {
   console.log('pid %d listening on %s', process.pid, this.address().port);
