@@ -210,11 +210,10 @@ function testname(cmd, pattern) {
 
 function expect(t, extra, cmd, pattern, next) {
   var name = testname(cmd, pattern);
-  console.log('# START expect %s', name);
+  console.log('\n# START expect %s', name);
   pmctl(cmd, function(out) {
     var match = checkOutput(out, pattern);
     extra = makeExtra(match, name, out.output, pattern, extra.stack);
-    console.log('# expect %s against code: %j', name, out.code);
 
     t.equal(out.code, 0, 'exit status should be zero for: ' + name);
 
@@ -223,7 +222,10 @@ function expect(t, extra, cmd, pattern, next) {
     }
 
     if (out.code != 0 || !match) {
-      console.log('check failed against code %d <\n%s>', out.code, out.output);
+      console.log('# FAIL expect %s against code: %j <\n%s>',
+                  name, out.code, out.output);
+    } else {
+      console.log('# OK expect %s', name);
     }
 
     next();
@@ -232,7 +234,7 @@ function expect(t, extra, cmd, pattern, next) {
 
 function waiton(t, extra, cmd, pattern, next) {
   var name = testname(cmd, pattern);
-  console.log('# START waiton %s', name);
+  console.log('\n# START waiton %s', name);
   var running = true;
   t.once('end', function() {
     running = false;
@@ -241,8 +243,8 @@ function waiton(t, extra, cmd, pattern, next) {
 
   function check() {
     pmctl(cmd, function(out) {
-      console.log("# waiton %s against code: %j", name, out.code);
       if (out.code == 0 && checkOutput(out, pattern)) {
+        console.log("# OK waiton %s", name);
         t.assert(true, name);
         return next();
       }
@@ -259,7 +261,7 @@ function wait(t, extra, time, reason, next) {
 
 function failon(t, extra, cmd, pattern, next) {
   var name = testname(cmd, pattern);
-  console.log('# START failon %s', name);
+  console.log('\n# START failon %s', name);
   pmctl(cmd, function(out) {
     var match = checkOutput(out, pattern);
     extra = makeExtra(match, name, out.output, pattern, extra.stack);
@@ -292,7 +294,7 @@ function pmctl(cmd, callback) {
       code: er ? er.code : 0
     };
     debug('Run: %s => %s out <\n%s>\nerr <\n%s>',
-          cmd, out.code, out.out, out.err);
+          cmd, out.code, stdout, stderr);
     return callback(out);
   });
 }
