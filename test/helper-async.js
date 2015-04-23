@@ -229,6 +229,10 @@ function expect(t, extra, cmd, pattern, next) {
 function waiton(t, extra, cmd, pattern, next) {
   var name = testname(cmd, pattern);
   console.log('# START waiton %s', name);
+  var running = true;
+  t.on('end', function() {
+    running = false;
+  });
   return check();
 
   function check() {
@@ -238,7 +242,8 @@ function waiton(t, extra, cmd, pattern, next) {
         t.assert(true, name);
         return next();
       }
-      setTimeout(check, 1000);
+      if (running)
+        setTimeout(check, 1000);
     });
   }
 }
