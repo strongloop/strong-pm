@@ -50,6 +50,7 @@ function testInitialInstState(cb) {
 function testInstanceState(expected, cb) {
   ServiceInstance.findOne(function(err, instance) {
     assert.ifError(err);
+    console.log('testInstanceState: expect started=%j:', expected, instance);
     assert.equal(instance.started, expected);
     cb(err);
   });
@@ -165,14 +166,12 @@ server.once('running', function() {
   var tests = [
     testInitialInstState,
     testInitialWorkerState,
+    pmctl.bind(null, 'set-size 1 1'),
+    // This test doesn't have a way to wait... so inject a number of status
+    // calls. We're waiting for worker 1 to have started.
     pmctl.bind(null, 'status 1'),
-    // XXX(sam) status output shows that there is a WID 2, but not 1, wtf?
-    //   ID      PID   WID
-    //   1.1.14383  14383   0
-    //   1.1.14417  14417   2
-    // The lack of WID 1 causes all subsequent commands to fail, and changing
-    // it to 2 causes the assertions on the models to fail, because they
-    // expect WID 1.
+    pmctl.bind(null, 'status 1'),
+    pmctl.bind(null, 'status 1'),
     pmctl.bind(null, 'cpu-start 1.1.1'),
     testCpuStart,
     pmctl.bind(null, 'cpu-stop 1.1.1'),
@@ -186,12 +185,16 @@ server.once('running', function() {
     testRestartedInstState,
     testTotalWorkers,
     testInstanceState.bind(null, true),
-    pmctl.bind(null, 'stop'),
+    pmctl.bind(null, 'stop 1'),
+    pmctl.bind(null, 'status 1'),
+    pmctl.bind(null, 'status 1'),
+    pmctl.bind(null, 'status 1'),
     testInstanceState.bind(null, false)
   ];
 
-  if (process.platform === 'linux') {
-    tests.push(pmctl.bind(null, 'start'),
+  if (process.platform === 'XXX' + 'linux') {
+    tests.push(
+      pmctl.bind(null, 'start 1'),
       pmctl.bind(null, 'cpu-start 1.1.1 1000'),
       testCpuWatchdogStart,
       pmctl.bind(null, 'cpu-stop 1.1.1'),
