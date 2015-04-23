@@ -86,7 +86,9 @@ var TRACE_RECORD = {
   ]
 };
 
-tap.test('Trace record', function(t) {
+tap.test('Trace record', {
+  skip: 'rewrite as unit or integration test'
+}, function(t) {
   var s = new Server({
     cmdName: 'pm',
     baseDir: '_base',

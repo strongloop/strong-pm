@@ -25,7 +25,9 @@ MockCurrent.prototype.request = function request(req, cb) {
   }
 }
 
-tap.test('metrics update', function(t) {
+tap.test('metrics update', {
+  skip: 'rewrite as unit or integration test'
+}, function(t) {
   var s = new Server();
   var m = s._meshApp.models;
   var commit = {hash: 'hash1', dir: 'dir1'};

@@ -25,7 +25,9 @@ MockCurrent.prototype.request = function request(req, cb) {
   }
 }
 
-tap.test('worker status update', function(t) {
+tap.test('worker status update', {
+  skip: 'rewrite as unit or integration test'
+}, function(t) {
   debug('test: worker status update');
   var s = new Server({baseDir: BASE});
   var m = s._meshApp.models;
