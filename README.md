@@ -10,8 +10,9 @@ console.
 
 For more details, see [http://strong-pm.io](http://strong-pm.io)
 
-
 ## Installation
+
+_Requirements: `git` needs to be installed_
 
 Install the client-side [CLI](https://github.com/strongloop/strongloop) and
 [GUI](https://github.com/strongloop/strong-arc) (`slc arc`):
@@ -128,6 +129,10 @@ See [http://strong-pm.io](http://strong-pm.io) for more information.
 For more resources, including links to blogs, see
 [http://strong-pm.io/resources/](http://strong-pm.io/resources/).
 
+## Troubleshooting
+
+**Q: On deploy getting an `git: fatal: unable to access 'http://127.0.0.1:8701/default/': Empty reply from server**
+A: Check to make sure `git` is installed
 
 ## License
 
