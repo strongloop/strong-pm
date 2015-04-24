@@ -132,6 +132,7 @@ For more resources, including links to blogs, see
 ## Troubleshooting
 
 **Q: On deploy getting an `git: fatal: unable to access 'http://127.0.0.1:8701/default/': Empty reply from server**
+
 A: Check to make sure `git` is installed
 
 ## License
