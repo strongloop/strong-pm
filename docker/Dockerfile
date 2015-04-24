@@ -1,10 +1,8 @@
-FROM nodesource/node
+FROM node:0.10
 
-# Ensure git is installed (used by strong-pm)
-# Create "strong-pm" user
-RUN npm install --unsafe-perm --global strongloop/strong-pm#production \
-    && npm cache clean \
-    && useradd -ms /bin/bash strong-pm
+RUN useradd -ms /bin/bash strong-pm \
+    && chown -R strong-pm:strong-pm /usr/local \
+    && su strong-pm -c "npm install -g strong-pm && npm cache clear"
 
 # Set up some semblance of an environment
 WORKDIR /home/strong-pm
@@ -13,11 +11,7 @@ ENV HOME=/home/strong-pm PORT=3000
 # Run as non-privileged user inside container
 USER strong-pm
 
-# pre-load node-gyp to speed up build time of apps pushed to strong-pm
-# and remove need to download node source in production
-RUN node-gyp install 2> /dev/null && npm cache clear
-
 # Expose strong-pm port
 EXPOSE 8701 3000
 
-ENTRYPOINT ["/usr/bin/sl-pm", "--base", ".", "--listen", "8701"]
+ENTRYPOINT ["/usr/local/bin/sl-pm", "--base", ".", "--listen", "8701"]
