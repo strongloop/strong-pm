@@ -1,6 +1,7 @@
 'use strict';
 
 var EE = require('events').EventEmitter;
+var fmt = require('util').format;
 
 exports.testConstructor = testDriverConstructor;
 exports.testInstance = testDriverInstance;
@@ -43,18 +44,25 @@ function testDriverConstructor(tap, Driver) {
 function testDriverInstance(tap, i) {
   tap.test('driver instance API', function(t) {
     t.isa(i, EE, 'instances are event emitters');
-    t.equal(i.setStartOptions.length, 2, '.startOptions(id, opts)');
-    t.equal(i.removeInstance.length, 2, '.removeInstance(id, cb)');
-    t.equal(i.deployInstance.length, 3, '.deployInstance(id, req, res)');
-    t.equal(i.startInstance.length, 2, '.startInstance(id, cb)');
-    t.equal(i.stopInstance.length, 3, '.stopInstance(id, style, cb)');
-    t.equal(i.dumpInstanceLog.length, 1, '.dumpInstanceLog(id)');
-    t.equal(i.updateInstanceEnv.length, 3, '.updateInstanceEnv(id, env, cb)');
-    t.equal(i.requestOfInstance.length, 3, '.requestOfInstance(id, req, cb)');
-    t.equal(i.start.length, 2, '.start(meta, cb)');
-    t.equal(i.stop.length, 1, '.stop(cb)');
+    method(t, i, 'setStartOptions', ['id', 'opts']);
+    method(t, i, 'removeInstance', ['id', 'cb']);
+    method(t, i, 'deployInstance', ['id', 'req', 'res']);
+    method(t, i, 'startInstance', ['id', 'cb']);
+    method(t, i, 'stopInstance', ['id', 'style', 'cb']);
+    method(t, i, 'dumpInstanceLog', ['id']);
+    method(t, i, 'updateInstanceEnv', ['id', 'env', 'cb']);
+    method(t, i, 'requestOfInstance', ['id', 'req', 'cb']);
+    method(t, i, 'start', ['meta', 'cb']);
+    method(t, i, 'stop', ['cb']);
     // XXX(rmg): to be removed
-    t.equal(i._containerById.length, 1, '._containerById(id)');
+    method(t, i, '_containerById', ['id']);
     t.end();
   });
+}
+
+function method(t, inst, fname, args) {
+  t.type(inst[fname], 'function', fmt('instance has callable .%s()', fname));
+  t.equal(inst[fname] && inst[fname].length, args.length,
+          fmt('instance .%s() expects %d arguments (%s)',
+                fname, args.length, args.join(', ')));
 }
