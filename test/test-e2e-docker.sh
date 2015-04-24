@@ -88,7 +88,7 @@ curl -s $APP/this/is/a/test \
   && echo 'ok # echo server responded' \
   || echo 'not ok # echo server failed to respond'
 
-../../bin/sl-pmctl.js -C $STRONGLOOP_PM env-set foo=success bar=foo \
+../../bin/sl-pmctl.js -C $STRONGLOOP_PM env-set 1 foo=success bar=foo \
   | grep -F -e 'Environment updated' \
   && echo 'ok # pmctl env-set command ran without error' \
   || echo 'not ok # failed to run env-set foo=success'
@@ -100,7 +100,7 @@ curl -s $APP/env \
   && echo 'ok # set foo=success via pmctl' \
   || echo 'not ok # failed to set foo=success via pmctl'
 
-../../bin/sl-pmctl.js -C $STRONGLOOP_PM env-unset foo \
+../../bin/sl-pmctl.js -C $STRONGLOOP_PM env-unset 1 foo \
   | grep -F -e 'Environment updated' \
   && echo 'ok # pmctl env-set command ran without error' \
   || echo 'not ok # failed to run env-set foo=success'
@@ -144,12 +144,12 @@ while ! curl -sI $APP/this/is/a/test; do
   sleep 5
 done
 
-../../bin/sl-pmctl.js -C $STRONGLOOP_PM status \
+../../bin/sl-pmctl.js -C $STRONGLOOP_PM status 1 \
   && echo 'ok # pmctl status command ran with auth' \
   || echo 'not ok # failed to run status with auth'
 
 
-../../bin/sl-pmctl.js -C $STRONGLOOP_PM_NOAUTH status \
+../../bin/sl-pmctl.js -C $STRONGLOOP_PM_NOAUTH status 1 \
   && echo 'not ok # pmctl status should fail without auth' \
   || echo 'ok # pmctl failed to run status without auth'
 
