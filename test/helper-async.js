@@ -157,6 +157,10 @@ function queued(t) {
       t[m].apply(t, arguments);
     };
   });
+
+  // Each waiton() adds a listener... so we pass the limit of 10.
+  t.setMaxListeners(50);
+
   return newT;
 
   function subTest(name, opts, cb) {
@@ -230,7 +234,7 @@ function waiton(t, extra, cmd, pattern, next) {
   var name = testname(cmd, pattern);
   console.log('# START waiton %s', name);
   var running = true;
-  t.on('end', function() {
+  t.once('end', function() {
     running = false;
   });
   return check();
