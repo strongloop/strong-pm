@@ -15,8 +15,9 @@ tap.test('without auth', function(t) {
       console.log('pmurl: %s', pmurl);
 
       t.assert(port, 'pm started on port ' + port);
-      pm.on('exit', function(code, signal) {
-        t.equal(signal, 'SIGTERM', 'killed by us');
+      pm.on('exit', function(code, sig) {
+        var SIGTERM = 15;
+        t.assert(code == 128 + SIGTERM || sig === 'SIGTERM', 'killed by us');
         t.end();
       });
       cp.exec(fmt('sl-deploy %s master', pmurl), function(er) {
@@ -35,8 +36,9 @@ tap.test('with basic auth and valid credentials', function(t) {
       console.log('pmurl: %s', pmurl);
 
       t.assert(port, 'pm started on port ' + port);
-      pm.on('exit', function(code, signal) {
-        t.equal(signal, 'SIGTERM', 'killed by us');
+      pm.on('exit', function(code, sig) {
+        var SIGTERM = 15;
+        t.assert(code == 128 + SIGTERM || sig === 'SIGTERM', 'killed by us');
         t.end();
       });
       cp.exec(fmt('sl-deploy %s master', pmurl), function(er) {
@@ -55,8 +57,9 @@ tap.test('with digest auth and valid credentials', function(t) {
       console.log('pmurl: %s', pmurl);
 
       t.assert(port, 'pm started on port ' + port);
-      pm.on('exit', function(code, signal) {
-        t.equal(signal, 'SIGTERM', 'killed by us');
+      pm.on('exit', function(code, sig) {
+        var SIGTERM = 15;
+        t.assert(code == 128 + SIGTERM || sig === 'SIGTERM', 'killed by us');
         t.end();
       });
 
@@ -76,8 +79,9 @@ tap.test('with auth and invalid credentials', function(t) {
       console.log('pmurl: %s', pmurl);
 
       t.assert(port, 'pm started on port ' + port);
-      pm.on('exit', function(code, signal) {
-        t.equal(signal, 'SIGTERM', 'killed by us');
+      pm.on('exit', function(code, sig) {
+        var SIGTERM = 15;
+        t.assert(code == 128 + SIGTERM || sig === 'SIGTERM', 'killed by us');
         t.end();
       });
       cp.exec(fmt('sl-deploy %s master', pmurl), function(er) {
