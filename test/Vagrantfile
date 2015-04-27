@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 $pkg_name = ENV['PKG_NAME'] || Dir["../strong-pm-*.tgz"].last
-$node_version = ENV['NODE_VER'] || "0.10.36"
+$node_version = ENV['NODE_VER'] || "0.10.38"
 $NODE_URL = "http://nodejs.org/dist/v#{$node_version}/node-v#{$node_version}-linux-x64.tar.gz"
 npm_config_registry = ENV['npm_config_registry'] ||
                       `npm config get registry`.strip ||
@@ -33,7 +33,7 @@ $test = <<SCRIPT
     ## ($* > /dev/null && echo "ok # $*") || (echo "not ok # $*" >&2)
   }
   report npm install #{$NPM_REGISTRY} -g strong-pm.tgz
-  report sudo sl-pm-install --port 7777 --set-env SL_PM_VAGRANT=42
+  report sudo sl-pm-install --port 8701 --set-env SL_PM_VAGRANT=42
   report test -f /etc/init/strong-pm.conf
   report sudo start strong-pm
   report sudo status strong-pm
@@ -43,8 +43,8 @@ SCRIPT
 
 Vagrant.configure("2") do |config|
 
-  # Ubuntu 12.04 is a reasonable starting point
-  config.vm.box = "ubuntu/precise64"
+  # Ubuntu 14.04 is a reasonable starting point
+  config.vm.box = "ubuntu/trusty64"
 
   # used for installing npm packages from private repos
   config.ssh.forward_agent = true
@@ -64,8 +64,8 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: $test, privileged: false
 
   # expose manager's port
-  config.vm.network "forwarded_port", guest: 7777, host: 8702
+  config.vm.network "forwarded_port", guest: 8701, host: 8702
   # expose sample app's port
-  config.vm.network "forwarded_port", guest: 8888, host: 8889
+  config.vm.network "forwarded_port", guest: 3001, host: 8889
 
 end

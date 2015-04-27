@@ -27,11 +27,11 @@ cd app || exit 1
 rm -rf .git .strong-pm
 git clean -f -x -d .
 git init .
-echo "PORT=8888" > .env
 git add .
 git commit --author="sl-pm-test <nobody@strongloop.com>" -m "initial"
 sl-build --install --commit
-git push --quiet $PM_URL/repo HEAD
+curl -s -X POST -d'{"name":"default"}' -H "Content-Type: application/json" $PM_URL/api/Services
+git push --quiet $PM_URL/api/Services/1/deploy HEAD
 
 echo "# waiting for manager to deploy our app..."
 sleep 5
@@ -51,8 +51,8 @@ curl -s $APP_URL/this/is/a/test \
   && echo 'ok # echo server responded' \
   || echo 'not ok # echo server failed to respond'
 
-../../bin/sl-pmctl.js -C $PM_URL env-set foo=success bar=foo \
-  | grep -F -e 'Environment updated' \
+../../bin/sl-pmctl.js -C $PM_URL env-set 1 foo=success bar=foo \
+  | grep -F -e 'environment updated' \
   && echo 'ok # pmctl env-set command ran without error' \
   || echo 'not ok # failed to run env-set foo=success'
 
@@ -63,8 +63,8 @@ curl -s $APP_URL/env \
   && echo 'ok # set foo=success via pmctl' \
   || echo 'not ok # failed to set foo=success via pmctl'
 
-../../bin/sl-pmctl.js -C $PM_URL env-unset foo \
-  | grep -F -e 'Environment updated' \
+../../bin/sl-pmctl.js -C $PM_URL env-unset 1 foo \
+  | grep -F -e 'environment updated' \
   && echo 'ok # pmctl env-set command ran without error' \
   || echo 'not ok # failed to run env-set foo=success'
 
