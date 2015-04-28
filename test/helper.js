@@ -13,7 +13,7 @@ process.env.PATH += path.delimiter
   + path.resolve(__dirname, '../node_modules/.bin');
 
 exports.main = require('../').main;
-exports.prepare = require('../lib/prepare').prepare;
+exports.prepare = require('../lib/drivers/common/prepare').prepare;
 exports.stop = stop;
 
 function ex(cmd, async) {

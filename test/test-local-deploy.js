@@ -1,7 +1,7 @@
 'use strict';
 
 var debug = require('debug')('strong-pm:test');
-var deployer = require('../lib/local-deploy');
+var deployer = require('../lib/drivers/common/local-deploy');
 var local = require('./deploy').local;
 var path = require('path');
 var tap = require('tap');
