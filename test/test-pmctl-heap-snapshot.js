@@ -4,14 +4,19 @@ var helper = require('./helper-pmctl');
 helper.test('pmctl', function(t, pm) {
   var pmctl = pm.pmctlFn;
 
-  t.waiton(pmctl('status'), /current:$/m);
+  t.waiton(pmctl('status'), /Processes:$/m);
 
   t.test('heap snapshot', function(t) {
-    t.waiton(pmctl('status'), /current:$/m);
-    t.expect(pmctl('set-size', '1'));
-    t.waiton(pmctl('status'), /worker count: *1/);
-    t.expect(pmctl('heap-snapshot', '1', '_heap'));
-    t.waiton(pmctl('status'), /worker count: *1/);
+    // XXX(sam) we could resize and snapshot worker 0, but I don't think it
+    // makes a difference in this test.
+    //   t.expect(pmctl('set-size', '1', '1'));
+
+    // Match:
+    //      ID      PID   WID  Tracking objects?  CPU profiling?
+    //      ..
+    //  1.1.30561  30561   0
+    t.waiton(pmctl('status'), / 1\.1\..* 0/);
+    t.expect(pmctl('heap-snapshot', '1.1.0', '_heap'));
     t.test('heapsnapshot file', function(t) {
       t.doesNotThrow(
         function() {

@@ -6,11 +6,15 @@ var util = require('util');
 
 require('shelljs/global');
 
-exports.configForCommit = require('../lib/config').configForCommit;
+console.error('test/helper... start');
+
+// So dev deps, like sl-build, are in the path.
+process.env.PATH += path.delimiter
+  + path.resolve(__dirname, '../node_modules/.bin');
+
 exports.main = require('../').main;
 exports.prepare = require('../lib/prepare').prepare;
-exports.run = require('../lib/run').run;
-exports.stop = require('../lib/run').stop;
+exports.stop = stop;
 
 function ex(cmd, async) {
   console.log('exec `%s`', cmd);
@@ -48,6 +52,8 @@ exports.APPNAME = APPNAME;
 
 assert.equal(package().name, APPNAME, 'cwd is ' + APPNAME);
 
+assert(which('sl-build'), 'sl-build should be in path');
+
 rm('-rf', '../receive-base');
 rm('-rf', '.git', '.strong-pm');
 ex('git clean -f -d -x .');
@@ -57,11 +63,6 @@ ex('git add .');
 ex('git commit --author="sl-pm-test <nobody@strongloop.com>" -m initial');
 ex('sl-build --install --commit');
 
-assert(!test('-e', 'node_modules/debug'), 'dev dep not installed');
-assert(test('-e', 'node_modules/buffertools'), 'prod dep installed');
-assert(!test('-e', 'node_modules/buffertools/build'), 'addons not built');
-assert(which('sl-build'), 'sl-build not in path');
-
 console.log('test/app built succesfully');
 
 var server;
@@ -70,15 +71,26 @@ var port;
 exports.listen = function() {
   var base = '../receive-base';
   mkdir('-p', base);
-  var app = new Server('test', base, 0, 'pmctl');
-  app.on('listening', function(listenAddr){
+  server = new Server({
+    cmdName: 'test',
+    baseDir: base,
+    listenPort: 0,
+    controlPath: 'pmctl',
+  });
+  server.on('listening', function(listenAddr){
     port = listenAddr.port;
     console.log('git receive listening on  %d', port);
   });
 
-  app.start();
-  return app;
+  server.start();
+  return server;
 };
+
+function stop(callback) {
+  if (!server) return callback();
+  server._container.stop(callback);
+};
+
 
 // Pushes don't work if we have already pushed... so force a new repo name for
 // each push.
@@ -94,7 +106,7 @@ exports.push = function(repo, callback) {
   if (!repo) {
     repo = repoN();
   }
-  var cmd = util.format('git push http://127.0.0.1:%d/%s master:master', port, repo);
+  var cmd = util.format('sl-deploy http://127.0.0.1:%d master', port);
   // Must be async... or we block ourselves from receiving
   ex(cmd, function() {
     if (callback) {
@@ -109,9 +121,13 @@ exports.pushTarball = function(repo, callback) {
     repo = repoN();
   }
 
-  var cmd = "npm pack";
-  ex(cmd, function() {
-    cmd = util.format('curl -X PUT --data-binary @test-app-0.0.0.tgz http://127.0.0.1:%d/%s ', port, repo);
+  ex('npm pack', function() {
+    var api = 'api/Services/1/deploy';
+
+    // XXX(sam) this won't work on win32
+    cmd = util.format(
+      'curl -X PUT --data-binary @test-app-0.0.0.tgz http://127.0.0.1:%d/%s ',
+      port, api);
 
     ex(cmd, function() {
       if (callback) {
@@ -124,6 +140,7 @@ exports.pushTarball = function(repo, callback) {
 };
 
 exports.localDeploy = function(dirPath, repo, callback) {
+  var api = 'api/Services/1/deploy';
   var cmd = [
       'curl',
       '-H "Content-Type: application/x-pm-deploy"',
@@ -131,10 +148,12 @@ exports.localDeploy = function(dirPath, repo, callback) {
       '--data \'{ "local-directory": "' +
       dirPath +
       '" }\'',
-      util.format('http://127.0.0.1:%d/%s', port, repo)
+      util.format('http://127.0.0.1:%d/%s', port, api)
     ].join(' ');
 
   ex(cmd, function() {
     if (callback) return callback();
   });
 };
+
+console.error('test/helper... done');
