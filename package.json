@@ -39,6 +39,7 @@
   },
   "main": "index.js",
   "scripts": {
+    "pretest": "eslint . && jscs .",
     "lint": "eslint . && jscs .",
     "test": "tap --timeout=400 ./test/test-*"
   },
