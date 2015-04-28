@@ -9,6 +9,8 @@ Options:
   -l,--listen PORT  Listen on PORT for git pushes (default 8701).
   -C,--control CTL  Listen for local control messages on CTL (default `pmctl`).
   --no-control      Do not listen for local control messages.
+  --driver DRIVER   Execution backend to use for running apps. Current supported
+                    drivers are 'direct' and 'docker' (default `direct`).
 
 The base directory is used to save deployed applications, for working
 directories, and for any other files the process manager needs to create.
