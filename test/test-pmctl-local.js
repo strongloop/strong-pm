@@ -4,19 +4,33 @@ var helper = require('./helper-pmctl');
 helper.test('pmctl', function(t, pm) {
   var pmctl = pm.pmctlFn;
 
-  t.waiton(pmctl('status'), /current:$/m);
-
+  // Note in below that cluster size is set to 0, so that a running app will
+  // have a single process, wid 0, the supervisor.
   t.test('status has pm pid', function(t) {
-    t.expect(pmctl('status'), fmt('pid: *%d', pm.pid));
-    t.expect(pmctl('ls'), /test-app@/);
-    t.failon(pmctl('start'), 'running, so cannot be started');
-    t.expect(pmctl('stop'), 'stopped with status SIGTERM');
-    t.waiton(pmctl('status'), /status: *stopped/);
-    t.failon(pmctl('stop'), 'not running, so cannot be stopped');
-    t.expect(pmctl('start'), 'starting');
-    t.expect(pmctl('restart'), 'stopped with status SIGTERM, restarting');
-    t.waiton(pmctl('status'), /status: *started/);
-    t.expect(pmctl('env-get'), 'No matching environment variables defined');
+    t.waiton(pmctl('status', '1'), 'Processes');
+    t.expect(pmctl('get-process-count', '1'), 'processes: 1');
+
+    t.failon(pmctl('start', '1'), 'running, so cannot be started');
+
+    t.expect(pmctl('stop', '1'), 'Service.*hard stopped');
+    t.waiton(pmctl('status', '1'), 'Not started');
+    t.expect(pmctl('get-process-count', '1'), 'processes: 0');
+
+    // XXX(sam, rmg) status should be zero, but message should be like:
+    //   not running, so cannot be stopped
+    t.expect(pmctl('stop', '1'), 'Service.*hard stopped');
+    t.expect(pmctl('status', '1'), 'Not started');
+    t.expect(pmctl('get-process-count', '1'), 'processes: 0');
+
+    t.expect(pmctl('start', '1'), 'starting');
+    t.waiton(pmctl('status', '1'), 'Processes');
+    t.expect(pmctl('get-process-count', '1'), 'processes: 1');
+
+    t.expect(pmctl('restart', '1'), 'Service.*restarting');
+    t.waiton(pmctl('status', '1'), 'Processes');
+    t.expect(pmctl('get-process-count', '1'), 'processes: 1');
+
+    t.expect(pmctl('env-get', '1', '0'), 'No matching environment variables defined');
   });
 
   t.shutdown(pm);

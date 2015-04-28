@@ -117,8 +117,8 @@ function pm(args, env, callback) {
   function syncEnv(pm) {
     var auth = pm.env.TEST_STRONGLOOP_PM_HTTP_AUTH || '';
     auth += auth.length > 0 ? '@' : '';
-    pm.pmurl = fmt('http://%s127.0.0.1:%d/default', auth, pm.port);
-    pm.pmurlNoAuth = fmt('http://127.0.0.1:%d/default', pm.port);
+    pm.pmurl = fmt('http://%s127.0.0.1:%d', auth, pm.port);
+    pm.pmurlNoAuth = fmt('http://127.0.0.1:%d', pm.port);
     pm.pmctlUrl = fmt('http://%s127.0.0.1:%d/api', auth, pm.port);
     pm.pmctlUrlNoAuth = fmt('http://127.0.0.1:%d/api', pm.port);
     pm.pmctlPath = path.resolve(pm.cwd, 'pmctl');
@@ -133,7 +133,7 @@ function pmWithApp(args, env, callback) {
   reset(function() {
     pm(args, env, function(pm) {
       console.log('pmurl: %s', pm.pmurl);
-      cp.exec(fmt('git push %s master:master', pm.pmurl), function(er) {
+      cp.exec(fmt('sl-deploy %s master', pm.pmurl), function(er) {
         assert.ifError(er, 'git push succeeds when auth not required');
         callback(pm);
       });
@@ -157,6 +157,10 @@ function queued(t) {
       t[m].apply(t, arguments);
     };
   });
+
+  // Each waiton() adds a listener... so we pass the limit of 10.
+  t.setMaxListeners(50);
+
   return newT;
 
   function subTest(name, opts, cb) {
@@ -179,7 +183,8 @@ function queued(t) {
     async.series(queue, function() {
       if (server) {
         server.on('exit', function(code, signal) {
-          t.equal(signal, 'SIGTERM', 'pm server shutdown by us');
+          debug('server exit: code %j signal %j', code, signal);
+          t.notEqual(code, 0, 'pm server shutdown by us');
           t.end();
         });
         setTimeout(server.kill.bind(server, 'SIGTERM'), 2000);
@@ -197,22 +202,31 @@ function queued(t) {
   }
 }
 
+function testname(cmd, pattern) {
+  if (cmd[0] === '--control')
+    cmd = cmd.slice(2);
+  cmd = cmd.join(' ');
+  return fmt('cmd %j pattern %s', cmd, new RegExp(pattern));
+}
+
 function expect(t, extra, cmd, pattern, next) {
-  var name = fmt('pmctl %j =~ %s', cmd, new RegExp(pattern));
-  console.log('# START expect %s', name);
+  var name = testname(cmd, pattern);
+  console.log('\n# START expect %s', name);
   pmctl(cmd, function(out) {
     var match = checkOutput(out, pattern);
     extra = makeExtra(match, name, out.output, pattern, extra.stack);
-    console.log('# expect %s against code: %j', name, out.code);
 
-    t.equal(out.code, 0, name + ' exit code');
+    t.equal(out.code, 0, 'exit status should be zero for: ' + name);
 
     if (out.code == 0) {
       t.assert(match, name, extra);
     }
 
     if (out.code != 0 || !match) {
-      console.log('check failed against: <\n%>', out.output);
+      console.log('# FAIL expect %s against code: %j <\n%s>',
+                  name, out.code, out.output);
+    } else {
+      console.log('# OK expect %s', name);
     }
 
     next();
@@ -220,18 +234,23 @@ function expect(t, extra, cmd, pattern, next) {
 }
 
 function waiton(t, extra, cmd, pattern, next) {
-  var name = fmt('pmctl %j =~ %s', cmd, new RegExp(pattern));
-  console.log('# START waiton %s', name);
+  var name = testname(cmd, pattern);
+  console.log('\n# START waiton %s', name);
+  var running = true;
+  t.once('end', function() {
+    running = false;
+  });
   return check();
 
   function check() {
     pmctl(cmd, function(out) {
-      console.log("# waiton %s against code: %j", name, out.code);
       if (out.code == 0 && checkOutput(out, pattern)) {
+        console.log("# OK waiton %s", name);
         t.assert(true, name);
         return next();
       }
-      setTimeout(check, 1000);
+      if (running)
+        setTimeout(check, 1000);
     });
   }
 }
@@ -242,11 +261,23 @@ function wait(t, extra, time, reason, next) {
 }
 
 function failon(t, extra, cmd, pattern, next) {
-  var name = fmt('pmctl %j !~ %s', cmd, new RegExp(pattern));
-  console.log('# START failon %s', name);
+  var name = testname(cmd, pattern);
+  console.log('\n# START failon %s', name);
   pmctl(cmd, function(out) {
+    var match = checkOutput(out, pattern);
+    extra = makeExtra(match, name, out.output, pattern, extra.stack);
     console.log('# failon %s against code: %j', name, out.code);
-    t.notEqual(out.code, 0, name);
+
+    t.notEqual(out.code, 0, 'exit status should not be zero for: ' + name);
+
+    if (out.code != 0) {
+      t.assert(match, name, extra);
+    }
+
+    if (out.code == 0 || !match) {
+      console.log('check failed against code %d <\n%s>', out.code, out.output);
+    }
+
     return next();
   });
 }
@@ -264,7 +295,7 @@ function pmctl(cmd, callback) {
       code: er ? er.code : 0
     };
     debug('Run: %s => %s out <\n%s>\nerr <\n%s>',
-          cmd, out.code, out.out, out.err);
+          cmd, out.code, stdout, stderr);
     return callback(out);
   });
 }
@@ -272,7 +303,10 @@ function pmctl(cmd, callback) {
 function checkOutput(out, pattern) {
   // undefined and '' become /(?:)/
   // RegExp's become themselves
-  return new RegExp(pattern).test(out.output);
+  var match = new RegExp(pattern).test(out.output);
+  //debug('pattern match: %j', match);
+  //debug('out <\n%s>', out.output);
+  return match;
 }
 
 function pmctlWithCtl(ctlPath) {

@@ -12,15 +12,16 @@ var cpuProfilingSupported = require('semver').gt(process.version, '0.11.0');
 
 var REPO = 'some-repo-name';
 
-function pmctl(/* cmd, arguments..., callback*/) {
+function pmctl(/*arguments..., callback*/) {
   var cli = require.resolve('../bin/sl-pmctl.js');
   var args = Array.prototype.slice.call(arguments);
   var callback = args.pop();
 
   var cmd = cli + ' ' + util.format.apply(util, args);
-  var out = exec(cmd, function(error, stdout, stderr) {
+  var out = exec(cmd, function(err, stdout, stderr) {
     output = stdout.trim() + stderr.trim();
-    console.log('Run: %s => %s ', cmd, output.replace(/\n/g, '$\n'));
+    console.log('Run: %s => err: %j stdout <\n%s>', cmd, err, output);
+    assert.ifError(err);
     setImmediate(callback);
   });
 }
@@ -29,8 +30,8 @@ server.on('listening', function() {
   app.push(REPO);
 });
 
-var ServiceProcess = server._app.models.ServiceProcess;
-var ServiceInstance = server._app.models.ServiceInstance;
+var ServiceProcess = server._meshApp.models.ServiceProcess;
+var ServiceInstance = server._meshApp.models.ServiceInstance;
 
 function testInitialInstState(cb) {
   ServiceInstance.findOne(function(err, instance) {
@@ -49,6 +50,7 @@ function testInitialInstState(cb) {
 function testInstanceState(expected, cb) {
   ServiceInstance.findOne(function(err, instance) {
     assert.ifError(err);
+    console.log('testInstanceState: expect started=%j:', expected, instance);
     assert.equal(instance.started, expected);
     cb(err);
   });
@@ -72,7 +74,8 @@ function testCpuStart(cb) {
 
   ServiceProcess.findOne({where: { workerId: 1 }}, function(err, proc) {
     assert.ifError(err);
-    assert.equal(proc.isProfiling, true);
+    assert(proc, 'worker 1 exists');
+    assert.equal(proc.isProfiling, true, 'worker 1 is profiling');
     cb(err);
   });
 }
@@ -131,7 +134,7 @@ function testWorkerExitState(cb) {
       cb(err);
     });
   });
-  pmctl('set-size 0', function(){});
+  pmctl('set-size 1 0', function(){});
 }
 
 function killClusterMaster(cb) {
@@ -163,28 +166,38 @@ server.once('running', function() {
   var tests = [
     testInitialInstState,
     testInitialWorkerState,
-    pmctl.bind(null, 'cpu-start 1'),
+    pmctl.bind(null, 'set-size 1 1'),
+    // This test doesn't have a way to wait... so inject a number of status
+    // calls. We're waiting for worker 1 to have started.
+    pmctl.bind(null, 'status 1'),
+    pmctl.bind(null, 'status 1'),
+    pmctl.bind(null, 'status 1'),
+    pmctl.bind(null, 'cpu-start 1.1.1'),
     testCpuStart,
-    pmctl.bind(null, 'cpu-stop 1'),
+    pmctl.bind(null, 'cpu-stop 1.1.1'),
     testCpuStop,
-    pmctl.bind(null, 'objects-start 1'),
+    pmctl.bind(null, 'objects-start 1.1.1'),
     testObjTrackingStart,
-    pmctl.bind(null, 'objects-stop 1'),
+    pmctl.bind(null, 'objects-stop 1.1.1'),
     testObjTrackingStop,
     testWorkerExitState,
     killClusterMaster,
     testRestartedInstState,
     testTotalWorkers,
     testInstanceState.bind(null, true),
-    pmctl.bind(null, 'stop'),
+    pmctl.bind(null, 'stop 1'),
+    pmctl.bind(null, 'status 1'),
+    pmctl.bind(null, 'status 1'),
+    pmctl.bind(null, 'status 1'),
     testInstanceState.bind(null, false)
   ];
 
-  if (process.platform === 'linux') {
-    tests.push(pmctl.bind(null, 'start'),
-      pmctl.bind(null, 'cpu-start 1 1000'),
+  if (process.platform === 'XXX' + 'linux') {
+    tests.push(
+      pmctl.bind(null, 'start 1'),
+      pmctl.bind(null, 'cpu-start 1.1.1 1000'),
       testCpuWatchdogStart,
-      pmctl.bind(null, 'cpu-stop 1'),
+      pmctl.bind(null, 'cpu-stop 1.1.1'),
       testCpuStop);
   }
 
