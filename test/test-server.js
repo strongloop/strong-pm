@@ -85,6 +85,8 @@ tap.test('server test', function(t) {
       driver = this;
     }
 
+    MockDriver.prototype.getName = _.constant('Mock');
+
     MockDriver.prototype.on = function(event) {
       var wanted = 'request or listening';
       if (event === 'request' || event === 'listening') {
@@ -189,6 +191,7 @@ tap.test('server test', function(t) {
       this._containers = {};
     }
     util.inherits(MockDriver, EventEmitter);
+    MockDriver.prototype.getName = _.constant('Mock');
     MockDriver.prototype.start = function(callback) {
       this.emit('request', instId, {
         cmd: 'started',
