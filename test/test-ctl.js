@@ -89,6 +89,28 @@ tap.test('log-dump', {todo: true}, function(t) {
   t.end();
 });
 
-tap.test('current', {todo: true}, function(t) {
-  t.end();
+tap.test('current', function(t) {
+  function MockServer() {
+    this._driver = new MockDriver(this);
+  }
+  util.inherits(MockServer, Server);
+
+  function MockDriver(server) {
+    this.server = server;
+  }
+  util.inherits(MockDriver, NullDriver);
+
+  t.assert(NullDriver.prototype.requestOfInstance, 'Driver method exists');
+  MockDriver.prototype.requestOfInstance = function(id, req, callback) {
+    t.equal(req.cmd, 'sub-cmd', 'driver is given sub cmd');
+    setImmediate(callback, {message: 'response'});
+  };
+
+  var opts = {server: new MockServer()};
+  var req = {cmd: 'current', sub: 'sub-cmd'};
+  ctl(opts, req, function(rsp) {
+    t.assert(!rsp.error, 'should not error');
+    t.equal(rsp.message, 'response', 'should be response');
+    t.end();
+  });
 });
