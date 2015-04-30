@@ -2,13 +2,11 @@
 
 if ! which vagrant; then
   echo "ok # skip vagrant tests, vagrant not found"
-  echo "no vagrant" >&2
   exit
 fi
 
 if test -n "$SKIP_VAGRANT"; then
   echo "ok # skip vagrant tests, disabled with SKIP_VAGRANT"
-  echo "skip vagrant" >&2
   exit
 fi
 

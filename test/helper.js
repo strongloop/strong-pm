@@ -6,8 +6,6 @@ var util = require('util');
 
 require('shelljs/global');
 
-console.error('test/helper... start');
-
 // So dev deps, like sl-build, are in the path.
 process.env.PATH += path.delimiter
   + path.resolve(__dirname, '../node_modules/.bin');
@@ -155,5 +153,3 @@ exports.localDeploy = function(dirPath, repo, callback) {
     if (callback) return callback();
   });
 };
-
-console.error('test/helper... done');
