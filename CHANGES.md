@@ -1,4 +1,88 @@
-2015-03-28, Version 3.1.9
+2015-04-30, Version 4.0.0
+=========================
+
+ * log when an app/service starts listening on a port (Ryan Graham)
+
+ * ctl: default to instance id 1 (Ryan Graham)
+
+ * test: test ctl 'current' commands (Ryan Graham)
+
+ * fix env-set from pm@3.x pmctl clients (Ryan Graham)
+
+ * test: unit tests for ctl handlers (Ryan Graham)
+
+ * update ctl handler to use instance env (Ryan Graham)
+
+ * package: bump to 4.x for multi-app support (Sam Roberts)
+
+ * Support multiple managed applications (Sam Roberts)
+
+ * test: move test-start-restart to strong-runner (Sam Roberts)
+
+ * service-manager: ctlRequest renamed to onCtlRequest (Sam Roberts)
+
+ * service-manager: reformat to reduce line lengths (Sam Roberts)
+
+ * package: loopback-sdk-angular is unused (Sam Roberts)
+
+ * package: update eslint (Sam Roberts)
+
+ * package: remove unused 'build' script (Sam Roberts)
+
+ * server: refactor inline event listeners to methods (Sam Roberts)
+
+ * server: always use onCtlRequest name (Sam Roberts)
+
+ * ctl: don't depend on server private properties (Sam Roberts)
+
+ * server: rename _app to _meshApp (Sam Roberts)
+
+ * pm: remove fake metrics (-F) (Sam Roberts)
+
+ * receive: pass baseApp, don't use private property (Sam Roberts)
+
+ * lib: remove unused _deploymentReceiver property (Sam Roberts)
+
+ * lib: refactor to use strong-runner (Sam Roberts)
+
+ * server: in-line XXX comments on future changes (Sam Roberts)
+
+ * test: server-metadata, assert on pmctl error (Sam Roberts)
+
+ * test: use assert.notEqual(), not assert(x != y) (Sam Roberts)
+
+ * ctl: rename "app" to "server" (Sam Roberts)
+
+ * docker: use official node image as base (Ryan Graham)
+
+ * Add extra blank line (Ryan Schumacher)
+
+ * Add message about git requirement (Ryan Schumacher)
+
+ * fix typo in user visible error message (Setogit)
+
+ * install: fix typo in auth option checking (Ryan Graham)
+
+ * docs: fix curl commands in docker instructions (Ryan Graham)
+
+ * test: simplify express-usage-record format check (Ryan Graham)
+
+ * test: use make 'old' record 25 hours old (Ryan Graham)
+
+ * docker: expose port 3000 by default (Ryan Graham)
+
+ * fixme! review comment (Krishna Raman)
+
+ * set trace.enableDebugServer from process.env.STRONGLOOP_DEBUG_MINKELITE (Setogit)
+
+ * Add option which enables tracing (Krishna Raman)
+
+ * Fix metadata tests (Krishna Raman)
+
+ * Remove npm module list from instance model (Krishna Raman)
+
+
+2015-03-27, Version 3.1.9
 =========================
 
  * Fix markdown for links in README.md (Krishna Raman)
