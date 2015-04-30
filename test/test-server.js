@@ -31,7 +31,11 @@ tap.test('server test', function(t) {
     };
 
     MockDriver.prototype.on = function(event) {
-      tt.equal(event, 'request', 'event handler must be registered');
+      var wanted = 'request or listening';
+      if (event === 'request' || event === 'listening') {
+        wanted = event;
+      }
+      tt.equal(event, wanted, 'event handler must be registered');
     }
 
     var serviceManager;
@@ -58,7 +62,7 @@ tap.test('server test', function(t) {
       MeshServer: MockMeshServerFactory
     };
 
-    tt.plan(6);
+    tt.plan(7);
 
     var s = new Server(options);
     tt.equal(driver.options.baseDir, options.baseDir, 'base dir must match');
@@ -82,7 +86,11 @@ tap.test('server test', function(t) {
     }
 
     MockDriver.prototype.on = function(event) {
-      tt.equal(event, 'request', 'event handler must be registered');
+      var wanted = 'request or listening';
+      if (event === 'request' || event === 'listening') {
+        wanted = event;
+      }
+      tt.equal(event, wanted, 'event handler must be registered');
     };
 
     MockDriver.prototype.setStartOptions = function(_instId, _startOptions) {
