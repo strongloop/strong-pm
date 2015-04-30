@@ -162,15 +162,29 @@ function testTotalWorkers(cb) {
   });
 }
 
+function waitForWorkers(cb) {
+  waitForWorkers.count = waitForWorkers.count || 0;
+  waitForWorkers.count += 1;
+  ServiceProcess.find(function(err, procs) {
+    console.log('# checked %d times waiting for a worker', waitForWorkers.count);
+    // supervisor + workers
+    if (procs.length > 1) {
+      return cb();
+    } else if (waitForWorkers.count > 20) {
+      return cb(err || Error('no workers'));
+    } else {
+      return setTimeout(waitForWorkers.bind(null, cb), 100);
+    }
+  });
+}
+
 server.once('running', function() {
   var tests = [
     testInitialInstState,
     testInitialWorkerState,
     pmctl.bind(null, 'set-size 1 1'),
-    // This test doesn't have a way to wait... so inject a number of status
-    // calls. We're waiting for worker 1 to have started.
     pmctl.bind(null, 'status 1'),
-    pmctl.bind(null, 'status 1'),
+    waitForWorkers,
     pmctl.bind(null, 'status 1'),
     pmctl.bind(null, 'cpu-start 1.1.1'),
     testCpuStart,
