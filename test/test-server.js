@@ -41,6 +41,7 @@ tap.test('server test', function(t) {
     var serviceManager;
     function MockServiceManager(o) {
       this.options = o;
+      this.handle = function(req,res,next) {};
       serviceManager = this;
     }
 
@@ -125,6 +126,7 @@ tap.test('server test', function(t) {
     var serviceManager;
     function MockServiceManager(o) {
       this.options = o;
+      this.handle = function(req,res,next) {};
       serviceManager = this;
     }
 
