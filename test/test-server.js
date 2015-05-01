@@ -219,6 +219,7 @@ tap.test('server test', function(t) {
       function(instanceId, env, callback) {
         callback();
       };
+    MockDriver.prototype.setStartOptions = function() {};
 
     var options = {
       cmdName: 'pm',
