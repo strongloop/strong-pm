@@ -10,10 +10,14 @@ if test -n "$SKIP_VAGRANT"; then
   exit
 fi
 
-PKG=$(npm pack ..)
+PKG=strong-pm.tgz
+NODE_NAME=$(basename $(node -p process.execPath))
+NODE_VER=$(node --version)
+make $PKG
 
+echo "# testing with $NODE_NAME-$NODE_VER"
 PKG_NAME=$PKG vagrant destroy --force
-PKG_NAME=$PKG NODE_VER=0.10.36 vagrant up --provision
+PKG_NAME=$PKG NODE_NAME=$NODE_NAME NODE_VER=$NODE_VER vagrant up --provision
 
 PM_URL=http://127.0.0.1:8702
 APP_URL=http://127.0.0.1:8889

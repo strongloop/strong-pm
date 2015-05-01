@@ -1,4 +1,4 @@
-FROM node:0.10
+FROM NODE_IMAGE:NODE_VERSION
 
 # Create "strongloop" user
 RUN useradd -ms /bin/bash strongloop \
