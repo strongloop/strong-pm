@@ -43,10 +43,13 @@ tap.test('start runs last services', function(t) {
         _.pull(instanceIds, options.instanceId);
         return callback();
       },
+      setStartOptions: function(options) {
+        t.assert('size' in options);
+      },
     }
   }
 
-  t.plan(5);
+  t.plan(8);
 
   d.start(instanceMetas, function(er) {
     t.ifError(er);
