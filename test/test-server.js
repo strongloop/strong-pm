@@ -1,13 +1,14 @@
-var EventEmitter = require('events').EventEmitter;
-var Server = require('../lib/server');
+var _ = require('lodash');
 var assert = require('assert');
 var async = require('async');
 var debug = require('debug')('strong-pm:test');
-var path = require('path');
-var tap = require('tap');
+var EventEmitter = require('events').EventEmitter;
 var events = require('events');
-var util = require('util');
+var path = require('path');
+var Server = require('../lib/server');
 var shell = require('shelljs');
+var tap = require('tap');
+var util = require('util');
 
 var BASE = path.resolve(__dirname, '.strong-pm');
 process.env.STRONGLOOP_MESH_DB = 'memory://';
