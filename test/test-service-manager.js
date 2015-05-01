@@ -4,6 +4,92 @@ var ServiceManager = require('../lib/service-manager');
 var meshServer = require('strong-mesh-models').meshServer;
 var tap = require('tap');
 
+tap.test('old-style git deploy', function(t) {
+  var req = {
+    url: '/default/a-bunch?of-git-stuff',
+  };
+  var res = {
+    setHeaders: function(status, values) {
+      console.error('setHeaders: %j %j', status, values);
+    },
+    end: function(body) {
+      t.assert(false, body);
+      t.end();
+    },
+  };
+  var next = function() {};
+  var server = {
+    getDefaultEnv: function() { return {}; },
+    updateInstanceEnv: function(_, __, callback) { callback();  },
+    deployInstance: deployInstance,
+  };
+  var sm = new ServiceManager(server);
+  var meshApp = meshServer(sm);
+
+  sm.initOrUpdateDb(meshApp, function(err) {
+    t.ifError(err, 'load failed');
+
+    sm.handle(req, res, next);
+  });
+
+  function deployInstance(_, _req, _res) {
+    t.equal(_req, req);
+    t.equal(_res, res);
+    t.end();
+  }
+});
+
+tap.test('old-style local or pack deploy', function(t) {
+  var req = {
+    url: '/default',
+  };
+  var res = {};
+  var next = function() {};
+  var server = {
+    getDefaultEnv: function() { return {}; },
+    updateInstanceEnv: function(_, __, callback) { callback();  },
+    deployInstance: deployInstance,
+  };
+  var sm = new ServiceManager(server);
+  var meshApp = meshServer(sm);
+
+  sm.initOrUpdateDb(meshApp, function(err) {
+    t.ifError(err, 'load failed');
+
+    sm.handle(req, res, next);
+  });
+
+  function deployInstance(_, _req, _res) {
+    t.equal(_req, req);
+    t.equal(_res, res);
+    t.end();
+  }
+});
+
+tap.test('old-style leaves non-deploy routes alone', function(t) {
+  var req = {
+    url: '/api',
+  };
+  var res = {};
+  var next = function() {
+    t.assert(true, 'passes through');
+    t.end();
+  };
+  var server = {
+    getDefaultEnv: function() { return {}; },
+    updateInstanceEnv: function(_, __, callback) { callback();  },
+  };
+  var sm = new ServiceManager(server);
+  var meshApp = meshServer(sm);
+
+  sm.initOrUpdateDb(meshApp, function(err) {
+    t.ifError(err, 'load failed');
+
+    sm.handle(req, res, next);
+  });
+});
+
+
 tap.test('construction', function(t) {
   var server = {};
   var sm = new ServiceManager(server);
