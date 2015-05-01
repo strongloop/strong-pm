@@ -1,6 +1,6 @@
 'use strict';
 
-var Driver = require('../lib/drivers/direct/direct-driver');
+var Driver = require('../lib/drivers/direct');
 var _ = require('lodash');
 var debug = require('debug')('strong-pm:test');
 var driverHelpers = require('./driver-helpers');

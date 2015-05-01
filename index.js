@@ -1,6 +1,6 @@
 'use strict';
 
-var DirectDriver = require('./lib/drivers/direct/direct-driver');
+var DirectDriver = require('./lib/drivers/direct');
 var Parser = require('posix-getopt').BasicParser;
 var mkdirp = require('mkdirp').sync;
 var path = require('path');

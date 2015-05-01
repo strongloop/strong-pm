@@ -3,6 +3,7 @@ var mktmpdir = require('mktmpdir');
 var fs = require('fs');
 var path = require('path');
 var test = require('tap').test;
+var _ = require('lodash');
 
 process.env.STRONGLOOP_MESH_DB = 'memory://';
 test('service environment', function(t) {
@@ -13,6 +14,7 @@ test('service environment', function(t) {
       this.options = o;
       driver = this;
     };
+    MockDriver.prototype.getName = _.constant('Mock');
     MockDriver.prototype.on = function() {};
 
     function matchEnv(tt, env, expectedEnv) {

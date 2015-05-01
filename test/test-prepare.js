@@ -2,7 +2,7 @@ var debug = require('debug')('strong-pm:test');
 var fmt = require('util').format;
 var fs = require('fs');
 var path = require('path');
-var prepare = require('../lib/prepare').prepare;
+var prepare = require('../lib/drivers/common/prepare').prepare;
 var rmrf = require('rimraf');
 var tap = require('tap');
 
