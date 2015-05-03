@@ -22,6 +22,7 @@ tap.test('old-style git deploy', function(t) {
     getDefaultEnv: function() { return {}; },
     updateInstanceEnv: function(_, __, callback) { callback();  },
     deployInstance: deployInstance,
+    setStartOptions: function() {},
   };
   var sm = new ServiceManager(server);
   var meshApp = meshServer(sm);
@@ -49,6 +50,7 @@ tap.test('old-style local or pack deploy', function(t) {
     getDefaultEnv: function() { return {}; },
     updateInstanceEnv: function(_, __, callback) { callback();  },
     deployInstance: deployInstance,
+    setStartOptions: function() {},
   };
   var sm = new ServiceManager(server);
   var meshApp = meshServer(sm);
@@ -78,6 +80,7 @@ tap.test('old-style leaves non-deploy routes alone', function(t) {
   var server = {
     getDefaultEnv: function() { return {}; },
     updateInstanceEnv: function(_, __, callback) { callback();  },
+    setStartOptions: function() {},
   };
   var sm = new ServiceManager(server);
   var meshApp = meshServer(sm);

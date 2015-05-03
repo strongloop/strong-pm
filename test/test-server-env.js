@@ -16,6 +16,7 @@ test('service environment', function(t) {
     };
     MockDriver.prototype.getName = _.constant('Mock');
     MockDriver.prototype.on = function() {};
+    MockDriver.prototype.setStartOptions = function() {};
 
     function matchEnv(tt, env, expectedEnv) {
       // PORT env is auto assigned so it should exist but we can exclude it when
