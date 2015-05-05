@@ -19,5 +19,6 @@ assert_exit 0 $CMD --port 7777 \
 # Upstart 0.6 template uses logger because console log isn't supported
 assert_file $TMP/upstart.conf "mkfifo /tmp/strong-pm"
 assert_file $TMP/upstart.conf "logger -t strong-pm"
+assert_file $TMP/upstart.conf "--driver direct"
 
 unset SL_PM_INSTALL_IGNORE_PLATFORM
