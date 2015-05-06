@@ -1,4 +1,36 @@
-2015-03-28, Version 3.1.9
+2015-05-06, Version 3.2.0
+=========================
+
+ * docker: use official node image as base (Ryan Graham)
+
+ * Add extra blank line (Ryan Schumacher)
+
+ * Add message about git requirement (Ryan Schumacher)
+
+ * fix typo in user visible error message (Setogit)
+
+ * install: fix typo in auth option checking (Ryan Graham)
+
+ * docs: fix curl commands in docker instructions (Ryan Graham)
+
+ * test: simplify express-usage-record format check (Ryan Graham)
+
+ * test: use make 'old' record 25 hours old (Ryan Graham)
+
+ * docker: expose port 3000 by default (Ryan Graham)
+
+ * fixme! review comment (Krishna Raman)
+
+ * set trace.enableDebugServer from process.env.STRONGLOOP_DEBUG_MINKELITE (Setogit)
+
+ * Add option which enables tracing (Krishna Raman)
+
+ * Fix metadata tests (Krishna Raman)
+
+ * Remove npm module list from instance model (Krishna Raman)
+
+
+2015-03-27, Version 3.1.9
 =========================
 
  * Fix markdown for links in README.md (Krishna Raman)
