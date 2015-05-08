@@ -1,3 +1,43 @@
+2015-05-08, Version 4.1.0
+=========================
+
+ * fix debug logging of app preparation (Ryan Graham)
+
+ * driver: implement changing cluster size (Ryan Graham)
+
+ * Fix default cluster size not honouring environment (Ryan Graham)
+
+ * prepare: redirect stderr to stdout (Ryan Graham)
+
+ * service-manager: implement cluster set-size (Sam Roberts)
+
+ * test: fix missing lodash in test-server.js (Ryan Graham)
+
+ * server: support old-style deploy to / (Sam Roberts)
+
+ * test: use same node version as host for e2e tests (Ryan Graham)
+
+ * test: make server-metadata test more robust (Ryan Graham)
+
+ * test: reduce noise on 'npm test' (Ryan Graham)
+
+ * server: comments working towards rework of container private meta info (Sam Roberts)
+
+ * service-manager: add debug statements and comments (Sam Roberts)
+
+ * package: run lint as part of pre-test (Sam Roberts)
+
+ * test: update generic driver API test (Ryan Graham)
+
+ * refactor: move deployment helpers to drivers/common (Ryan Graham)
+
+ * refactor: simplify direct-driver path (Ryan Graham)
+
+ * server: honour async service shutdown (Ryan Graham)
+
+ * fix driver 'listening' event handling (Ryan Graham)
+
+
 2015-04-30, Version 4.0.0
 =========================
 
