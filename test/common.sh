@@ -1,18 +1,34 @@
 #!/bin/bash
 fails=0
+tests=0
+skips=0
+
+trap assert_report EXIT
 
 function fail() {
-  report=$1
-  output=$2
+  local report=$1
+  local output=$2
   fails=$((fails+1))
-  echo "not ok # $report"
+  tests=$((tests+1))
+  echo "not ok $tests # $report" >&3
   echo "# $report" >&2
   echo "$output" >&2
 }
 
 function ok() {
   cmd=$1
-  echo "ok # $cmd"
+  tests=$((tests+1))
+  echo "ok $tests # $cmd" >&3
+}
+
+function skip() {
+  comment=$1
+  tests=$((tests+1))
+  echo "ok $tests # SKIP $comment" >&3
+}
+
+function comment() {
+  echo "# $*" >&3
 }
 
 function assert_exit() {
@@ -71,6 +87,30 @@ function assert_not_file() {
   fi
 }
 
+function bailout() {
+  fail "$1"
+  echo "Bail out!" >&3
+  echo "$1" >&3
+  assert_report
+}
+
 function assert_report() {
+  echo "1..$tests" >&3
   exit $fails
 }
+
+echo 'TAP version 13'
+export PATH=$(dirname $(pwd))/node_modules/.bin:$PATH
+
+# make fd 3 the new fd 1 and redirect original fd 1 to fd 2
+# this allows us to completely isolate the TAP output from these helpers
+# to their own stream
+if test -z "$DEBUG"; then
+  exec 3>&1 2>/dev/null 1>&2
+  comment "suppressing stderr, set DEBUG to restore"
+else
+  exec 3>&1 1>&2
+fi
+
+comment "using npm registry $(npm config get registry)"
+comment "using $(basename $(node -p process.execPath))-$(node -p process.version)"

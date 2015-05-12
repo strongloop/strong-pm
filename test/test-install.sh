@@ -4,7 +4,7 @@ source common.sh
 # Setup
 CMD="node ../bin/sl-pm-install.js"
 TMP=`mktemp -d -t sl-svc-installXXXXXX`
-echo "# using tmpdir: $TMP"
+comment "using tmpdir: $TMP"
 
 export SL_PM_INSTALL_IGNORE_PLATFORM=true
 
@@ -96,4 +96,3 @@ else
 fi
 
 unset SL_PM_INSTALL_IGNORE_PLATFORM
-assert_report
