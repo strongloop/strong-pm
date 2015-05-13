@@ -2,10 +2,14 @@ var assert = require('assert');
 var async = require('async');
 var debug = require('debug')('strong-pm:test');
 var path = require('path');
+var tap = require('tap');
 
 require('shelljs/global');
 
 console.log('working dir for %s is %s', process.argv[1], process.cwd());
+
+// Prevent usage text from confusing the TAP parser
+console.log = console.error;
 
 var main = require('../').main;
 
@@ -27,7 +31,7 @@ function expectError(er) {
 }
 
 // argv [0] and [1] are ignored (they are node and script name, not options)
-async.parallel([
+var tests = [
   main.bind(null, ['', '', '-h']),
   main.bind(null, ['', '', '--help']),
   main.bind(null, ['', '', '-hv']),
@@ -49,8 +53,16 @@ async.parallel([
       return callback(expectError(er));
     });
   },
-], function(er, results) {
-  debug('test-help: error=%s:', er, results);
-  assert.ifError(er);
-  ok = true;
+];
+
+tap.test('sl-pm usage', function(t) {
+  t.plan(tests.length + 1);
+  async.parallel(tests, function(err, results) {
+    results.forEach(function(res) {
+      t.ifError(res);
+    });
+    t.ifError(err);
+    ok = true;
+    t.end();
+  });
 });
