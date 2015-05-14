@@ -1,3 +1,11 @@
+2015-05-14, Version 4.1.1
+=========================
+
+ * service-manager: robust to missing json (Sam Roberts)
+
+ * eslint: allow new without parentheses (Sam Roberts)
+
+
 2015-05-08, Version 4.1.0
 =========================
 
