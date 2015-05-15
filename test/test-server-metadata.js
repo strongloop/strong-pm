@@ -7,6 +7,9 @@ var exec = require('child_process').exec;
 var path = require('path');
 var util = require('util');
 
+// TODO: convert to tap test and use tap@1's --bail option instead of asserts
+//       to get early bailout on the first failure.
+
 var server = app.listen();
 var cpuProfilingSupported = require('semver').gt(process.version, '0.11.0');
 
@@ -95,7 +98,7 @@ function testCpuStop(cb) {
 function testCpuWatchdogStart(cb) {
   if (!cpuProfilingSupported) return cb();
 
-  ServiceProcess.findOne({where: { workerId: 1, stopTime: null }}, 
+  ServiceProcess.findOne({where: { workerId: 1, stopTime: null }},
     function(err, proc) {
       assert.ifError(err);
       assert.equal(proc.isProfiling, true);

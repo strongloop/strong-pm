@@ -1,14 +1,16 @@
-#!/bin/sh
-
+#!/bin/bash
 set -e
 
+cd $(dirname "${BASH_SOURCE[0]}")
+source common.sh
+
 if ! docker info > /dev/null; then
-  echo "ok # skip docker tests, docker not installed or not running"
+  skip "docker not installed or not running"
   exit
 fi
 
 if test -n "$SKIP_DOCKER"; then
-  echo "ok # skip docker tests, disabled with SKIP_DOCKER"
+  skip "disabled with SKIP_DOCKER"
   exit
 fi
 
@@ -29,16 +31,15 @@ docker_run() {
     --env STRONGLOOP_PM_HTTP_AUTH=$STRONGLOOP_PM_HTTP_AUTH \
     --cidfile=sl-pm.docker.cid \
     $1 --listen 8701
+  ok 'docker run: pm container started'
 
   SL_PM=$(cat sl-pm.docker.cid)
   rm sl-pm.docker.cid
 
-  echo "# strong-pm running in container: $SL_PM"
-  echo '# tailing container log to stderr...'
+  comment "strong-pm running in container: $SL_PM"
+  comment 'tailing container log to stderr...'
   docker logs -t -f $SL_PM &
-  LOGGER=$!
-
-  # trap "docker stop $SL_PM; kill $LOGGER" EXIT
+  # docker log will die when the container it is connected to dies
 
   if which boot2docker > /dev/null; then
     LOCALHOST=$(boot2docker ip 2> /dev/null)
@@ -57,64 +58,73 @@ docker_run() {
   export APP2=http://$LOCALHOST:$(port $(docker port $SL_PM 3002/tcp))
   export APP1_GIT=$STRONGLOOP_PM/api/Services/1/deploy
   export APP2_GIT=$STRONGLOOP_PM/api/Services/2/deploy
-  echo "# strong-pm URL: $STRONGLOOP_PM"
-  echo "# app URL: $APP"
+  comment "strong-pm URL: $STRONGLOOP_PM"
+  comment "app URL: $APP"
 }
 
 make npm_config_registry=${npm_config_registry:-$(npm config get registry)} container/strong-pm.tgz container/Dockerfile
+ok "prepared Dockerfile for building test image"
 
-docker build -t strong-pm:test container
+docker build -t strong-pm:test container \
+  && ok 'docker build: pm container built'
 docker_run strong-pm:test
 
 # If this fails, bail out, otherwise we could do irreparable damage to the
 # parent strong-pm repo if run from the wrong directory
-cd app || exit 1
+cd app || bailout 'could not cd into test app'
 rm -rf .git .strong-pm
 git clean -f -x -d .
 git init .
 git add .
 git commit --author="sl-pm-test <nobody@strongloop.com>" -m "initial"
 sl-build --install --commit
-echo "# creating Service 1 to we can deploy to it"
-curl -s -X POST -d'{"name":"default"}' -H "Content-Type: application/json" $STRONGLOOP_PM/api/Services
-git push --quiet $APP1_GIT HEAD
+comment "creating Service 1 to we can deploy to it"
+curl -s -X POST -d'{"name":"default"}' \
+        -H "Content-Type: application/json" \
+        $STRONGLOOP_PM/api/Services \
+  && ok 'created service 1' \
+  || fail 'could not create service 1'
 
-echo "# waiting for manager to deploy our app..."
+git push --quiet $APP1_GIT HEAD \
+  && ok 'git pushed app' \
+  || fail 'could not git push app as service 1'
+
+comment "waiting for manager to deploy our app..."
 sleep 5
-echo "# polling...."
+comment "polling...."
 while ! curl -sI $APP1/this/is/a/test; do
-  echo "# nothing yet, sleeping for 5s..."
+  comment "nothing yet, sleeping for 5s..."
   sleep 5
 done
 
 curl -s $APP1/this/is/a/test \
   | grep -F -e '/this/is/a/test' \
-  && echo 'ok # echo server responded' \
-  || echo 'not ok # echo server failed to respond'
+  && ok 'echo server responded' \
+  || fail 'echo server failed to respond'
 
 ../../bin/sl-pmctl.js -C $STRONGLOOP_PM env-set 1 foo=success bar=foo \
   | grep -F -e 'environment updated' \
-  && echo 'ok # pmctl env-set command ran without error' \
-  || echo 'not ok # failed to run env-set foo=success'
+  && ok 'pmctl env-set command ran without error' \
+  || fail 'failed to run env-set foo=success'
 
 sleep 5 # Long enough for app to restart
 
 curl -s $APP1/env \
   | grep -F -e '"foo": "success"' \
-  && echo 'ok # set foo=success via pmctl' \
-  || echo 'not ok # failed to set foo=success via pmctl'
+  && ok 'set foo=success via pmctl' \
+  || fail 'failed to set foo=success via pmctl'
 
 ../../bin/sl-pmctl.js -C $STRONGLOOP_PM env-unset 1 foo \
   | grep -F -e 'environment updated' \
-  && echo 'ok # pmctl env-set command ran without error' \
-  || echo 'not ok # failed to run env-set foo=success'
+  && ok 'pmctl env-set command ran without error' \
+  || fail 'failed to run env-set foo=success'
 
 sleep 5 # Long enough for app to restart
 
 curl -s $APP1/env \
   | grep -F -e '"foo": "success"' \
-  && echo 'not ok # failed to unset foo via pmctl' \
-  || echo 'ok # unset foo via pmctl'
+  && fail 'failed to unset foo via pmctl' \
+  || ok 'unset foo via pmctl'
 
 # make new image of strong-pm that includes a deployed app
 docker commit $SL_PM strong-pm:test-deployed
@@ -123,38 +133,38 @@ docker stop $SL_PM
 # run strong-pm instance that already has an app deployed to it
 STRONG_PM_LOCKED=1 docker_run strong-pm:test-deployed
 
-echo "# waiting for manager to deploy our app..."
+comment "waiting for manager to deploy our app..."
 sleep 5
-echo "# polling...."
+comment "polling...."
 while ! curl -sI $APP1/this/is/a/test; do
-  echo "# nothing yet, sleeping for 5s..."
+  comment "nothing yet, sleeping for 5s..."
   sleep 5
 done
 
 git push --quiet $APP1_GIT HEAD \
-  && echo 'not ok # git push should be rejected' \
-  || echo 'ok # git push rejected'
+  && fail 'git push should be rejected' \
+  || ok 'git push rejected'
 
 docker stop $SL_PM
 
 # run strong-pm instance that already has an app deployed to it
 STRONGLOOP_PM_HTTP_AUTH=user:pass docker_run strong-pm:test-deployed
 
-echo "# waiting for manager to deploy our app..."
+comment "waiting for manager to deploy our app..."
 sleep 5
-echo "# polling...."
+comment "polling...."
 while ! curl -sI $APP1/this/is/a/test; do
-  echo "# nothing yet, sleeping for 5s..."
+  comment "nothing yet, sleeping for 5s..."
   sleep 5
 done
 
 ../../bin/sl-pmctl.js -C $STRONGLOOP_PM status 1 \
-  && echo 'ok # pmctl status command ran with auth' \
-  || echo 'not ok # failed to run status with auth'
+  && ok 'pmctl status command ran with auth' \
+  || fail 'failed to run status with auth'
 
 
 ../../bin/sl-pmctl.js -C $STRONGLOOP_PM_NOAUTH status 1 \
-  && echo 'not ok # pmctl status should fail without auth' \
-  || echo 'ok # pmctl failed to run status without auth'
+  && fail 'pmctl status should fail without auth' \
+  || ok 'pmctl failed to run status without auth'
 
 docker stop $SL_PM

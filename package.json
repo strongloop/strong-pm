@@ -39,8 +39,8 @@
   },
   "main": "index.js",
   "scripts": {
-    "pretest": "eslint . && jscs .",
-    "lint": "eslint . && jscs .",
+    "pretest": "eslint ./ && jscs ./",
+    "lint": "eslint ./ && jscs ./",
     "test": "tap --timeout=400 ./test/test-*"
   },
   "bin": {
@@ -51,7 +51,7 @@
     "sl-pm-install": "./bin/sl-pm-install.js"
   },
   "devDependencies": {
-    "eslint": "^0.18.0",
+    "eslint": "^0.21.0",
     "jscs": "^1.11.3",
     "mktmpdir": "^0.1.1",
     "request": "^2.45.0",
