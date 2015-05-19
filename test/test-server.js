@@ -200,7 +200,8 @@ tap.test('server test', function(t) {
         cmd: 'started',
         appName: 'test-app',
         agentVersion: '1.0.0',
-        pid: 1234
+        pid: 1234,
+        pst: Date.now(),
       });
       callback();
     };
