@@ -95,3 +95,23 @@ tap.test('DockerDriver#start', function(t) {
     t.end();
   });
 });
+
+tap.test('DockerDriver#setStartOptions', function(t) {
+  var docker = new DockerDriver({
+    baseDir: 'BASE',
+    console: debugConsole,
+    server: {},
+  });
+  var requests = [];
+  docker.requestOfInstance = function(id, req) {
+    requests.push(req);
+  };
+  docker._instance(1).startOpts.size = 1;
+  docker._instance(2).startOpts.size = 42;
+  docker.setStartOptions(1, {foo: 'bar', size: 42});
+  docker.setStartOptions(2, {foo: 'bar', size: 42});
+  t.equal(docker._instance(1).startOpts.foo, 'bar', 'sets foo option');
+  t.deepEqual(requests, [{cmd: 'set-size', size: 42}],
+              'tries to resize instance 1 but not instance 2');
+  t.end();
+});
