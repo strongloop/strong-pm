@@ -14,3 +14,11 @@ tap.test('DockerDriver instance API', function(t) {
   driverHelpers.testInstance(t, docker);
   t.end();
 });
+
+tap.test('Docker containers', function(t) {
+  var docker = new DockerDriver({baseDir: 'BASE', console: {}, server: {}});
+  var instance = docker._instance(1);
+  t.assert('startOpts' in instance, 'instnace has startOpts');
+  t.assert('log' in instance, 'instance has log buffer');
+  t.end();
+});
