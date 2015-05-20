@@ -14,156 +14,166 @@ var BASE = path.resolve(__dirname, '.strong-pm');
 process.env.STRONGLOOP_MESH_DB = 'memory://';
 
 tap.test('server test', function(t) {
-  t.test('full server construction', function(tt) {
-    var s = new Server({
-      cmdName: 'pm',
-      baseDir: BASE,
-      listenPort: 0,
-      controlPath: null,
-    });
-    tt.end();
-  });
-
-  t.test('mocked server construction', function(tt) {
-    var driver;
-    function MockDriver(o) {
-      this.options = o;
-      driver = this;
-    };
-
-    MockDriver.prototype.on = function(event) {
-      var wanted = 'request or listening';
-      if (event === 'request' || event === 'listening') {
-        wanted = event;
-      }
-      tt.equal(event, wanted, 'event handler must be registered');
-    }
-
-    var serviceManager;
-    function MockServiceManager(o) {
-      this.options = o;
-      this.handle = function(req,res,next) {};
-      serviceManager = this;
-    }
-
-    var server;
-    function MockMeshServerFactory(_serviceManager, minkelite,  o) {
-      tt.equal(_serviceManager, serviceManager, 'service manager must match');
-      tt.deepEqual(o, {}, 'mesh server options must match');
-      server = function(req, res, next) {};
-      return server;
-    }
-
-    var options = {
-      cmdName: 'pm',
-      baseDir: BASE,
-      listenPort: 0,
-      controlPath: null,
-      Driver: MockDriver,
-      ServiceManager: MockServiceManager,
-      MeshServer: MockMeshServerFactory
-    };
-
-    tt.plan(7);
-
-    var s = new Server(options);
-    tt.equal(driver.options.baseDir, options.baseDir, 'base dir must match');
-    tt.equal(driver.options.server, s, 'driver.server must match');
-    tt.equal(serviceManager.options, s,
-      'serviceManager options must match');
-    tt.end();
-  });
-
-  t.test('driver methods are forwarded', function(tt) {
-    var startOptions = {};
-    var req = {};
-    var res = {};
-
-    var svcId = 10;
-    var instId = 10;
-
-    function MockDriver(o) {
-      this.options = o;
-      driver = this;
-    }
-
-    MockDriver.prototype.getName = _.constant('Mock');
-
-    MockDriver.prototype.on = function(event) {
-      var wanted = 'request or listening';
-      if (event === 'request' || event === 'listening') {
-        wanted = event;
-      }
-      tt.equal(event, wanted, 'event handler must be registered');
-    };
-
-    MockDriver.prototype.setStartOptions = function(_instId, _startOptions) {
-      tt.equal(_instId, instId, 'setStartOptions: instId must match');
-      tt.equal(_startOptions, startOptions,
-        'setStartOptions: start actions must match');
-    };
-
-    MockDriver.prototype.deployInstance = function(_instId, _req, _res) {
-      tt.equal(_instId, instId, 'deployInstance: instId must match');
-      tt.equal(_req, req, 'deployInstance: req must match');
-      tt.equal(_res, res, 'deployInstance: res must match');
-    };
-
-    MockDriver.prototype.dumpInstanceLog = function(_instId) {
-      tt.equal(_instId, instId, 'dumpInstanceLog: instId must match');
-      return 'LOG';
-    };
-
-    MockDriver.prototype.startInstance = function(_instId, callback) {
-      tt.equal(_instId, instId, 'startInstance: instId must match');
-      setImmediate(callback);
-    };
-
-    MockDriver.prototype.stopInstance = function(_instId, callback) {
-      tt.equal(_instId, instId, 'stopInstance: instId must match');
-      setImmediate(callback);
-    };
-
-    var serviceManager;
-    function MockServiceManager(o) {
-      this.options = o;
-      this.handle = function(req,res,next) {};
-      serviceManager = this;
-    }
-
-    var server;
-    function MockMeshServerFactory(_serviceManager, minkelite, o) {
-      tt.equal(_serviceManager, serviceManager, 'service manager must match');
-      server = function(req, res, next) {};
-      return server;
-    }
-
-    var options = {
-      cmdName: 'pm',
-      baseDir: BASE,
-      listenPort: 0,
-      controlPath: null,
-      enableTracing: true,
-      Driver: MockDriver,
-      ServiceManager: MockServiceManager,
-      MeshServer: MockMeshServerFactory
-    };
-
-    tt.plan(11);
-
-    var s = new Server(options);
-    s.setStartOptions(svcId, startOptions);
-    s.deployInstance(instId, req, res);
-    tt.equal(s.dumpInstanceLog(instId), 'LOG',
-      'dumpInstanceLog: log must match');
-
-    // TODO cover the rest of the methods. Could also cover the error branches,
-    // I wish I had code coverage metrics :-(
-    async.series([
-      s.startInstance.bind(s, instId),
-      s.stopInstance.bind(s, instId),
-    ], tt.end.bind(tt));
-  });
+  //t.test('full server construction', function(tt) {
+  //  var server = new Server({
+  //    cmdName: 'pm',
+  //    baseDir: BASE,
+  //    listenPort: 0,
+  //    controlPath: null,
+  //  });
+  //  server.stop(tt.end.bind(tt));
+  //});
+  //
+  //t.test('mocked server construction', function(tt) {
+  //  var driver;
+  //  function MockDriver(o) {
+  //    this.options = o;
+  //    driver = this;
+  //  };
+  //
+  //  MockDriver.prototype.on = function(event) {
+  //    var wanted = 'request or listening';
+  //    if (event === 'request' || event === 'listening') {
+  //      wanted = event;
+  //    }
+  //    tt.equal(event, wanted, 'event handler must be registered');
+  //  };
+  //
+  //  MockDriver.prototype.stop = function(callback) {
+  //    callback();
+  //  };
+  //
+  //  var serviceManager;
+  //  function MockServiceManager(o) {
+  //    this.options = o;
+  //    this.handle = function(req,res,next) {};
+  //    serviceManager = this;
+  //  }
+  //
+  //  var server;
+  //  function MockMeshServerFactory(_serviceManager, minkelite,  o) {
+  //    tt.equal(_serviceManager, serviceManager, 'service manager must match');
+  //    tt.deepEqual(o, {}, 'mesh server options must match');
+  //    server = function(req, res, next) {};
+  //    return server;
+  //  }
+  //
+  //  var options = {
+  //    cmdName: 'pm',
+  //    baseDir: BASE,
+  //    listenPort: 0,
+  //    controlPath: null,
+  //    Driver: MockDriver,
+  //    ServiceManager: MockServiceManager,
+  //    MeshServer: MockMeshServerFactory
+  //  };
+  //
+  //  tt.plan(7);
+  //
+  //  var s = new Server(options);
+  //  tt.equal(driver.options.baseDir, options.baseDir, 'base dir must match');
+  //  tt.equal(driver.options.server, s, 'driver.server must match');
+  //  tt.equal(serviceManager.options, s,
+  //    'serviceManager options must match');
+  //  s.stop(tt.end.bind(tt));
+  //});
+  //
+  //t.test('driver methods are forwarded', function(tt) {
+  //  var startOptions = {};
+  //  var req = {};
+  //  var res = {};
+  //
+  //  var svcId = 10;
+  //  var instId = 10;
+  //
+  //  function MockDriver(o) {
+  //    this.options = o;
+  //    driver = this;
+  //  }
+  //
+  //  MockDriver.prototype.getName = _.constant('Mock');
+  //
+  //  MockDriver.prototype.on = function(event) {
+  //    var wanted = 'request or listening';
+  //    if (event === 'request' || event === 'listening') {
+  //      wanted = event;
+  //    }
+  //    tt.equal(event, wanted, 'event handler must be registered');
+  //  };
+  //
+  //  MockDriver.prototype.setStartOptions = function(_instId, _startOptions) {
+  //    tt.equal(_instId, instId, 'setStartOptions: instId must match');
+  //    tt.equal(_startOptions, startOptions,
+  //      'setStartOptions: start actions must match');
+  //  };
+  //
+  //  MockDriver.prototype.deployInstance = function(_instId, _req, _res) {
+  //    tt.equal(_instId, instId, 'deployInstance: instId must match');
+  //    tt.equal(_req, req, 'deployInstance: req must match');
+  //    tt.equal(_res, res, 'deployInstance: res must match');
+  //  };
+  //
+  //  MockDriver.prototype.dumpInstanceLog = function(_instId) {
+  //    tt.equal(_instId, instId, 'dumpInstanceLog: instId must match');
+  //    return 'LOG';
+  //  };
+  //
+  //  MockDriver.prototype.startInstance = function(_instId, callback) {
+  //    tt.equal(_instId, instId, 'startInstance: instId must match');
+  //    setImmediate(callback);
+  //  };
+  //
+  //  MockDriver.prototype.stopInstance = function(_instId, callback) {
+  //    tt.equal(_instId, instId, 'stopInstance: instId must match');
+  //    setImmediate(callback);
+  //  };
+  //
+  //  MockDriver.prototype.stop = function(callback) {
+  //    callback();
+  //  };
+  //
+  //  var serviceManager;
+  //  function MockServiceManager(o) {
+  //    this.options = o;
+  //    this.handle = function(req,res,next) {};
+  //    serviceManager = this;
+  //  }
+  //
+  //  var server;
+  //  function MockMeshServerFactory(_serviceManager, minkelite, o) {
+  //    tt.equal(_serviceManager, serviceManager, 'service manager must match');
+  //    server = function(req, res, next) {};
+  //    return server;
+  //  }
+  //
+  //  var options = {
+  //    cmdName: 'pm',
+  //    baseDir: BASE,
+  //    listenPort: 0,
+  //    controlPath: null,
+  //    enableTracing: true,
+  //    Driver: MockDriver,
+  //    ServiceManager: MockServiceManager,
+  //    MeshServer: MockMeshServerFactory
+  //  };
+  //
+  //  tt.plan(11);
+  //
+  //  var s = new Server(options);
+  //  s.setStartOptions(svcId, startOptions);
+  //  s.deployInstance(instId, req, res);
+  //  tt.equal(s.dumpInstanceLog(instId), 'LOG',
+  //    'dumpInstanceLog: log must match');
+  //
+  //  // TODO cover the rest of the methods. Could also cover the error branches,
+  //  // I wish I had code coverage metrics :-(
+  //  async.series([
+  //    s.startInstance.bind(s, instId),
+  //    s.stopInstance.bind(s, instId),
+  //  ], function() {
+  //    s.stop(tt.end.bind(tt));
+  //  });
+  //});
 
   // XXX(sam) test below needs re-writing into a unit test against public APIs,
   // right now it depends on private methods of Driver, Container, and
@@ -223,6 +233,9 @@ tap.test('server test', function(t) {
         callback();
       };
     MockDriver.prototype.setStartOptions = function() {};
+    MockDriver.prototype.stop = function(callback) {
+      callback();
+    };
 
     var options = {
       cmdName: 'pm',
@@ -248,7 +261,9 @@ tap.test('server test', function(t) {
       secondRun,
       checkInstance,
       end
-    ], tt.end.bind(tt));
+    ], function() {
+      s.stop(tt.end.bind(t));
+    });
 
     function createService(callback) {
       debug('create service');

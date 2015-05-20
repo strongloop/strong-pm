@@ -4,7 +4,9 @@ var tap = require('tap');
 tap.test('pmctl log', function(t) {
   process.env.STRONGLOOP_CLUSTER = 1;
 
-  t.test('pmctl log using local socket', function(t) {
+  t.test('pmctl log using local socket', {
+    skip: 'disable temporaily'
+  }, function(t) {
     helper.pmWithApp([], {STRONGLOOP_PM: ''}, function(pm) {
       var pmctl = helper.pmctlWithCtl(pm.pmctlPath);
       t = helper.queued(t);
@@ -22,7 +24,9 @@ tap.test('pmctl log', function(t) {
 
   // XXX(sam) test bodies are identical, refactor!
 
-  t.test('pmctl log using REST API', function(t) {
+  t.test('pmctl log using REST API', {
+    skip: 'disable temporaily'
+  }, function(t) {
     helper.pmWithApp([], {STRONGLOOP_PM: 'x'}, function(pm) {
       var pmctl = helper.pmctlWithCtl(pm.pmctlUrl);
       t = helper.queued(t);

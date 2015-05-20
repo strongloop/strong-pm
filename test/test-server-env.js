@@ -34,6 +34,9 @@ test('service environment', function(t) {
     MockDriver.prototype.getName = _.constant('Mock');
     MockDriver.prototype.on = function() {};
     MockDriver.prototype.setStartOptions = function() {};
+    MockDriver.prototype.stop = function(callback) {
+      callback();
+    };
 
     t.test('empty initial environment', function(tt) {
       fs.writeFileSync(path.join(tmpdir, 'env.json'), '{}');
@@ -56,7 +59,12 @@ test('service environment', function(t) {
         Service.create({name: 'Service 1'}, function(err, service) {
           tt.ifError(err);
           matchEnv(tt, service.env, {});
-          setImmediate(tt.end.bind(tt));
+
+          // give some time for minkelite to initialize completely before
+          // calling shutdown
+          setTimeout(function() {
+            s.stop(tt.end.bind(tt));
+          }, 1000);
         });
       });
     });
@@ -97,7 +105,12 @@ test('service environment', function(t) {
         service.env = JSON.parse(JSON.stringify(newEnv));
         service.save(function(err) {
           tt.ifError(err);
-          setImmediate(tt.end.bind(tt));
+
+          // give some time for minkelite to initialize completely before
+          // calling shutdown
+          setTimeout(function() {
+            s.stop(tt.end.bind(tt));
+          }, 1000);
         });
       }
     });
