@@ -89,13 +89,18 @@ function assert_not_file() {
 
 function bailout() {
   fail "$1"
-  echo "Bail out!" >&3
-  echo "$1" >&3
+  echo "Bail out! $1" >&1
+  echo "Bail out! $1" >&2
+  echo "Bail out! $1" >&3
+  # exit 1
   assert_report
 }
 
 function assert_report() {
-  echo "1..$tests" >&3
+  if test -z $reported; then
+    echo "1..$tests" >&3
+    reported=1
+  fi
   exit $fails
 }
 

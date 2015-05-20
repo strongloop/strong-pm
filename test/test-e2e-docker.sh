@@ -15,13 +15,21 @@ if test -n "$SKIP_DOCKER"; then
 fi
 
 # extract port from 'docker port' output: 0.0.0.0:1234
-port() {
+function port() {
   echo $* | cut -d : -f 2
+}
+
+function cleanup_docker() {
+  if test -z $SL_PM; then
+    echo nothing to clean up
+  else
+    docker stop -t 1 $SL_PM
+  fi
 }
 
 # run container and update variables
 # $1: image to run
-docker_run() {
+function docker_run() {
   rm -f sl-pm.docker.cid
   docker run -i -t -d \
     --expose 8701 --expose 3000-3005 -P \
@@ -35,6 +43,7 @@ docker_run() {
 
   SL_PM=$(cat sl-pm.docker.cid)
   rm sl-pm.docker.cid
+  trap cleanup_docker EXIT
 
   comment "strong-pm running in container: $SL_PM"
   comment 'tailing container log to stderr...'
@@ -59,7 +68,22 @@ docker_run() {
   export APP1_GIT=$STRONGLOOP_PM/api/Services/1/deploy
   export APP2_GIT=$STRONGLOOP_PM/api/Services/2/deploy
   comment "strong-pm URL: $STRONGLOOP_PM"
-  comment "app URL: $APP"
+  comment "app1 URL: $APP1"
+  comment "app2 URL: $APP2"
+}
+
+function wait_until_available() {
+  local url=$1
+  comment "polling...."
+  polls=0
+  while ! curl -sI $url; do
+    polls=$((polls+1))
+    if test $polls -gt 10; then
+      return 1
+    fi
+    comment "nothing yet, sleeping for 5s..."
+    sleep 5
+  done
 }
 
 make npm_config_registry=${npm_config_registry:-$(npm config get registry)} container/strong-pm.tgz container/Dockerfile
@@ -78,6 +102,12 @@ git init .
 git add .
 git commit --author="sl-pm-test <nobody@strongloop.com>" -m "initial"
 sl-build --install --commit
+
+comment "waiting for manager to be accessible..."
+wait_until_available $STRONGLOOP_PM \
+  && ok "PM accessible" \
+  || bailout "PM not accessible, bailing out"
+
 comment "creating Service 1 to we can deploy to it"
 curl -s -X POST -d'{"name":"default"}' \
         -H "Content-Type: application/json" \
@@ -91,11 +121,9 @@ git push --quiet $APP1_GIT HEAD \
 
 comment "waiting for manager to deploy our app..."
 sleep 5
-comment "polling...."
-while ! curl -sI $APP1/this/is/a/test; do
-  comment "nothing yet, sleeping for 5s..."
-  sleep 5
-done
+wait_until_available $APP1/this/is/a/test \
+  && ok "PM accessible" \
+  || bailout "PM not accessible, bailing out"
 
 curl -s $APP1/this/is/a/test \
   | grep -F -e '/this/is/a/test' \
@@ -134,12 +162,9 @@ docker stop $SL_PM
 STRONG_PM_LOCKED=1 docker_run strong-pm:test-deployed
 
 comment "waiting for manager to deploy our app..."
-sleep 5
-comment "polling...."
-while ! curl -sI $APP1/this/is/a/test; do
-  comment "nothing yet, sleeping for 5s..."
-  sleep 5
-done
+wait_until_available $APP1/this/is/a/test \
+  && ok "APP1 accessible" \
+  || bailout "APP1 not accessible, bailing out"
 
 git push --quiet $APP1_GIT HEAD \
   && fail 'git push should be rejected' \
@@ -151,12 +176,9 @@ docker stop $SL_PM
 STRONGLOOP_PM_HTTP_AUTH=user:pass docker_run strong-pm:test-deployed
 
 comment "waiting for manager to deploy our app..."
-sleep 5
-comment "polling...."
-while ! curl -sI $APP1/this/is/a/test; do
-  comment "nothing yet, sleeping for 5s..."
-  sleep 5
-done
+wait_until_available $APP1/this/is/a/test \
+  && ok "APP1 accessible" \
+  || bailout "APP1 not accessible, bailing out"
 
 ../../bin/sl-pmctl.js -C $STRONGLOOP_PM status 1 \
   && ok 'pmctl status command ran with auth' \
