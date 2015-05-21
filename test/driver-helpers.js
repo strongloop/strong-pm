@@ -56,8 +56,7 @@ function testDriverInstance(tap, i) {
     method(t, i, 'stop', ['cb']);
     method(t, i, 'getName', []);
     method(t, i, 'getStatus', []);
-    // XXX(rmg): to be removed
-    method(t, i, '_containerById', ['id']);
+    method(t, i, 'instanceById', ['id']);
     t.end();
   });
 }
