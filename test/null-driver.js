@@ -72,9 +72,13 @@ NullDriver.prototype.stop = function(cb) {
   setImmediate(cb);
 };
 
-NullDriver.prototype._containerById = function(id) {
+NullDriver.prototype.instanceById = function(id) {
   assert(id, 'id is provided');
-  return new EventEmitter();
+  return {
+    commit: {},
+    restartCount: 0,
+    pid: process.pid,
+  };
 };
 
 NullDriver.prototype.getName = function() {

@@ -175,10 +175,9 @@ tap.test('server test', function(t) {
     var commit = {hash: '123', dir: '/some/dir'};
 
     function MockContainer() {
-      this.current = new events.EventEmitter();
+      this.current = {};
       this.current.commit = commit;
     }
-    util.inherits(MockContainer, events.EventEmitter);
     MockContainer.prototype.request = function request(req, cb) {
       if (req.cmd === 'status') {
         cb({ master: { setSize: 1 } });
@@ -204,6 +203,9 @@ tap.test('server test', function(t) {
         pst: Date.now(),
       });
       callback();
+    };
+    MockDriver.prototype.instanceById = function(instanceId) {
+      return this._containerById(instId).current;
     };
     MockDriver.prototype._containerById = function(instanceId) {
       var container = this._containers[instanceId];
