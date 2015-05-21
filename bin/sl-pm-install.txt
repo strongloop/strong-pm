@@ -9,6 +9,8 @@ Options:
                       applications.
   -b,--base BASE      Base directory to work in (default is $HOME of the user
                       that manager is run as, see --user).
+  -d,--driver DRIVER  Specify application execution driver. May be  direct or
+                      docker (default is direct).
   -e,--set-env K=V... Initial application environment variables. If setting
                       multiple variables they must be quoted into a single
                       argument: "K1=V1 K2=V2 K3=V3".

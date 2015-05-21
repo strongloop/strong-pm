@@ -1,10 +1,14 @@
 'use strict';
 
-var DirectDriver = require('./lib/drivers/direct');
 var Parser = require('posix-getopt').BasicParser;
 var mkdirp = require('mkdirp').sync;
 var path = require('path');
 var fs = require('fs');
+
+var DRIVERS = {
+  direct: require('./lib/drivers/direct'),
+  docker: require('./lib/drivers/docker'),
+};
 
 var Server = require('./lib/server');
 
@@ -23,6 +27,7 @@ function main(argv, callback) {
       'h(help)',
       'b:(base)',
       'c:(config)', // unused. left in so Upstart/systemd jobs don't crash
+      'd:(driver)',
       'l:(listen)',
       'C:(control)',
       'N(no-control)',
@@ -34,6 +39,7 @@ function main(argv, callback) {
   var enableTracing = false;
   var listen = 8701;
   var control = 'pmctl';
+  var driver = DRIVERS.direct;
 
   var option;
   while ((option = parser.getopt()) !== undefined) {
@@ -49,6 +55,9 @@ function main(argv, callback) {
         break;
       case 'c':
         console.error('Warning: ignoring config file: ', option.optarg);
+        break;
+      case 'd':
+        driver = DRIVERS[option.optarg.toLowerCase()];
         break;
       case 'l':
         listen = option.optarg;
@@ -92,7 +101,7 @@ function main(argv, callback) {
 
   var app = new Server({
     // Choose driver based on cli options/env once we have alternate drivers.
-    Driver: DirectDriver,
+    Driver: driver,
     cmdName: $0,
     baseDir: base,
     listenPort: listen,
@@ -101,8 +110,8 @@ function main(argv, callback) {
   });
 
   app.on('listening', function(listenAddr) {
-    console.log('%s: listen on %s, work base is `%s`',
-      $0, listenAddr.port, base);
+    console.log('%s: listen on %s, work base is `%s`, driver is `%s`',
+      $0, listenAddr.port, base, app.getDriverInfo().type);
   });
 
   app.start();

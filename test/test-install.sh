@@ -29,6 +29,9 @@ assert_exit 1 $CMD --dry-run --user `id -un` --port 0
 # should fail when given user doesn't actually exist
 assert_exit 1 $CMD --dry-run --port 7777 --user definitely-does-not-exist
 
+# should require a valid driver
+assert_exit 1 $CMD --dry-run --driver foobar
+
 echo "FOO=bar BAR=foo" > $TMP/input.env
 echo "MORE=less LESS=more" >> $TMP/input.env
 
@@ -44,6 +47,7 @@ $CMD --port 7777 \
 # Should match what was specified
 assert_file $TMP/upstart.conf "--listen 7777"
 assert_file $TMP/upstart.conf "--base $TMP/deeply/nested/sl-pm"
+assert_file $TMP/upstart.conf "--driver direct"
 
 # Should actually point to strong-pm
 assert_file $TMP/upstart.conf "$(node -p process.execPath) $(which sl-pm.js)"
@@ -85,7 +89,8 @@ assert_file $TMP/upstart.conf "STRONGLOOP_PM_HTTP_AUTH=basic:myuser:mypass"
 # Should create an upstart job at the specified path
 assert_exit 0 $CMD --port 7777 \
                    --job-file $TMP/upstart-with-basedir.conf \
-                   --user `id -un`
+                   --user `id -un` \
+                   --driver docker
 
 # TODO: find another way to test his without depending on the real $HOME
 if [ -d $HOME/.strong-pm ]; then
@@ -95,5 +100,13 @@ else
   assert_not_file $TMP/upstart-with-basedir.conf "--base $HOME/"
   assert_file $TMP/upstart-with-basedir.conf "--base $HOME"
 fi
+
+# Should create an upstart job at the specified path
+assert_exit 0 $CMD --port 7777 \
+                   --job-file $TMP/upstart-with-docker.conf \
+                   --user `id -un` \
+                   --driver docker
+assert_not_file $TMP/upstart-with-docker.conf "--driver direct"
+assert_file $TMP/upstart-with-docker.conf "--driver docker"
 
 unset SL_PM_INSTALL_IGNORE_PLATFORM

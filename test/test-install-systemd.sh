@@ -20,5 +20,6 @@ assert_exit 0 $CMD --port 7777 \
 assert_file $TMP/systemd.service "ExecStart=$(node -p process.execPath)"
 assert_file $TMP/systemd.service "WorkingDirectory=$HOME"
 assert_file $TMP/systemd.service "Description=StrongLoop Process Manager"
+assert_file $TMP/systemd.service "--driver direct"
 
 unset SL_PM_INSTALL_IGNORE_PLATFORM
