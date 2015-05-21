@@ -47,7 +47,7 @@ tap.test('server test', function(t) {
     }
 
     var server;
-    function MockMeshServerFactory(_serviceManager, o) {
+    function MockMeshServerFactory(_serviceManager, minkelite,  o) {
       tt.equal(_serviceManager, serviceManager, 'service manager must match');
       tt.deepEqual(o, {}, 'mesh server options must match');
       server = function(req, res, next) {};
@@ -132,7 +132,7 @@ tap.test('server test', function(t) {
     }
 
     var server;
-    function MockMeshServerFactory(_serviceManager, o) {
+    function MockMeshServerFactory(_serviceManager, minkelite, o) {
       tt.equal(_serviceManager, serviceManager, 'service manager must match');
       server = function(req, res, next) {};
       return server;
