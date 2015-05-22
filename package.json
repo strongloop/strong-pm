@@ -86,7 +86,7 @@
     "strong-fork-cicada": "^1.1.2",
     "strong-mesh-models": "^7.0.0",
     "strong-npm-ls": "^1.0.0",
-    "strong-runner": "^1.0.0",
+    "strong-runner": "^2.0.0",
     "strong-service-install": "^1.1.0",
     "strong-spawn-npm": "^1.0.0",
     "strong-tunnel": "^1.1.1",
