@@ -41,7 +41,7 @@
   "scripts": {
     "pretest": "eslint ./ && jscs ./",
     "lint": "eslint ./ && jscs ./",
-    "test": "tap --timeout=400 ./test/test-*"
+    "test": "tap --timeout=1000 ./test/test-*"
   },
   "bin": {
     "sl-pm": "./bin/sl-pm.js",
@@ -74,6 +74,7 @@
     "extsprintf": "^1.2.0",
     "http-auth": "^2.2.5",
     "lodash": "^2.4.1",
+    "minkelite": "^1.0.0",
     "mkdirp": "^0.5.0",
     "osenv": "^0.1.0",
     "passwd-user": "^1.0.0",
@@ -83,7 +84,7 @@
     "strong-control-channel": "^1",
     "strong-docker-build": "^1.0.0",
     "strong-fork-cicada": "^1.1.2",
-    "strong-mesh-models": "^6.0.0",
+    "strong-mesh-models": "^7.0.0",
     "strong-npm-ls": "^1.0.0",
     "strong-runner": "^1.0.0",
     "strong-service-install": "^1.1.0",

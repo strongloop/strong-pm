@@ -221,6 +221,9 @@ server.once('running', function() {
   tests.push(server.stop.bind(server));
   async.series(tests, function(err) {
     assert.ifError(err);
-    app.ok = 1;
+    server.stop(function(err) {
+      assert.ifError(err);
+      app.ok = 1;
+    });
   });
 });

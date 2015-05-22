@@ -172,6 +172,6 @@ tap.test('metrics update', {
   }
 
   function end() {
-    t.end();
+    s.stop(t.end.bind(t));
   }
 });

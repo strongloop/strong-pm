@@ -31,12 +31,10 @@ function main(argv, callback) {
       'l:(listen)',
       'C:(control)',
       'N(no-control)',
-      'T(trace)',
     ].join(''),
     argv);
 
   var base = '.strong-pm';
-  var enableTracing = false;
   var listen = 8701;
   var control = 'pmctl';
   var driver = DRIVERS.direct;
@@ -67,9 +65,6 @@ function main(argv, callback) {
         break;
       case 'N':
         control = undefined;
-        break;
-      case 'T':
-        enableTracing = true;
         break;
       default:
         console.error('Invalid usage (near option \'%s\'), try `%s --help`.',
@@ -106,7 +101,6 @@ function main(argv, callback) {
     baseDir: base,
     listenPort: listen,
     controlPath: control,
-    enableTracing: enableTracing,
   });
 
   app.on('listening', function(listenAddr) {

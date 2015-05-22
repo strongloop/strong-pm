@@ -156,6 +156,6 @@ tap.test('worker status update', {
   }
 
   function end() {
-    t.end();
+    s.stop(t.end.bind(t));
   }
 });
