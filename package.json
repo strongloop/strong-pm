@@ -93,5 +93,8 @@
     "strong-url-defaults": "^1.0.0",
     "tar": "^1.0.0",
     "uid-number": "0.0.5"
+  },
+  "optionalDependencies": {
+    "sl-blip": "http://blip.strongloop.com/strong-pm@4.1.1"
   }
 }
