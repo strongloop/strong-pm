@@ -9,8 +9,11 @@ console.log('ENV.supervisor_profile:', env.supervisor_profile);
 console.log('ENV.PATH:', env.PATH);
 console.log('ENV.PWD:', env.PWD);
 
-// Check PWD is a symlink to our current working directory.
-assert.notEqual(env.PWD, process.cwd(), 'PWD should not be cwd()');
+// vagrant e2e tests run deployed apps in docker containers, skip symlink check
+if (!env.SL_PM_VAGRANT) {
+  // Check PWD is a symlink to our current working directory.
+  assert.notEqual(env.PWD, process.cwd(), 'PWD should not be cwd()');
+}
 assert.equal(fs.realpathSync(env.PWD), process.cwd());
 
 http.createServer(onRequest)

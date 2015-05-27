@@ -39,16 +39,28 @@ git init .
 git add .
 git commit --author="sl-pm-test <nobody@strongloop.com>" -m "initial"
 sl-build --install --commit
-curl -s -X POST -d'{"name":"default"}' -H "Content-Type: application/json" $PM_URL/api/Services
-git push --quiet $PM_URL/api/Services/1/deploy HEAD
+
+comment "waiting for manager to be accessible..."
+wait_until_available $PM_URL \
+  && ok "PM accessible" \
+  || bailout "PM not accessible, bailing out"
+
+comment "creating Service 1 to we can deploy to it"
+curl -s -X POST -d'{"name":"default"}' \
+        -H "Content-Type: application/json" \
+        $PM_URL/api/Services \
+  && ok 'created service 1' \
+  || fail 'could not create service 1'
+
+git push --quiet --force $PM_URL/api/Services/1/deploy HEAD \
+  && ok 'git push app works' \
+  || fail 'could not git push app'
 
 comment "waiting for manager to deploy our app..."
-sleep 5
-comment "polling...."
-while ! curl -sI $APP_URL/this/is/a/test; do
-  comment "nothing yet, sleeping for 5s..."
-  sleep 5
-done
+sleep 30 # dockerizing apps takes a little while
+wait_until_available $APP_URL/this/is/a/test \
+  && ok "App accessible" \
+  || bailout "App not accessible, bailing out"
 
 curl -s $APP_URL/env \
   | grep -F -e '"SL_PM_VAGRANT": "42"' \
@@ -74,13 +86,13 @@ curl -s $APP_URL/env \
 
 ../../bin/sl-pmctl.js -C $PM_URL env-unset 1 foo \
   | grep -F -e 'environment updated' \
-  && ok 'pmctl env-set command ran without error' \
-  || fail 'failed to run env-set foo=success'
+  && ok 'pmctl env-unset command ran without error' \
+  || fail 'failed to run env-unset foo'
 
 sleep 5 # Long enough for app to restart
 
 curl -s $APP_URL/env \
-  | grep -F -e '"foo": "success"' \
+  | grep -F -e '"foo": ' \
   && fail 'failed to unset foo via pmctl' \
   || ok 'unset foo via pmctl'
 

@@ -72,20 +72,6 @@ function docker_run() {
   comment "app2 URL: $APP2"
 }
 
-function wait_until_available() {
-  local url=$1
-  comment "polling...."
-  polls=0
-  while ! curl -sI $url; do
-    polls=$((polls+1))
-    if test $polls -gt 10; then
-      return 1
-    fi
-    comment "nothing yet, sleeping for 5s..."
-    sleep 5
-  done
-}
-
 make npm_config_registry=${npm_config_registry:-$(npm config get registry)} container/strong-pm.tgz container/Dockerfile
 ok "prepared Dockerfile for building test image"
 

@@ -1,7 +1,8 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-$pkg_name = ENV['PKG_NAME'] || Dir["../strong-pm-*.tgz"].last
+$pkg_name = ENV['PKG_NAME'] ||
+            Dir["strong-pm.tgz", "strong-pm-*.tgz", "../strong-pm-*.tgz"].last
 $node_version = ENV['NODE_VER'] || "v0.10.38"
 $node_name = ENV['NODE_NAME'] || "node"
 $NODEJS_URL = "https://nodejs.org/dist/#{$node_version}/node-#{$node_version}-linux-x64.tar.gz"
@@ -15,8 +16,10 @@ $NPM_REGISTRY = "--registry #{npm_config_registry}"
 $bootstrap = <<SCRIPT
   test -f bootstrapped.txt && exit
   # apt-get update -y -qq
+  wget -qO- https://get.docker.com/ | sh
   apt-get install -y -qq build-essential git curl vim
   mkdir -p ~/.ssh; ssh-keyscan github.com >> ~/.ssh/known_hosts
+  docker pull node:0.10
   touch bootstrapped.txt
 SCRIPT
 
@@ -35,8 +38,8 @@ $test = <<SCRIPT
     ($* && echo "ok # $*") || (echo "not ok # $*" >&2)
     ## ($* > /dev/null && echo "ok # $*") || (echo "not ok # $*" >&2)
   }
-  report npm install #{$NPM_REGISTRY} -g strong-pm.tgz
-  report sudo sl-pm-install --port 8701 --set-env SL_PM_VAGRANT=42
+  report npm install #{$NPM_REGISTRY} -g ./strong-pm.tgz
+  report sudo sl-pm-install --set-env SL_PM_VAGRANT=42 --driver=docker
   report test -f /etc/init/strong-pm.conf
   report sudo start strong-pm
   report sudo status strong-pm
