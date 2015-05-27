@@ -5,6 +5,8 @@ source common.sh
 # Setup
 CMD="node ../bin/sl-pm-install.js"
 TMP=`mktemp -d -t sl-svc-installXXXXXX`
+CURRENT_USER=`id -un`
+CURRENT_GROUP=`id -gn`
 comment "using tmpdir: $TMP"
 
 export SL_PM_INSTALL_IGNORE_PLATFORM=true
@@ -38,7 +40,7 @@ echo "MORE=less LESS=more" >> $TMP/input.env
 # Should create an upstart job at the specified path
 $CMD --port 7777 \
      --job-file $TMP/upstart.conf \
-     --user `id -un` \
+     --user $CURRENT_USER \
      --metrics statsd: \
      --set-env "$(cat $TMP/input.env)" \
      --base $TMP/deeply/nested/sl-pm 2>&1 \
@@ -48,6 +50,8 @@ $CMD --port 7777 \
 assert_file $TMP/upstart.conf "--listen 7777"
 assert_file $TMP/upstart.conf "--base $TMP/deeply/nested/sl-pm"
 assert_file $TMP/upstart.conf "--driver direct"
+assert_file $TMP/upstart.conf "setuid $CURRENT_USER"
+assert_file $TMP/upstart.conf "setgid $CURRENT_GROUP"
 
 # Should actually point to strong-pm
 assert_file $TMP/upstart.conf "$(node -p process.execPath) $(which sl-pm.js)"
@@ -71,7 +75,7 @@ assert_file $TMP/deeply/nested/sl-pm/env.json '"MORE":"less"'
 assert_file $TMP/deeply/nested/sl-pm/env.json '"LESS":"more"'
 
 # Should fail to overwrite existing file
-assert_exit 1 $CMD --port 7777 --user `id -un` \
+assert_exit 1 $CMD --port 7777 --user $CURRENT_USER \
                    --job-file $TMP/upstart.conf \
                    --base $TMP/deeply/nested/sl-pm 2>&1
 
@@ -89,7 +93,7 @@ assert_file $TMP/upstart.conf "STRONGLOOP_PM_HTTP_AUTH=basic:myuser:mypass"
 # Should create an upstart job at the specified path
 assert_exit 0 $CMD --port 7777 \
                    --job-file $TMP/upstart-with-basedir.conf \
-                   --user `id -un` \
+                   --user $CURRENT_USER \
                    --driver docker
 
 # TODO: find another way to test his without depending on the real $HOME
@@ -104,9 +108,11 @@ fi
 # Should create an upstart job at the specified path
 assert_exit 0 $CMD --port 7777 \
                    --job-file $TMP/upstart-with-docker.conf \
-                   --user `id -un` \
+                   --user $CURRENT_USER \
                    --driver docker
 assert_not_file $TMP/upstart-with-docker.conf "--driver direct"
 assert_file $TMP/upstart-with-docker.conf "--driver docker"
+assert_file $TMP/upstart-with-docker.conf "setuid $CURRENT_USER"
+assert_file $TMP/upstart-with-docker.conf "setgid docker"
 
 unset SL_PM_INSTALL_IGNORE_PLATFORM
