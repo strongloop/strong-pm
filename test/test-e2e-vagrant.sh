@@ -26,6 +26,10 @@ PKG_NAME=$PKG NODE_NAME=$NODE_NAME NODE_VER=$NODE_VER vagrant up --provision \
   && ok "vagrant VM provisioned" \
   || fail "vagrant VM not provisioned"
 
+vagrant ssh -- id strong-pm | grep docker \
+  && ok 'strong-pm user added to docker group' \
+  || fail 'strong-pm user not added to docker group'
+
 PM_URL=http://127.0.0.1:8702
 APP_URL=http://127.0.0.1:8889
 comment 'strong-pm running in VM'
