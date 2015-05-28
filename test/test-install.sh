@@ -96,7 +96,7 @@ assert_exit 0 $CMD --port 7777 \
                    --user $CURRENT_USER \
                    --driver docker
 
-# TODO: find another way to test his without depending on the real $HOME
+# TODO: find another way to test this without depending on the real $HOME
 if [ -d $HOME/.strong-pm ]; then
   assert_file $TMP/upstart-with-basedir.conf "--base $HOME/.strong-pm"
 else
@@ -107,6 +107,7 @@ fi
 
 # Should create an upstart job at the specified path
 assert_exit 0 $CMD --port 7777 \
+		   --base-port 8888 \
                    --job-file $TMP/upstart-with-docker.conf \
                    --user $CURRENT_USER \
                    --driver docker
@@ -114,5 +115,7 @@ assert_not_file $TMP/upstart-with-docker.conf "--driver direct"
 assert_file $TMP/upstart-with-docker.conf "--driver docker"
 assert_file $TMP/upstart-with-docker.conf "setuid $CURRENT_USER"
 assert_file $TMP/upstart-with-docker.conf "setgid docker"
+assert_file $TMP/upstart-with-docker.conf "--listen 7777"
+assert_file $TMP/upstart-with-docker.conf "--base-port 8888"
 
 unset SL_INSTALL_IGNORE_PLATFORM
