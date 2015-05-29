@@ -71,6 +71,7 @@
     "dockerode": "^2.1.2",
     "errorhandler": "^1.2.0",
     "express": "^4.12.0",
+    "express-ws": "^0.2.6",
     "extsprintf": "^1.2.0",
     "http-auth": "^2.2.5",
     "lodash": "^3.9.3",
