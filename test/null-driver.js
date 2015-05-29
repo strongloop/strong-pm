@@ -75,9 +75,10 @@ NullDriver.prototype.stop = function(cb) {
 NullDriver.prototype.instanceById = function(id) {
   assert(id, 'id is provided');
   return {
-    commit: {},
+    commit: {hash: null, dir: null},
     restartCount: 0,
     pid: process.pid,
+    driverMeta: null,
   };
 };
 

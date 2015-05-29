@@ -59,6 +59,17 @@ function testDriverInstance(tap, i) {
     method(t, i, 'instanceById', ['id']);
     t.end();
   });
+
+  tap.test('driver instance object', function(t) {
+    var svc = i.instanceById(1);
+    t.assert('driverMeta' in svc, 'instances have driverMeta');
+    t.assert('restartCount' in svc, 'instances have restartCount');
+    t.assert('commit' in svc, 'instances have commit');
+    t.assert('hash' in svc.commit, 'commit has hash');
+    t.assert('dir' in svc.commit, 'commit has dir');
+    t.assert('pid' in svc, 'instances have a pid');
+    t.end();
+  });
 }
 
 function method(t, inst, fname, args) {
