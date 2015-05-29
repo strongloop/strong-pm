@@ -5,6 +5,20 @@ skips=0
 
 trap assert_report EXIT
 
+function wait_until_available() {
+  local url=$1
+  comment "polling...."
+  polls=0
+  while ! curl -sI $url; do
+    polls=$((polls+1))
+    if test $polls -gt 10; then
+      return 1
+    fi
+    comment "nothing yet, sleeping for 5s..."
+    sleep 5
+  done
+}
+
 function fail() {
   local report=$1
   local output=$2
