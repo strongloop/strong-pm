@@ -1,3 +1,111 @@
+2015-06-03, Version 4.2.0
+=========================
+
+ * docker: remove --driver from CLI usage (Sam Roberts)
+
+ * Fix strict mode warning about function scope (Ryan Graham)
+
+ * log app logs to PM's log (Ryan Graham)
+
+ * server: disable websockets until needed (Sam Roberts)
+
+ * fixup, channel destroy (Sam Roberts)
+
+ * direct: use websockets for control channel (Sam Roberts)
+
+ * server: print listening host correctly (Sam Roberts)
+
+ * docker: record container id in driverMeta (Ryan Graham)
+
+ * add driverMeta field to instance data (Ryan Graham)
+
+ * fix docker detection when not run as root (Ryan Graham)
+
+ * install: check for usable docker environment (Ryan Graham)
+
+ * install: add existing user to docker group (Ryan Graham)
+
+ * install: add strong-pm user to docker group (Ryan Graham)
+
+ * fix: env-unset doesn't work on dockerized apps (Ryan Graham)
+
+ * install: run strong-pm under docker group if needed (Ryan Graham)
+
+ * test: make e2e vagrant test cover docker driver (Ryan Graham)
+
+ * Add blip (Sam Roberts)
+
+ * Distinguish REST API and js API version (Sam Roberts)
+
+ * Rename enableTracing field on instance model (Krishna Raman)
+
+ * Allow enable/disable of tracing per instance (Krishna Raman)
+
+ * Move Minkelite dependency from mesh-models to PM (Krishna Raman)
+
+ * refactor: remove Driver#_containerById interface (Ryan Graham)
+
+ * refactor: remove container refs from server (Ryan Graham)
+
+ * Upgrade strong-runner to v2.x (Sam Roberts)
+
+ * refactor: extract log buffer from drivers (Ryan Graham)
+
+ * refactor: move child exit handling in to driver (Ryan Graham)
+
+ * test: DockerDriver#setStartOptions (Ryan Graham)
+
+ * test: test docker driver startup (Ryan Graham)
+
+ * test: minimal test for docker instance (Ryan Graham)
+
+ * install: add --driver option (Ryan Graham)
+
+ * pm: add --driver option (Ryan Graham)
+
+ * Add docker driver to dockerize apps on deployment (Ryan Graham)
+
+ * test: fix test-server to provide start time (Ryan Graham)
+
+ * direct: fix child check in log-dump handler (Ryan Graham)
+
+ * fix inconsistency in pm log message (Ryan Graham)
+
+ * server: allow driver to specify parent pid (Ryan Graham)
+
+ * direct: handle listening events for domain sockets (Ryan Graham)
+
+ * test: wait for startup in docker e2e test (Ryan Graham)
+
+ * ensure PORT env variable is stored as a string (Ryan Graham)
+
+ * service-manager: fix check for process stopped (Sam Roberts)
+
+ * Mark processes dead more robustly on startup (Sam Roberts)
+
+ * server: honour setSize on started message if set (Ryan Graham)
+
+ * ensure STRONGLOOP_LICENSE is inherited from PM (Ryan Graham)
+
+ * deps: update eslint (Ryan Graham)
+
+ * test: simplify log-dump tests (Ryan Graham)
+
+ * test: fix driver tests tap usage (Ryan Graham)
+
+ * test: mark test-server-metadata for tap@1 (Ryan Graham)
+
+ * test: make test-usage tap@1 safe (Ryan Graham)
+
+ * test: make test-pmctl-rest-digest-auth tap@1 safe (Ryan Graham)
+
+ * test: use common.sh helper for e2e tests (Ryan Graham)
+
+ * test: ensure bash tests are run inside test/ (Ryan Graham)
+
+ * test: make common.sh helper more TAP compliant (Ryan Graham)
+
+
 2015-05-14, Version 4.1.1
 =========================
 
@@ -354,10 +462,6 @@
 =========================
 
  * Use process pid when filtering for model updates (Krishna Raman)
-
-
-2015-01-29, Version 1.7.0
-=========================
 
  * fix 'pmctl log-dump --follow' option parsing (Ryan Graham)
 
