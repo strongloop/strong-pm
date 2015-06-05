@@ -29,13 +29,13 @@ helper.test('pmctl', function(t, pm) {
     t.waiton(pmctl('get-process-count', '1'), /processes: 4/);
 
     t.expect(pmctl('soft-restart', '1'), 'Service.*soft restarting');
-    t.waiton(pmctl('get-process-count', '1'), /processes: 1/);
+    t.waiton(pmctl('get-process-count', '1'), /processes: 4/);
 
     t.expect(pmctl('set-size', '1', '1'));
     t.waiton(pmctl('get-process-count', '1'), /processes: 2/);
 
     t.expect(pmctl('restart', '1'), 'Service.*restarting');
-    t.waiton(pmctl('get-process-count', '1'), /processes: 1/);
+    t.waiton(pmctl('get-process-count', '1'), /processes: 2/);
   });
 
   t.shutdown(pm);
