@@ -54,7 +54,7 @@
     "request": "^2.45.0",
     "semver": "^4.1.0",
     "shelljs": "^0.3.0",
-    "strong-build": "^1.0.0",
+    "strong-build": "^2.0.0",
     "strong-deploy": "^2.0.0",
     "tap": "^1.2.0"
   },
