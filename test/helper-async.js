@@ -12,6 +12,8 @@ var partial = require('lodash').partial;
 var once = require('lodash').once;
 var path = require('path');
 var rimraf = require('rimraf');
+var slBuild = require.resolve('strong-build/bin/sl-build');
+var slDeploy = require.resolve('strong-deploy/bin/sl-deploy');
 
 module.exports = exports = {
   pm: pm,
@@ -35,7 +37,7 @@ function reset(callback) {
     ex('git init'),
     ex('git add .'),
     ex('git commit --author="sl-pm-test <nobody@strongloop.com>" -m initial'),
-    ex('sl-build --install --commit'),
+    ex(slBuild + ' --install --commit'),
   ], function(err) {
     assert.ifError(err);
     console.log('test/app built succesfully')
@@ -136,7 +138,7 @@ function pmWithApp(args, env, callback) {
   reset(function() {
     pm(args, env, function(pm) {
       console.log('pmurl: %s', pm.pmurl);
-      cp.exec(fmt('sl-deploy %s master', pm.pmurl), function(er) {
+      cp.exec(fmt('%s %s master', slDeploy, pm.pmurl), function(er) {
         assert.ifError(er, 'git push succeeds when auth not required');
         callback(pm);
       });
