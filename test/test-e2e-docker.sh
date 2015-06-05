@@ -176,3 +176,5 @@ wait_until_available $APP1/this/is/a/test \
   || ok 'pmctl failed to run status without auth'
 
 docker stop $SL_PM
+
+assert_report
