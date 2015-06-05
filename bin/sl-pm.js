@@ -38,14 +38,12 @@ var parser = new Parser([
     'c:(config)', // unused. left in so Upstart/systemd jobs don't crash
     'd:(driver)',
     'l:(listen)',
-    'C:(control)',
-    'N(no-control)',
+    'N:(no-control)', // unused. left for backwards compat.
   ].join(''),
   argv);
 
 var base = '.strong-pm';
 var listen = 8701;
-var control = 'pmctl';
 var driver = DRIVERS.direct;
 
 var option;
@@ -71,11 +69,7 @@ while ((option = parser.getopt()) !== undefined) {
     case 'l':
       listen = option.optarg;
       break;
-    case 'C':
-      control = option.optarg;
-      break;
     case 'N':
-      control = undefined;
       break;
     default:
       console.error('Invalid usage (near option \'%s\'), try `%s --help`.',
@@ -85,10 +79,6 @@ while ((option = parser.getopt()) !== undefined) {
 }
 
 base = path.resolve(base);
-
-if (control) {
-  control = path.resolve(control);
-}
 
 if (parser.optind() !== argv.length) {
   console.error('Invalid usage (extra arguments), try `%s --help`.', $0);
@@ -110,7 +100,6 @@ var app = new Server({
   cmdName: $0,
   baseDir: base,
   listenPort: listen,
-  controlPath: control,
 });
 
 app.on('listening', function(listenAddr) {

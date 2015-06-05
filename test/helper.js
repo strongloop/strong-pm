@@ -71,11 +71,11 @@ exports.listen = function() {
     cmdName: 'test',
     baseDir: base,
     listenPort: 0,
-    controlPath: 'pmctl',
   });
   server.on('listening', function(listenAddr){
     port = listenAddr.port;
     console.log('git receive listening on  %d', port);
+    process.env.STRONGLOOP_PM = 'http://127.0.0.1:' + port;
   });
 
   server.start();

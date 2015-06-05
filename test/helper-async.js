@@ -68,11 +68,8 @@ function pm(args, env, callback) {
     env = {};
   }
 
-  // Listened on zero to avoid port conflicts, search for actual port.
+  // Listen on zero to avoid port conflicts, search for actual port.
   args.push('--listen=0');
-  if (env.STRONGLOOP_PM) {
-    args.push('--no-control');
-  }
 
   var pm;
 
@@ -122,14 +119,20 @@ function pm(args, env, callback) {
     pm.pmctlUrl = fmt('http://%s127.0.0.1:%d/api', auth, pm.port);
     pm.pmctlUrlNoAuth = fmt('http://127.0.0.1:%d/api', pm.port);
     pm.pmctlPath = path.resolve(pm.cwd, 'pmctl');
-    if (env.STRONGLOOP_PM) {
-      pm.env.STRONGLOOP_PM = pm.pmurl;
-      pm.env.STRONGLOOP_PM_NOAUTH = pm.pmurlNoAuth;
-    }
+    pm.env.STRONGLOOP_PM = pm.pmurl;
+    pm.env.STRONGLOOP_PM_NOAUTH = pm.pmurlNoAuth;
+
+    // So pmctl, with no further config, can connect to an ephemeral pm port.
+    process.env.STRONGLOOP_PM = pm.pmurl;
   }
 }
 
 function pmWithApp(args, env, callback) {
+  if (typeof env === 'function') {
+    callback = env;
+    env = {};
+  }
+  assert.equal(typeof callback, 'function');
   reset(function() {
     pm(args, env, function(pm) {
       console.log('pmurl: %s', pm.pmurl);
@@ -286,7 +289,6 @@ function pmctl(cmd, callback) {
   var cli = require.resolve('../bin/sl-pmctl.js');
   var args = [cli].concat(cmd);
   var env = JSON.parse(JSON.stringify(process.env));
-  env.STRONGLOOP_PM = '';
   return cp.execFile(process.execPath, args, {env: env}, function(er, stdout, stderr) {
     var out = {
       out: stdout.trim(),
@@ -309,10 +311,11 @@ function checkOutput(out, pattern) {
   return match;
 }
 
-function pmctlWithCtl(ctlPath) {
+function pmctlWithCtl(control) {
   return function pmctl(args) {
+    control = control || process.env.STRONGLOOP_PM;
     args = [].slice.call(arguments);
-    return ['--control', ctlPath].concat(args);
+    return ['--control', control].concat(args);
   }
 }
 

@@ -4,6 +4,7 @@
 *.tgz
 .env
 .strong*
+failed.txt
 minkelite.db
 node_modules
 npm-debug.log

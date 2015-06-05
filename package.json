@@ -1,7 +1,7 @@
 {
   "name": "strong-pm",
   "description": "StrongLoop Process Manager",
-  "version": "4.2.0",
+  "version": "5.0.0",
   "keywords": [
     "StrongLoop",
     "agent",
@@ -38,7 +38,7 @@
   "scripts": {
     "pretest": "eslint ./ && jscs ./",
     "lint": "eslint ./ && jscs ./",
-    "test": "tap --bail --timeout=1000 ./test/test-*"
+    "test": "tap --bail --timeout=1000 --save=failed.txt ./test/test-*"
   },
   "bin": {
     "sl-pm": "./bin/sl-pm.js",
