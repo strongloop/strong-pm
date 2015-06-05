@@ -41,7 +41,7 @@
   "scripts": {
     "pretest": "eslint ./ && jscs ./",
     "lint": "eslint ./ && jscs ./",
-    "test": "tap --timeout=1000 ./test/test-*"
+    "test": "tap --bail --timeout=1000 ./test/test-*"
   },
   "bin": {
     "sl-pm": "./bin/sl-pm.js",
@@ -59,7 +59,7 @@
     "shelljs": "^0.3.0",
     "strong-build": "^1.0.0",
     "strong-deploy": "^2.0.0",
-    "tap": "^0.7.0"
+    "tap": "^1.2.0"
   },
   "dependencies": {
     "async": "^0.9.0",
