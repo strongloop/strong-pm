@@ -10,6 +10,7 @@ process.on('disconnect', function() {
 });
 
 var Parser = require('posix-getopt').BasicParser;
+var home = require('userhome');
 var mkdirp = require('mkdirp').sync;
 var path = require('path');
 var fs = require('fs');
@@ -42,7 +43,7 @@ var parser = new Parser([
   ].join(''),
   argv);
 
-var base = '.strong-pm';
+var base = home('.strong-pm');
 var listen = 8701;
 var driver = DRIVERS.direct;
 

@@ -65,6 +65,10 @@ function pm(args, env, callback) {
   args = args || [];
   env = env || {};
 
+  // Avoid the ~/.strong-pm default, we want test artifacts to not be shared,
+  // but for any user-provided --base argument to override this one.
+  args.unshift('--base=.strong-pm');
+
   if (typeof env === 'function' && !callback) {
     callback = env;
     env = {};
