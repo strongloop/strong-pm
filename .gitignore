@@ -4,10 +4,11 @@
 *.tgz
 .env
 .strong*
+minkelite.db
 node_modules
 npm-debug.log
 test/.vagrant/
-test/copy.out
-test/receive-base
 test/SANDBOX*
 test/container
+test/copy.out
+test/receive-base
