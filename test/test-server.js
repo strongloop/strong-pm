@@ -19,7 +19,6 @@ tap.test('server test', function(t) {
   //    cmdName: 'pm',
   //    baseDir: BASE,
   //    listenPort: 0,
-  //    controlPath: null,
   //  });
   //  server.stop(tt.end.bind(tt));
   //});
@@ -62,7 +61,6 @@ tap.test('server test', function(t) {
   //    cmdName: 'pm',
   //    baseDir: BASE,
   //    listenPort: 0,
-  //    controlPath: null,
   //    Driver: MockDriver,
   //    ServiceManager: MockServiceManager,
   //    MeshServer: MockMeshServerFactory
@@ -150,7 +148,6 @@ tap.test('server test', function(t) {
   //    cmdName: 'pm',
   //    baseDir: BASE,
   //    listenPort: 0,
-  //    controlPath: null,
   //    enableTracing: true,
   //    Driver: MockDriver,
   //    ServiceManager: MockServiceManager,
@@ -241,7 +238,6 @@ tap.test('server test', function(t) {
       cmdName: 'pm',
       baseDir: BASE,
       listenPort: 1234,
-      controlPath: null,
       enableTracing: false,
       Driver: MockDriver,
     };

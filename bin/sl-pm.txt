@@ -6,9 +6,7 @@ Options:
   -h,--help         Print this message and exit.
   -v,--version      Print version and exit.
   -b,--base BASE    Base directory to work in (default `.strong-pm`).
-  -l,--listen PORT  Listen on PORT for git pushes (default 8701).
-  -C,--control CTL  Listen for local control messages on CTL (default `pmctl`).
-  --no-control      Do not listen for local control messages.
+  -l,--listen PORT  Listen on PORT for control (default 8701).
 
 The base directory is used to save deployed applications, for working
 directories, and for any other files the process manager needs to create.
@@ -18,7 +16,3 @@ port is also used for deployment with strong-deploy. Basic authentication
 can be enabled for HTTP by setting the STRONGLOOP_PM_HTTP_AUTH environment
 variable to <user>:<pass> (eg. strong-pm:super-secret). This is the same format
 as used by the --http-auth option of pm-install.
-
-It is also controllable using local domain sockets, which look like file paths,
-and the listen path can be changed or disabled. These sockets do not support
-HTTP authentication.
