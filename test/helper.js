@@ -1,5 +1,4 @@
 var assert = require('assert');
-var async = require('async');
 var debug = require('debug')('strong-pm:test');
 var path = require('path');
 var util = require('util');
