@@ -48,7 +48,7 @@
     "sl-pm-install": "./bin/sl-pm-install.js"
   },
   "devDependencies": {
-    "eslint": "^0.21.0",
+    "eslint": "^0.22.1",
     "jscs": "^1.11.3",
     "mktmpdir": "^0.1.1",
     "request": "^2.45.0",
