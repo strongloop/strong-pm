@@ -93,6 +93,6 @@
     "uid-number": "0.0.5"
   },
   "optionalDependencies": {
-    "sl-blip": "http://blip.strongloop.com/strong-pm@4.2.0"
+    "sl-blip": "http://blip.strongloop.com/strong-pm@4.2.1"
   }
 }
