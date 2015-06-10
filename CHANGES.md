@@ -1,3 +1,21 @@
+2015-06-10, Version 4.2.1
+=========================
+
+ * test: tapify test-server-metadata (Ryan Graham)
+
+ * test: update expectations for persisted set-size (Ryan Graham)
+
+ * package: update license to SPDX expression (Ryan Graham)
+
+ * gitignore minkelite.db (Sam Roberts)
+
+ * test: fix e2e docker test (Ryan Graham)
+
+ * Upgrade tap to 1.x (Sam Roberts)
+
+ * Update runner cmdline when tracing/size is changed (Krishna Raman)
+
+
 2015-06-03, Version 4.2.0
 =========================
 
@@ -462,6 +480,10 @@
 =========================
 
  * Use process pid when filtering for model updates (Krishna Raman)
+
+
+2015-01-29, Version 1.7.0
+=========================
 
  * fix 'pmctl log-dump --follow' option parsing (Ryan Graham)
 
