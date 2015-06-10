@@ -57,9 +57,9 @@ tap.test('DockerDriver#start', function(t) {
       };
     },
   };
-  function MockImage(driver, id, baseDir) {
+  function MockImage(driver, svcDir) {
     EE.call(this);
-    images.push(id);
+    images.push(svcDir);
     this.on('commit', function(c) {
       commits.push(c);
     });
@@ -89,7 +89,7 @@ tap.test('DockerDriver#start', function(t) {
     t.ifError(err, 'should not error on startup');
     t.equal(pulledImages.length, 2, 'attempted to pull 2 base images');
     t.assert(gotInfo, 'polled docker server info on startup');
-    t.deepEqual(images, [1], 'creates image for instnace 1');
+    t.equal(images.length, 1, 'creates image for instance 1');
     t.deepEqual(listeners, ['error', 'image'], 'driver listens for image');
     t.deepEqual(commits, [metas['1'].commit], 'Image for instnace 1 commit');
     t.end();
