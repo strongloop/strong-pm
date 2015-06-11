@@ -60,6 +60,7 @@ tap.test('start runs last services', function(t) {
 });
 
 tap.test('start does nothing with no last services', function(t) {
+  t.plan(3);
   mktmpdir(function (err, dir, done) {
     t.ifError(err);
     t.on('end', done);
@@ -72,10 +73,8 @@ tap.test('start does nothing with no last services', function(t) {
       server: server,
     });
     function Container() {
-      t.assert(false, 'should be no services found');
+      t.fail('should be no services found');
     }
-
-    t.plan(2);
 
     d.start({}, function(er) {
       t.ifError(er);

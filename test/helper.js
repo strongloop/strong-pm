@@ -1,11 +1,7 @@
 var assert = require('assert');
 var path = require('path');
+var shelljs = require('shelljs');
 var util = require('util');
-
-require('shelljs/global');
-
-// XXX should be a way to ignore specific shelljs globals
-/* eslint no-undef:0 */
 
 // So dev deps, like sl-build, are in the path.
 process.env.PATH += path.delimiter
@@ -16,7 +12,7 @@ exports.stop = stop;
 
 function ex(cmd, async) {
   console.log('exec `%s`', cmd);
-  return exec(cmd, async);
+  return shelljs.exec(cmd, async);
 }
 
 exports.ex = ex;
@@ -38,24 +34,24 @@ process.on('exit', function(code) {
 });
 
 function package() {
-  return require(path.resolve(pwd(), 'package.json'));
+  return require(path.resolve(shelljs.pwd(), 'package.json'));
 }
 
 exports.package = package;
 
-cd(path.resolve(__dirname, 'app'));
+shelljs.cd(path.resolve(__dirname, 'app'));
 
 var APPNAME = 'test-app';
 exports.APPNAME = APPNAME;
 
 assert.equal(package().name, APPNAME, 'cwd is ' + APPNAME);
 
-assert(which('sl-build'), 'sl-build should be in path');
+assert(shelljs.which('sl-build'), 'sl-build should be in path');
 
-rm('-rf', '../receive-base');
-rm('-rf', '.git', '.strong-pm');
+shelljs.rm('-rf', '../receive-base');
+shelljs.rm('-rf', '.git', '.strong-pm');
 ex('git clean -f -d -x .');
-assert(!test('-e', 'node_modules'));
+assert(!shelljs.test('-e', 'node_modules'));
 ex('git init');
 ex('git add .');
 ex('git commit --author="sl-pm-test <nobody@strongloop.com>" -m initial');
@@ -68,7 +64,7 @@ var port;
 
 exports.listen = function() {
   var base = '../receive-base';
-  mkdir('-p', base);
+  shelljs.mkdir('-p', base);
   server = new Server({
     cmdName: 'test',
     baseDir: base,
@@ -123,7 +119,7 @@ exports.pushTarball = function(repo, callback) {
     var api = 'api/Services/1/deploy';
 
     // XXX(sam) this won't work on win32
-    cmd = util.format(
+    var cmd = util.format(
       'curl -X PUT --data-binary @test-app-0.0.0.tgz http://127.0.0.1:%d/%s ',
       port, api);
 
