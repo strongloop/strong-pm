@@ -9,8 +9,13 @@ tap.test('old-style git deploy', function(t) {
     url: '/default/a-bunch?of-git-stuff',
   };
   var res = {
-    setHeaders: function(status, values) {
-      console.error('setHeaders: %j %j', status, values);
+    set: function(k, v) {
+      console.error('set: %j %j', key, value);
+      return this;
+    },
+    status: function(status) {
+      console.error('status: %j', status);
+      return this;
     },
     end: function(body) {
       t.assert(false, body);
