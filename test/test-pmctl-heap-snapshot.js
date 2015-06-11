@@ -20,7 +20,7 @@ helper.test('pmctl', function(t, pm) {
     t.test('heapsnapshot file', function(t) {
       t.doesNotThrow(
         function() {
-          fs.statSync('_heap.heapsnapshot')
+          fs.statSync('_heap.heapsnapshot');
         },
         '_heap.heapsnapshot should exist'
       );

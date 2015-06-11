@@ -3,17 +3,15 @@ var helper = require('./helper-pmctl');
 helper.test('pmctl', function(t, pm) {
   var pmctl = pm.pmctlFn;
 
-  // Note in below that cluster size is set to 0, so that a running app will
-  // have a single process, wid 0, the supervisor.
-  t.test('status has pm pid', function(t) {
-    t.waiton(pmctl('status', '1'), 'Processes');
-    t.expect(pmctl('get-process-count', '1'), 'processes: 1');
+  t.waiton(pmctl('get-process-count', '1'), 'processes: 1');
+
+  t.test('start/restart/resize', function(t) {
+    t.expect(pmctl('set-size', '1', '0'));
+    t.waiton(pmctl('get-process-count', '1'), 'processes: 1');
 
     t.failon(pmctl('start', '1'), 'running, so cannot be started');
-
     t.expect(pmctl('stop', '1'), 'Service.*hard stopped');
-    t.waiton(pmctl('status', '1'), 'Not started');
-    t.expect(pmctl('get-process-count', '1'), 'processes: 0');
+    t.waiton(pmctl('status'), 'Not started');
 
     // XXX(sam) this test fails, hard stop succeeds silently when service
     // is already stopped
@@ -21,11 +19,10 @@ helper.test('pmctl', function(t, pm) {
 
     t.expect(pmctl('start', '1'), 'starting');
     t.waiton(pmctl('get-process-count', '1'), 'processes: 1');
-    t.expect(pmctl('status', '1'), 'Processes');
 
     t.expect(pmctl('restart', '1'), 'Service.*restarting');
+
     t.waiton(pmctl('get-process-count', '1'), 'processes: 1');
-    t.expect(pmctl('status', '1'), 'Processes');
 
     t.expect(pmctl('set-size', '1', '3'));
     t.waiton(pmctl('get-process-count', '1'), /processes: 4/);
@@ -38,8 +35,6 @@ helper.test('pmctl', function(t, pm) {
 
     t.expect(pmctl('restart', '1'), 'Service.*restarting');
     t.waiton(pmctl('get-process-count', '1'), /processes: 2/);
-
-    t.expect(pmctl('env-get', '1', '0'), 'No matching env variables defined');
   });
 
   t.shutdown(pm);

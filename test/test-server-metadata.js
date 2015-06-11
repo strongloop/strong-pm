@@ -1,9 +1,7 @@
 process.env.STRONGLOOP_CLUSTER = 1;
 
 var app = require('./helper');
-var assert = require('assert');
 var exec = require('child_process').exec;
-var path = require('path');
 var tap = require('tap');
 var util = require('util');
 
@@ -19,11 +17,12 @@ function pmctl(/*arguments..., callback*/) {
   return doPmctl;
   function doPmctl(t, noEnd) {
     var cmd = cli + ' -C ' + CTL + ' ' + util.format.apply(util, args);
-    exec(cmd, function(err, stdout, stderr) {
-      output = stdout.trim() + stderr.trim();
-      console.log('# Run: %s => err: %j stdout <\n%s>', cmd, err, output);
+    exec(cmd, function(err, stdout) {
+      console.log('# Run: %s => err: %j stdout <\n%s>', cmd, err, stdout);
       t.ifError(err);
-      noEnd || t.end();
+      if (!noEnd ) {
+        t.end();
+      }
     });
   }
 }
@@ -56,7 +55,7 @@ function testInstanceState(expected) {
   function doTest(t) {
     ServiceInstance.findOne(function(err, instance) {
       t.ifError(err);
-      console.log('# testInstanceState: expect started=%j:', expected, instance);
+      console.log('# testInstanceState: expected=%j:', expected, instance);
       t.equal(instance.started, expected);
       t.end();
     });
@@ -64,7 +63,7 @@ function testInstanceState(expected) {
 }
 
 function testInitialWorkerState(t) {
-  ServiceProcess.findOne({where: { workerId: 1 }}, function(err, proc) {
+  ServiceProcess.findOne({where: {workerId: 1}}, function(err, proc) {
     t.ifError(err);
     t.equal(proc.isProfiling, false);
     t.equal(proc.isSnapshotting, false);
@@ -77,7 +76,7 @@ function testInitialWorkerState(t) {
 }
 
 function testCpuStart(t) {
-  ServiceProcess.findOne({where: { workerId: 1 }}, function(err, proc) {
+  ServiceProcess.findOne({where: {workerId: 1}}, function(err, proc) {
     t.ifError(err);
     t.assert(proc, 'worker 1 exists');
     t.equal(proc.isProfiling, true, 'worker 1 is profiling');
@@ -86,7 +85,7 @@ function testCpuStart(t) {
 }
 
 function testCpuStop(t) {
-  ServiceProcess.findOne({where: { workerId: 1, stopTime: null }},
+  ServiceProcess.findOne({where: {workerId: 1, stopTime: null}},
     function(err, proc) {
       t.ifError(err);
       t.equal(proc.isProfiling, false);
@@ -96,7 +95,7 @@ function testCpuStop(t) {
 }
 
 function testCpuWatchdogStart(t) {
-  ServiceProcess.findOne({where: { workerId: 1, stopTime: null }},
+  ServiceProcess.findOne({where: {workerId: 1, stopTime: null}},
     function(err, proc) {
       t.ifError(err);
       t.equal(proc.isProfiling, true);
@@ -107,7 +106,7 @@ function testCpuWatchdogStart(t) {
 }
 
 function testObjTrackingStart(t) {
-  ServiceProcess.findOne({where: { workerId: 1 }}, function(err, proc) {
+  ServiceProcess.findOne({where: {workerId: 1}}, function(err, proc) {
     t.ifError(err);
     t.equal(proc.isTrackingObjects, true);
     t.end();
@@ -115,7 +114,7 @@ function testObjTrackingStart(t) {
 }
 
 function testObjTrackingStop(t) {
-  ServiceProcess.findOne({where: { workerId: 1 }}, function(err, proc) {
+  ServiceProcess.findOne({where: {workerId: 1}}, function(err, proc) {
     t.ifError(err);
     t.equal(proc.isTrackingObjects, false);
     t.end();
@@ -124,7 +123,7 @@ function testObjTrackingStop(t) {
 
 function testWorkerExitState(t) {
   server.once('exit', function() {
-    ServiceProcess.findOne({where: { workerId: 1}}, function(err, proc) {
+    ServiceProcess.findOne({where: {workerId: 1}}, function(err, proc) {
       t.ifError(err);
       t.equal(proc.isProfiling, false);
       t.equal(proc.isSnapshotting, false);
@@ -139,7 +138,9 @@ function testWorkerExitState(t) {
 }
 
 function killClusterMaster(t) {
-  ServiceProcess.findOne({where: { workerId: 0}}, function(err, proc) {
+  ServiceProcess.findOne({where: {workerId: 0}}, function(err, proc) {
+    t.ifError(err);
+    t.assert(proc);
     server.once('running', function() {
       t.pass('running');
       t.end();
@@ -156,7 +157,7 @@ function testRestartedInstState(t) {
   });
 }
 
-function testTotalWorkers(count, t) {
+function testTotalWorkers(count) {
   return testCount;
 
   function testCount(t) {
@@ -172,7 +173,7 @@ function waitForWorkers(t) {
   waitForWorkers.count = waitForWorkers.count || 0;
   waitForWorkers.count += 1;
   ServiceProcess.find(function(err, procs) {
-    console.log('# checked %d times waiting for a worker', waitForWorkers.count);
+    console.log('# checked %d times on wait for worker', waitForWorkers.count);
     // supervisor + workers
     if (procs.length > 1) {
       return t.end();

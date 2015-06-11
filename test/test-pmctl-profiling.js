@@ -33,7 +33,7 @@ helper.test('pmctl profiling', function(t, pm) {
       t.test('objects-start/stop', {skip: 'no license'}, function() {
       });
     }
-    return
+    return;
   });
 
   t.shutdown(pm);

@@ -9,7 +9,7 @@ process.env.STRONGLOOP_CLUSTER = 1;
 // XXX(sam) each test should be its own file, its to hard to debug like this
 tap.test('without auth', function(t) {
   helper.reset(function() {
-    helper.pm([], { STRONGLOOP_PM_HTTP_AUTH: '' }, function(pm) {
+    helper.pm([], {STRONGLOOP_PM_HTTP_AUTH: ''}, function(pm) {
       var port = pm.port;
       var pmurl = pm.pmurlNoAuth;
       console.log('pmurl: %s', pmurl);
@@ -17,7 +17,7 @@ tap.test('without auth', function(t) {
       t.assert(port, 'pm started on port ' + port);
       pm.on('exit', function(code, sig) {
         var SIGTERM = 15;
-        t.assert(code == 128 + SIGTERM || sig === 'SIGTERM', 'killed by us');
+        t.assert(code === 128 + SIGTERM || sig === 'SIGTERM', 'killed by us');
         t.end();
       });
       cp.exec(fmt('sl-deploy %s master', pmurl), function(er) {
@@ -30,7 +30,7 @@ tap.test('without auth', function(t) {
 
 tap.test('with basic auth and valid credentials', function(t) {
   helper.reset(function() {
-    helper.pm([], { STRONGLOOP_PM_HTTP_AUTH: 'basic:user:pass' }, function(pm) {
+    helper.pm([], {STRONGLOOP_PM_HTTP_AUTH: 'basic:user:pass'}, function(pm) {
       var port = pm.port;
       var pmurl = fmt('http://user:pass@127.0.0.1:%d', port);
       console.log('pmurl: %s', pmurl);
@@ -38,7 +38,7 @@ tap.test('with basic auth and valid credentials', function(t) {
       t.assert(port, 'pm started on port ' + port);
       pm.on('exit', function(code, sig) {
         var SIGTERM = 15;
-        t.assert(code == 128 + SIGTERM || sig === 'SIGTERM', 'killed by us');
+        t.assert(code === 128 + SIGTERM || sig === 'SIGTERM', 'killed by us');
         t.end();
       });
       cp.exec(fmt('sl-deploy %s master', pmurl), function(er) {
@@ -51,7 +51,7 @@ tap.test('with basic auth and valid credentials', function(t) {
 
 tap.test('with digest auth and valid credentials', function(t) {
   helper.reset(function() {
-    helper.pm([], { STRONGLOOP_PM_HTTP_AUTH: 'digest:user:pass' }, function(pm) {
+    helper.pm([], {STRONGLOOP_PM_HTTP_AUTH: 'digest:user:pass'}, function(pm) {
       var port = pm.port;
       var pmurl = fmt('http://user:pass@127.0.0.1:%d', port);
       console.log('pmurl: %s', pmurl);
@@ -59,7 +59,7 @@ tap.test('with digest auth and valid credentials', function(t) {
       t.assert(port, 'pm started on port ' + port);
       pm.on('exit', function(code, sig) {
         var SIGTERM = 15;
-        t.assert(code == 128 + SIGTERM || sig === 'SIGTERM', 'killed by us');
+        t.assert(code === 128 + SIGTERM || sig === 'SIGTERM', 'killed by us');
         t.end();
       });
 
@@ -73,7 +73,7 @@ tap.test('with digest auth and valid credentials', function(t) {
 
 tap.test('with auth and invalid credentials', function(t) {
   helper.reset(function() {
-    helper.pm([], { STRONGLOOP_PM_HTTP_AUTH: 'basic:user:pass' }, function(pm) {
+    helper.pm([], {STRONGLOOP_PM_HTTP_AUTH: 'basic:user:pass'}, function(pm) {
       var port = pm.port;
       var pmurl = fmt('http://baduser:badpass@127.0.0.1:%d', port);
       console.log('pmurl: %s', pmurl);
@@ -81,7 +81,7 @@ tap.test('with auth and invalid credentials', function(t) {
       t.assert(port, 'pm started on port ' + port);
       pm.on('exit', function(code, sig) {
         var SIGTERM = 15;
-        t.assert(code == 128 + SIGTERM || sig === 'SIGTERM', 'killed by us');
+        t.assert(code === 128 + SIGTERM || sig === 'SIGTERM', 'killed by us');
         t.end();
       });
       cp.exec(fmt('sl-deploy %s master', pmurl), function(er) {

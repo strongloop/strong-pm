@@ -26,7 +26,7 @@ http.createServer(onRequest)
 });
 
 function onRequest(req, res) {
-  switch(req.url) {
+  switch (req.url) {
     case '/env':
       res.end(JSON.stringify(process.env, null, 2) + '\n\n');
       break;

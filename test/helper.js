@@ -1,9 +1,11 @@
 var assert = require('assert');
-var debug = require('debug')('strong-pm:test');
 var path = require('path');
 var util = require('util');
 
 require('shelljs/global');
+
+// XXX should be a way to ignore specific shelljs globals
+/* eslint no-undef:0 */
 
 // So dev deps, like sl-build, are in the path.
 process.env.PATH += path.delimiter
@@ -36,7 +38,7 @@ process.on('exit', function(code) {
 });
 
 function package() {
-  return require(path.resolve(pwd(),'package.json'));
+  return require(path.resolve(pwd(), 'package.json'));
 }
 
 exports.package = package;
@@ -85,7 +87,7 @@ exports.listen = function() {
 function stop(callback) {
   if (!server) return callback();
   server._container.stop(callback);
-};
+}
 
 
 // Pushes don't work if we have already pushed... so force a new repo name for
