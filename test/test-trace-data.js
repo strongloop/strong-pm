@@ -7,8 +7,6 @@ var tap = require('tap');
 var events = require('events');
 var util = require('util');
 
-var BASE = path.resolve(__dirname, '.strong-pm');
-
 function MockCurrent() {
   this.child = {
     pid: 59312

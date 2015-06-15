@@ -65,6 +65,10 @@ function pm(args, env, callback) {
   args = args || [];
   env = env || {};
 
+  // Avoid the ~/.strong-pm default, we want test artifacts to not be shared,
+  // but for any user-provided --base argument to override this one.
+  args.unshift('--base=.strong-pm');
+
   if (typeof env === 'function' && !callback) {
     callback = env;
     env = {};
@@ -157,7 +161,7 @@ function queued(t) {
     shutdown: partial(runTests, queue, t),
     test: subTest,
   };
-  ['equal', 'notEqual', 'assert', 'end', 'skip', 'doesNotThrow'].forEach(function(m) {
+  ['equal', 'notEqual', 'assert', 'end', 'doesNotThrow'].forEach(function(m) {
     newT[m] = function() {
       t[m].apply(t, arguments);
     };

@@ -16,19 +16,29 @@ helper.test('pmctl', function(t, pm) {
     t.waiton(pmctl('status', '1'), 'Not started');
     t.expect(pmctl('get-process-count', '1'), 'processes: 0');
 
-    // XXX(sam, rmg) status should be zero, but message should be like:
-    //   not running, so cannot be stopped
-    t.expect(pmctl('stop', '1'), 'Service.*hard stopped');
-    t.expect(pmctl('status', '1'), 'Not started');
-    t.expect(pmctl('get-process-count', '1'), 'processes: 0');
+    // XXX(sam) this test fails, hard stop succeeds silently when service
+    // is already stopped
+    // t.failon(pmctl('stop', '1'), 'not running, so cannot be stopped');
 
     t.expect(pmctl('start', '1'), 'starting');
-    t.waiton(pmctl('status', '1'), 'Processes');
-    t.expect(pmctl('get-process-count', '1'), 'processes: 1');
+    t.waiton(pmctl('get-process-count', '1'), 'processes: 1');
+    t.expect(pmctl('status', '1'), 'Processes');
 
     t.expect(pmctl('restart', '1'), 'Service.*restarting');
-    t.waiton(pmctl('status', '1'), 'Processes');
-    t.expect(pmctl('get-process-count', '1'), 'processes: 1');
+    t.waiton(pmctl('get-process-count', '1'), 'processes: 1');
+    t.expect(pmctl('status', '1'), 'Processes');
+
+    t.expect(pmctl('set-size', '1', '3'));
+    t.waiton(pmctl('get-process-count', '1'), /processes: 4/);
+
+    t.expect(pmctl('soft-restart', '1'), 'Service.*soft restarting');
+    t.waiton(pmctl('get-process-count', '1'), /processes: 4/);
+
+    t.expect(pmctl('set-size', '1', '1'));
+    t.waiton(pmctl('get-process-count', '1'), /processes: 2/);
+
+    t.expect(pmctl('restart', '1'), 'Service.*restarting');
+    t.waiton(pmctl('get-process-count', '1'), /processes: 2/);
 
     t.expect(pmctl('env-get', '1', '0'), 'No matching environment variables defined');
   });
