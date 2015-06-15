@@ -11,12 +11,18 @@ helper.test('pmctl profiling', function(t, pm) {
     t.expect(pmctl('cpu-start', '1.1.0'), /Profiler started/);
     t.expect(pmctl('cpu-stop', '1.1.0'), /CPU profile written.*0.cpuprofile/);
 
-    if (process.platform === 'linux') {
-      t.expect(pmctl('cpu-start', '1.1.0', '100'), /Profiler started/);
-      t.expect(pmctl('cpu-stop', '1.1.0'), /CPU profile written.*0.cpuprofile/);
+    if (process.env.STRONGLOOP_LICENSE &&
+        process.env.STRONGLOOP_LICENSE.length > 10) {
+      if (process.platform === 'linux') {
+        t.expect(pmctl('cpu-start', '1.1.0', '100'), /Profiler started/);
+        t.expect(pmctl('cpu-stop', '1.1.0'), /CPU profile .*0.cpuprofile/);
+      } else {
+        t.failon(pmctl('cpu-start', '1.1.0', '100'), /profiling not supported/);
+        t.failon(pmctl('cpu-stop', '1.1.0'), /profiler not started/);
+      }
     } else {
-      t.failon(pmctl('cpu-start', '1.1.0', '100'), /profiling not supported/);
-      t.failon(pmctl('cpu-stop', '1.1.0'), /profiler not started/);
+        t.failon(pmctl('cpu-start', '1.1.0', '100'), /requires license/);
+        t.failon(pmctl('cpu-stop', '1.1.0'), /profiler not started/);
     }
 
     if (process.env.STRONGLOOP_LICENSE &&
