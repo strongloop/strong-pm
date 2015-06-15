@@ -161,7 +161,7 @@ function queued(t) {
     shutdown: partial(runTests, queue, t),
     test: subTest,
   };
-  ['equal', 'notEqual', 'assert', 'end', 'skip', 'doesNotThrow'].forEach(function(m) {
+  ['equal', 'notEqual', 'assert', 'end', 'doesNotThrow'].forEach(function(m) {
     newT[m] = function() {
       t[m].apply(t, arguments);
     };

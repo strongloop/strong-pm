@@ -24,7 +24,8 @@ helper.test('pmctl profiling', function(t, pm) {
       t.expect(pmctl('objects-start', '1.1.1'));
       t.expect(pmctl('objects-stop', '1.1.1'));
     } else {
-      t.skip('objects-start/stop, no license');
+      t.test('objects-start/stop', {skip: 'no license'}, function() {
+      });
     }
     return
   });
