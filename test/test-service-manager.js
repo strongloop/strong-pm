@@ -9,7 +9,7 @@ tap.test('old-style git deploy', function(t) {
     url: '/default/a-bunch?of-git-stuff',
   };
   var res = {
-    set: function(k, v) {
+    set: function(key, value) {
       console.error('set: %j %j', key, value);
       return this;
     },
@@ -22,10 +22,14 @@ tap.test('old-style git deploy', function(t) {
       t.end();
     },
   };
-  var next = function() {};
+  function next() {}
   var server = {
-    getDefaultEnv: function() { return {}; },
-    updateInstanceEnv: function(_, __, callback) { callback();  },
+    getDefaultEnv: function() {
+      return {};
+    },
+    updateInstanceEnv: function(_, __, callback) {
+      callback();
+    },
     deployInstance: deployInstance,
     setStartOptions: function() {},
   };
@@ -50,10 +54,14 @@ tap.test('old-style local or pack deploy', function(t) {
     url: '/default',
   };
   var res = {};
-  var next = function() {};
+  function next() {}
   var server = {
-    getDefaultEnv: function() { return {}; },
-    updateInstanceEnv: function(_, __, callback) { callback();  },
+    getDefaultEnv: function() {
+      return {};
+    },
+    updateInstanceEnv: function(_, __, callback) {
+      callback();
+    },
     deployInstance: deployInstance,
     setStartOptions: function() {},
   };
@@ -78,13 +86,17 @@ tap.test('old-style leaves non-deploy routes alone', function(t) {
     url: '/api',
   };
   var res = {};
-  var next = function() {
+  function next() {
     t.assert(true, 'passes through');
     t.end();
-  };
+  }
   var server = {
-    getDefaultEnv: function() { return {}; },
-    updateInstanceEnv: function(_, __, callback) { callback();  },
+    getDefaultEnv: function() {
+      return {};
+    },
+    updateInstanceEnv: function(_, __, callback) {
+      callback();
+    },
     setStartOptions: function() {},
   };
   var sm = new ServiceManager(server);
@@ -157,7 +169,7 @@ tap.test('onCtlRequest failure', function(t) {
 
   t.plan(1);
 
-  sm.onCtlRequest(svc, ins, req, function(err, r) {
+  sm.onCtlRequest(svc, ins, req, function(err) {
     t.equal(err.message, res.error);
   });
 });

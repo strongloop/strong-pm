@@ -39,9 +39,9 @@ test('Persistence', function(t) {
     var env = new Environment(SANDBOX.empty);
     env.set('FOO', 'bar');
     env.save();
-    t.strictEqual(env.all()['FOO'], 'bar');
+    t.strictEqual(env.all().FOO, 'bar');
     var env2 = new Environment(SANDBOX.empty);
-    t.strictEqual(env.all()['FOO'], env2.all()['FOO']);
+    t.strictEqual(env.all().FOO, env2.all().FOO);
     t.end();
   });
 });

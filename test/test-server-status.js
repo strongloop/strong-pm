@@ -1,5 +1,4 @@
 var Server = require('../lib/server');
-var assert = require('assert');
 var async = require('async');
 var debug = require('debug')('strong-pm:test');
 var path = require('path');
@@ -18,12 +17,12 @@ util.inherits(MockCurrent, events.EventEmitter);
 
 MockCurrent.prototype.request = function request(req, cb) {
   if (req.cmd === 'status') {
-    cb({ master: { setSize: 1 } });
+    cb({master: {setSize: 1}});
   }
   if (req.cmd === 'npm-ls') {
     cb({});
   }
-}
+};
 
 tap.test('worker status update', {
   skip: 'rewrite as unit or integration test'
@@ -48,10 +47,10 @@ tap.test('worker status update', {
   function emit(req) {
     return function(callback) {
       runner.emit('request', req, function() {
-        debug('done?')
+        debug('done?');
         return callback();
       });
-    }
+    };
   }
 
   function emitOne() {
@@ -60,11 +59,7 @@ tap.test('worker status update', {
       cmd: 'fork',
       id: 1, pid: 1001
     };
-    var status = {
-      cmd: 'status',
-      workers: [{id: 1, pid: 1001}],
-    };
-    var expect = [{id:1, pid:1001}];
+    var expect = [{id: 1, pid: 1001}];
     async.series([
       emit(fork),
       //emit(status),
@@ -79,9 +74,9 @@ tap.test('worker status update', {
     };
     var status = {
       cmd: 'status',
-      workers: [{id:1, pid:1001}, {id:2, pid:1002}],
+      workers: [{id: 1, pid: 1001}, {id: 2, pid: 1002}],
     };
-    var expect = [{id:1, pid:1001}, {id:2, pid:1002}];
+    var expect = [{id: 1, pid: 1001}, {id: 2, pid: 1002}];
     async.series([
       runner.emit.bind(runner, 'request', fork),
       runner.emit.bind(runner, 'request', status),
@@ -99,9 +94,9 @@ tap.test('worker status update', {
     };
     var status = {
       cmd: 'status',
-      workers: [{id:2, pid:1002}],
+      workers: [{id: 2, pid: 1002}],
     };
-    var expect = [{id:1, pid:1001}, {id:2, pid:1002}]; // XXX stopTime, etc.
+    var expect = [{id: 1, pid: 1001}, {id: 2, pid: 1002}]; // XXX stopTime, etc.
     async.series([
       runner.emit.bind(runner, 'request', exit),
       runner.emit.bind(runner, 'request', status),
@@ -121,7 +116,7 @@ tap.test('worker status update', {
       cmd: 'status',
       workers: [],
     };
-    var expect = [{id:1, pid:1001}, {id:2, pid:1002}]; // XXX stopTime, etc.
+    var expect = [{id: 1, pid: 1001}, {id: 2, pid: 1002}]; // XXX stopTime, etc.
     async.series([
       runner.emit.bind(runner, 'request', exit),
       runner.emit.bind(runner, 'request', status),
@@ -129,7 +124,7 @@ tap.test('worker status update', {
   }
 
   function checkWorkers(expect, next) {
-    m.ServiceProcess.find({order: 'workerId ASC' }, function(err, processes) {
+    m.ServiceProcess.find({order: 'workerId ASC'}, function(err, processes) {
       debug('processes: %j', err || processes);
       debug('expect: %j', expect);
       debug('next: %j', next.name);
@@ -139,7 +134,7 @@ tap.test('worker status update', {
           workerId: p.id,
           pid: p.pid,
           // XXX start/stop time, etc.
-        }
+        };
       });
       debug('expect: %j', expect);
       processes = processes.map(function(p) {
@@ -148,7 +143,7 @@ tap.test('worker status update', {
           workerId: p.id,
           pid: p.pid,
           // XXX start/stop time, etc.
-        }
+        };
       });
       t.deepEqual(processes, expect);
       next();

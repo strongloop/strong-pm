@@ -52,7 +52,7 @@ tap.test('env-set', function(t) {
   var req = {cmd: 'env-set', env: {foo: 'bar'}};
   ctl(opts, req, function(rsp) {
     t.assert(!rsp.error, 'should not error');
-    t.assert(rsp.message, 'should have a message')
+    t.assert(rsp.message, 'should have a message');
     t.end();
   });
 });
@@ -80,7 +80,7 @@ tap.test('env-get', function(t) {
   var req = {cmd: 'env-get'};
   ctl(opts, req, function(rsp) {
     t.assert(!rsp.error, 'should not error');
-    t.assert(rsp.env, 'should have an env')
+    t.assert(rsp.env, 'should have an env');
     t.end();
   });
 });

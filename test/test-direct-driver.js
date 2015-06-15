@@ -48,7 +48,7 @@ tap.test('start runs last services', function(t) {
       setStartOptions: function(options) {
         t.assert('size' in options);
       },
-    }
+    };
   }
 
   t.plan(8);
@@ -60,7 +60,9 @@ tap.test('start runs last services', function(t) {
 });
 
 tap.test('start does nothing with no last services', function(t) {
+  t.plan(3);
   mktmpdir(function (err, dir, done) {
+    t.ifError(err);
     t.on('end', done);
 
     var server = {};
@@ -70,11 +72,9 @@ tap.test('start does nothing with no last services', function(t) {
       console: console,
       server: server,
     });
-    function Container(options) {
-      t.assert(false, 'should be no services found');
+    function Container() {
+      t.fail('should be no services found');
     }
-
-    t.plan(2);
 
     d.start({}, function(er) {
       t.ifError(er);
@@ -94,10 +94,12 @@ tap.test('stop applied to all services', function(t) {
     server: server,
   });
 
-  function Container(options) {
+  function Container() {
     return {
       on: function() {},
-      stop: function() { this.stopped = true; },
+      stop: function() {
+        this.stopped = true;
+      },
     };
   }
 
@@ -153,7 +155,6 @@ function testPassThru(method, args) {
   tap.test(fmt('driver passes %s to container', method), function(t) {
     var server = {};
     var logger = {};
-    var options = {};
     var d = new Driver({
       Container: Container,
       baseDir: __dirname,
@@ -164,7 +165,7 @@ function testPassThru(method, args) {
 
     function Container(options) {
       t.equal(options.instanceId, instanceId);
-      var c= {
+      var c = {
         on: function() {},
       };
       c[method] = function(arg1, arg2) {

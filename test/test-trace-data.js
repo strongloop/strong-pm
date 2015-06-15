@@ -1,11 +1,10 @@
 var Server = require('../lib/server');
 var assert = require('assert');
 var async = require('async');
-var debug = require('debug')('strong-pm:test');
-var path = require('path');
 var tap = require('tap');
 var events = require('events');
 var util = require('util');
+
 
 function MockCurrent() {
   this.child = {
@@ -16,17 +15,17 @@ util.inherits(MockCurrent, events.EventEmitter);
 
 MockCurrent.prototype.request = function request(req, cb) {
   if (req.cmd === 'status') {
-    cb({ master: { setSize: 1 } });
+    cb({master: {setSize: 1}});
   }
   if (req.cmd === 'npm-ls') {
     cb({});
   }
-}
+};
 
 var WORKER_PID = 1001;
 
 var _now = +new Date();
-var _10minAgo = _now - (10*60*1000);
+var _10minAgo = _now - (10 * 60 * 1000);
 var TRACE_RECORD = {
   start: _10minAgo,
   collectionName: 'httpCalls',
@@ -73,7 +72,8 @@ var TRACE_RECORD = {
           }
         ]
       }
-    ],[
+    ],
+    [
       _10minAgo,
       '/should_not_remember',
       13.092878,
@@ -116,7 +116,7 @@ tap.test('Trace record', {
     },
     function emitFork(next) {
       // mock "fork" event from runner
-      runner.emit('request', { cmd: 'fork', id: 1, pid: WORKER_PID }, next);
+      runner.emit('request', {cmd: 'fork', id: 1, pid: WORKER_PID}, next);
     },
     function emitTraces(next) {
       var message = {

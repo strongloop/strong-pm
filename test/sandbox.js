@@ -1,3 +1,4 @@
+var assert = require('assert');
 var fs = require('fs');
 var mkdirp = require('mkdirp');
 var path = require('path');
@@ -15,9 +16,13 @@ function withSandbox(testFn) {
   var blankJSON = '';
   var missingFile = path.resolve(SANDBOX, 'missing.json');
   rimraf(SANDBOX, function(e) {
+    assert.ifError(e);
     mkdirp(SANDBOX, function (e) {
+      assert.ifError(e);
       fs.writeFile(emptyFile, emptyJSON, 'utf8', function(e) {
+        assert.ifError(e);
         fs.writeFile(blankFile, blankJSON, 'utf8', function(e) {
+          assert.ifError(e);
           var sandbox = {
             root: SANDBOX,
             empty: emptyFile,

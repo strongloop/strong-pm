@@ -1,3 +1,6 @@
-test
 node_modules
-.strong-pm
+test/.vagrant/
+test/SANDBOX*
+test/app-prepare/node_modules
+test/container
+test/receive-base

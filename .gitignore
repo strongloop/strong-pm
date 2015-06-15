@@ -10,6 +10,7 @@ node_modules
 npm-debug.log
 test/.vagrant/
 test/SANDBOX*
+test/app-prepare/node_modules
 test/container
 test/copy.out
 test/receive-base

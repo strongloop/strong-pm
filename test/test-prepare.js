@@ -1,4 +1,3 @@
-var debug = require('debug')('strong-pm:test');
 var fmt = require('util').format;
 var fs = require('fs');
 var path = require('path');

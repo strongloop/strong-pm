@@ -1,4 +1,3 @@
-var fmt = require('util').format;
 var helper = require('./helper-pmctl');
 
 helper.test('pmctl', function(t, pm) {

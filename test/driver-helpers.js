@@ -13,26 +13,26 @@ function testDriverConstructor(tap, Driver) {
     var logger = {};
     t.equal(Driver.length, 1, 'constructor accepts 1 argument');
     t.doesNotThrow(function() {
-      new Driver({
+      return new Driver({
         baseDir: baseDir,
         console: logger,
         server: server,
       });
     });
     t.throws(function() {
-      new Driver({
+      return new Driver({
         console: logger,
         server: server,
       });
     });
     t.throws(function() {
-      new Driver({
+      return new Driver({
         baseDir: baseDir,
         server: server,
       });
     });
     t.throws(function() {
-      new Driver({
+      return new Driver({
         baseDir: baseDir,
         console: logger,
       });

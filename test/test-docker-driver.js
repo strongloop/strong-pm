@@ -47,9 +47,11 @@ tap.test('DockerDriver#start', function(t) {
       cb(null);
     },
     modem: {
-      followProgress: function(_str, cb) { cb(); },
+      followProgress: function(_str, cb) {
+        cb();
+      },
     },
-    getImage: function(name) {
+    getImage: function() {
       return {
         inspect: function(cb) {
           cb(null, {});

@@ -1,4 +1,3 @@
-var fmt = require('util').format;
 var helper = require('./helper-pmctl');
 
 helper.test('pmctl', function(t, pm) {
@@ -39,8 +38,6 @@ helper.test('pmctl', function(t, pm) {
 
     t.expect(pmctl('restart', '1'), 'Service.*restarting');
     t.waiton(pmctl('get-process-count', '1'), /processes: 2/);
-
-    t.expect(pmctl('env-get', '1', '0'), 'No matching environment variables defined');
   });
 
   t.shutdown(pm);

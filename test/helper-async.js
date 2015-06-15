@@ -4,9 +4,7 @@ var childctl = require('strong-control-channel/process');
 var cp = require('child_process');
 var debug = require('debug')('strong-pm:test');
 var defaults = require('lodash').defaults;
-var rest = require('lodash').rest;
 var fmt = require('util').format;
-var fs = require('fs');
 var mktmpdir = require('mktmpdir');
 var partial = require('lodash').partial;
 var once = require('lodash').once;
@@ -21,7 +19,7 @@ module.exports = exports = {
   queued: queued,
   reset: reset,
   pmctlWithCtl: pmctlWithCtl,
-}
+};
 
 function reset(callback) {
   console.log('working dir for %s is %s', process.argv[1], process.cwd());
@@ -40,7 +38,7 @@ function reset(callback) {
     ex(slBuild + ' --install --commit'),
   ], function(err) {
     assert.ifError(err);
-    console.log('test/app built succesfully')
+    console.log('test/app built succesfully');
     callback();
   });
 
@@ -80,6 +78,7 @@ function pm(args, env, callback) {
   var pm;
 
   return mktmpdir(function(err, tmpdir, cleanup) {
+    assert.ifError(err);
     console.log('pmcli:', pmcli, args);
     cleanup = once(cleanup);
 
@@ -227,11 +226,11 @@ function expect(t, extra, cmd, pattern, next) {
 
     t.equal(out.code, 0, 'exit status should be zero for: ' + name);
 
-    if (out.code == 0) {
+    if (out.code === 0) {
       t.assert(match, name, extra);
     }
 
-    if (out.code != 0 || !match) {
+    if (out.code !== 0 || !match) {
       console.log('# FAIL expect %s against code: %j <\n%s>',
                   name, out.code, out.output);
     } else {
@@ -253,8 +252,8 @@ function waiton(t, extra, cmd, pattern, next) {
 
   function check() {
     pmctl(cmd, function(out) {
-      if (out.code == 0 && checkOutput(out, pattern)) {
-        console.log("# OK waiton %s", name);
+      if (out.code === 0 && checkOutput(out, pattern)) {
+        console.log('# OK waiton %s', name);
         t.assert(true, name);
         return next();
       }
@@ -279,11 +278,11 @@ function failon(t, extra, cmd, pattern, next) {
 
     t.notEqual(out.code, 0, 'exit status should not be zero for: ' + name);
 
-    if (out.code != 0) {
+    if (out.code !== 0) {
       t.assert(match, name, extra);
     }
 
-    if (out.code == 0 || !match) {
+    if (out.code === 0 || !match) {
       console.log('check failed against code %d <\n%s>', out.code, out.output);
     }
 
@@ -295,7 +294,8 @@ function pmctl(cmd, callback) {
   var cli = require.resolve('../bin/sl-pmctl.js');
   var args = [cli].concat(cmd);
   var env = JSON.parse(JSON.stringify(process.env));
-  return cp.execFile(process.execPath, args, {env: env}, function(er, stdout, stderr) {
+  return cp.execFile(process.execPath, args, {env: env}, cb);
+  function cb(er, stdout, stderr) {
     var out = {
       out: stdout.trim(),
       err: stderr.trim(),
@@ -305,7 +305,7 @@ function pmctl(cmd, callback) {
     debug('Run: %s => %s out <\n%s>\nerr <\n%s>',
           cmd, out.code, stdout, stderr);
     return callback(out);
-  });
+  }
 }
 
 function checkOutput(out, pattern) {
@@ -322,7 +322,7 @@ function pmctlWithCtl(control) {
     control = control || process.env.STRONGLOOP_PM;
     args = [].slice.call(arguments);
     return ['--control', control].concat(args);
-  }
+  };
 }
 
 function makeExtra(ok, name, actual, expected, stack) {

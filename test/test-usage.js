@@ -4,7 +4,6 @@ var concat = require('concat-stream');
 var debug = require('debug')('strong-pm:test');
 var executor = require.resolve('../bin/sl-pm.js');
 var fork = require('child_process').fork;
-var path = require('path');
 var tap = require('tap');
 
 tap.test('version,--version', function(t) {
