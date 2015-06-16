@@ -1,3 +1,25 @@
+2015-06-16, Version 4.3.0
+=========================
+
+ * docker: fix ignored container exit (Ryan Graham)
+
+ * service-manager: fix error in error handler (Ryan Graham)
+
+ * docker: make internal instance an EventEmitter (Ryan Graham)
+
+ * refactor: docker: extract _proxyRequest method (Ryan Graham)
+
+ * docker: fix started message to match new format (Ryan Graham)
+
+ * docker: expose instance to Container (Ryan Graham)
+
+ * refactor: docker images aren't instance specific (Ryan Graham)
+
+ * docker: refactor instance lookup (Ryan Graham)
+
+ * docker: fix cluster size in start options (Ryan Graham)
+
+
 2015-06-10, Version 4.2.1
 =========================
 
