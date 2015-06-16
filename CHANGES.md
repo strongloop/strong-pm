@@ -1,3 +1,9 @@
+2015-06-16, Version 4.3.1
+=========================
+
+ * cli: add --driver from CLI usage (Ryan Graham)
+
+
 2015-06-16, Version 4.3.0
 =========================
 
