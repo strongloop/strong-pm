@@ -1,5 +1,6 @@
 'use strict';
 
+var _ = require('lodash');
 var debug = require('debug')('strong-pm:test');
 var DockerDriver = require('../lib/drivers/docker');
 var driverHelpers = require('./driver-helpers');
@@ -12,19 +13,39 @@ var debugConsole = {
   error: debug,
 };
 
+var mockServer = {
+  port: _.constant(0),
+};
+var mockRouter = {
+  createChannel: _.constant({
+    getToken: _.constant('abc'),
+  }),
+  path: '/test',
+};
+
 tap.test('DockerDriver constructor API', function(t) {
   driverHelpers.testConstructor(t, DockerDriver);
   t.end();
 });
 
 tap.test('DockerDriver instance API', function(t) {
-  var docker = new DockerDriver({baseDir: 'BASE', console: {}, server: {}});
+  var docker = new DockerDriver({
+    baseDir: 'BASE',
+    console: {},
+    server: mockServer,
+    wsRouter: mockRouter,
+  });
   driverHelpers.testInstance(t, docker);
   t.end();
 });
 
 tap.test('Docker containers', function(t) {
-  var docker = new DockerDriver({baseDir: 'BASE', console: {}, server: {}});
+  var docker = new DockerDriver({
+    baseDir: 'BASE',
+    console: {},
+    server: mockServer,
+    wsRouter: mockRouter,
+  });
   var instance = docker._instance(1);
   t.assert('startOpts' in instance, 'instnace has startOpts');
   t.assert('log' in instance, 'instance has log buffer');
@@ -73,9 +94,10 @@ tap.test('DockerDriver#start', function(t) {
   var docker = new DockerDriver({
     baseDir: 'BASE',
     console: debugConsole,
-    server: {},
+    server: mockServer,
     docker: mockDocker,
     Image: MockImage,
+    wsRouter: mockRouter,
   });
 
   var metas = {
@@ -102,7 +124,8 @@ tap.test('DockerDriver#setStartOptions', function(t) {
   var docker = new DockerDriver({
     baseDir: 'BASE',
     console: debugConsole,
-    server: {},
+    server: mockServer,
+    wsRouter: mockRouter,
   });
   var requests = [];
   docker.requestOfInstance = function(id, req) {
