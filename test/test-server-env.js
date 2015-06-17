@@ -14,8 +14,10 @@ function matchInstanceEnv(tt, env, expectedEnv) {
   tt.assert(env.PORT, 'PORT is set');
   tt.equal(env.STRONGLOOP_LICENSE, 'inherited',
            'STRONGLOOP_LICENSE is inherited from PM environment');
-  tt.deepEqual(_.omit(env, 'PORT', 'STRONGLOOP_LICENSE'), expectedEnv,
-                'generated instance environment matches');
+  tt.equal(env.STRONGLOOP_TRACES_ID, '1', 'STRONGLOOP_TRACES_ID set by PM');
+  var appEnv = _.omit(env, 'PORT', 'STRONGLOOP_LICENSE',
+                      'STRONGLOOP_TRACES_ID');
+  tt.deepEqual(appEnv, expectedEnv, 'generated instance environment matches');
 }
 
 function matchEnv(tt, env, expectedEnv) {
