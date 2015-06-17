@@ -8,31 +8,21 @@ $node_name = ENV['NODE_NAME'] || "node"
 $NODEJS_URL = "https://nodejs.org/dist/#{$node_version}/node-#{$node_version}-linux-x64.tar.gz"
 $IOJS_URL = "https://iojs.org/dist/#{$node_version}/iojs-#{$node_version}-linux-x64.tar.gz"
 $NODE_URL = $node_name == 'iojs' ? $IOJS_URL : $NODEJS_URL
-npm_config_registry = ENV['npm_config_registry'] ||
+$npm_config_registry = ENV['npm_config_registry'] ||
                       `npm config get registry`.strip ||
                       'https://registry.npmjs.org/'
-$NPM_REGISTRY = "--registry #{npm_config_registry}"
-
-$bootstrap = <<SCRIPT
-  test -f bootstrapped.txt && exit
-  # apt-get update -y -qq
-  wget -qO- https://get.docker.com/ | sh
-  apt-get install -y -qq build-essential git curl vim
-  mkdir -p ~/.ssh; ssh-keyscan github.com >> ~/.ssh/known_hosts
-  docker pull node:0.10
-  touch bootstrapped.txt
-SCRIPT
+$NPM_REGISTRY = "--registry #{$npm_config_registry}"
 
 $setup = <<SCRIPT
-  rm -rf /usr/local/lib/node_modules
+  rm -rf /usr/local/lib/node_modules /usr/local/bin/{node,npm,slc}
   curl -s #{$NODE_URL} | tar -C /usr/local --strip-components 1 -xzf -
+  echo "registry=#{$npm_config_registry}" > /usr/local/etc/npmrc
+  echo "npm_config_registry=#{$npm_config_registry}" >> /etc/environment
   chown -R vagrant /usr/local
 SCRIPT
 
 $test = <<SCRIPT
   mkdir -p ~/.ssh; ssh-keyscan github.com >> ~/.ssh/known_hosts
-  npm install -g node-gyp > /dev/null
-  node-gyp install &> /dev/null
   function report() {
     echo "# $*..."
     ($* && echo "ok # $*") || (echo "not ok # $*" >&2)
@@ -41,6 +31,10 @@ $test = <<SCRIPT
   report npm install #{$NPM_REGISTRY} -g ./strong-pm.tgz
   report sudo sl-pm-install --set-env SL_PM_VAGRANT=42 --driver=docker
   report test -f /etc/init/strong-pm.conf
+  echo "env npm_config_registry=#{$npm_config_registry}" | sudo tee -a /etc/init/strong-pm.conf
+  report sudo initctl reload-configuration
+  report docker pull node:0.10
+  report docker pull debian:jessie
   report sudo start strong-pm
   report sudo status strong-pm
   sleep 5
@@ -50,13 +44,10 @@ SCRIPT
 Vagrant.configure("2") do |config|
 
   # Ubuntu 14.04 is a reasonable starting point
-  config.vm.box = "ubuntu/trusty64"
+  config.vm.box = "strongloop/node-trusty"
 
   # used for installing npm packages from private repos
   config.ssh.forward_agent = true
-
-  # Ideally this part would be cached
-  config.vm.provision "shell", inline: $bootstrap, privileged: true
 
   # Clear the environment and reset the state of Node
   config.vm.provision "shell", inline: $setup, privileged: true
@@ -74,4 +65,9 @@ Vagrant.configure("2") do |config|
   # expose sample app's port
   config.vm.network "forwarded_port", guest: 3001, host: 8889
 
+  # default is 1 cpu, 512MB of RAM
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = 1024
+    vb.cpus = 2
+  end
 end

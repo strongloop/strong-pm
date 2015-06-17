@@ -61,7 +61,7 @@ git push --quiet --force $PM_URL/api/Services/1/deploy HEAD \
   || fail 'could not git push app'
 
 comment "waiting for manager to deploy our app..."
-sleep 30 # dockerizing apps takes a little while
+sleep 50 # dockerizing apps takes a little while
 wait_until_available $APP_URL/this/is/a/test \
   && ok "App accessible" \
   || bailout "App not accessible, bailing out"
