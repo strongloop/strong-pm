@@ -9,19 +9,34 @@ var mktmpdir = require('mktmpdir');
 var path = require('path');
 var tap = require('tap');
 
+var mockServer = {
+  port: _.constant(0),
+};
+var mockRouter = {
+  createChannel: _.constant({
+    getToken: _.constant('abc'),
+  }),
+  path: '/test',
+};
+
 tap.test('DirectDriver constructor API', function(t) {
   driverHelpers.testConstructor(t, Driver);
   t.end();
 });
 
 tap.test('DirectDriver instance API', function(t) {
-  var driver = new Driver({baseDir: 'BASE', console: {}, server: {}});
+  var driver = new Driver({
+    baseDir: 'BASE',
+    console: {},
+    server: mockServer,
+    wsRouter: mockRouter,
+  });
   driverHelpers.testInstance(t, driver);
   t.end();
 });
 
 tap.test('start runs last services', function(t) {
-  var server = {};
+  var server = mockServer;
   var instanceMetas = {
     '11111': {data: 'some metadata'},
     'a3f55e8c-de43-11e4-9b68-b3b7dd588a5b': {data: 'some metadata'},
@@ -33,6 +48,7 @@ tap.test('start runs last services', function(t) {
     baseDir: path.resolve(__dirname, 'direct-driver-workdir'),
     console: console,
     server: server,
+    wsRouter: mockRouter,
   });
   function Container(options) {
     return {
@@ -46,7 +62,7 @@ tap.test('start runs last services', function(t) {
         return callback();
       },
       setStartOptions: function(options) {
-        t.assert('size' in options);
+        t.assert('size' in options || 'control' in options);
       },
     };
   }
@@ -71,6 +87,7 @@ tap.test('start does nothing with no last services', function(t) {
       baseDir: dir,
       console: console,
       server: server,
+      wsRouter: mockRouter,
     });
     function Container() {
       t.fail('should be no services found');
@@ -84,7 +101,7 @@ tap.test('start does nothing with no last services', function(t) {
 });
 
 tap.test('stop applied to all services', function(t) {
-  var server = {};
+  var server = mockServer;
   var logger = {};
 
   var d = new Driver({
@@ -92,6 +109,7 @@ tap.test('stop applied to all services', function(t) {
     baseDir: __dirname,
     console: logger,
     server: server,
+    wsRouter: mockRouter,
   });
 
   function Container() {
@@ -100,6 +118,7 @@ tap.test('stop applied to all services', function(t) {
       stop: function() {
         this.stopped = true;
       },
+      setStartOptions: _.noop,
     };
   }
 
@@ -121,7 +140,7 @@ tap.test('stop applied to all services', function(t) {
 });
 
 tap.test('containerById', function(t) {
-  var server = {};
+  var server = mockServer;
   var logger = {};
 
   var d = new Driver({
@@ -129,11 +148,13 @@ tap.test('containerById', function(t) {
     baseDir: __dirname,
     console: logger,
     server: server,
+    wsRouter: mockRouter,
   });
   var _c = {
     on: function(event) {
       t.equal(event, 'request');
     },
+    setStartOptions: _.noop,
   };
 
   function Container(options) {
@@ -153,13 +174,14 @@ tap.test('containerById', function(t) {
 
 function testPassThru(method, args) {
   tap.test(fmt('driver passes %s to container', method), function(t) {
-    var server = {};
+    var server = mockServer;
     var logger = {};
     var d = new Driver({
       Container: Container,
       baseDir: __dirname,
       console: logger,
       server: server,
+      wsRouter: mockRouter,
     });
     var instanceId = 'x-z';
 
@@ -167,10 +189,11 @@ function testPassThru(method, args) {
       t.equal(options.instanceId, instanceId);
       var c = {
         on: function() {},
+        setStartOptions: _.noop,
       };
       c[method] = function(arg1, arg2) {
-        t.equal(arg1, args[1]);
-        t.equal(arg2, args[2]);
+        t.equivalent(arg1, args[1]);
+        t.equivalent(arg2, args[2]);
       };
       return c;
     }
@@ -185,14 +208,14 @@ function testPassThru(method, args) {
   });
 }
 
-testPassThru('setStartOptions', [{/*options*/}]);
+testPassThru('setStartOptions', [{control: 'ws://abc@127.0.0.1:0/test'}]);
 
 testPassThru('deployInstance', [{/*req*/}, {/*res*/}]);
 
 testPassThru('updateInstanceEnv', [{/*env*/}]);
 
 tap.test('container requests are emitted on the driver', function(t) {
-  var server = {};
+  var server = mockServer;
   var logger = {};
   var request = {cmd: 'some-cmd'};
 
@@ -201,6 +224,7 @@ tap.test('container requests are emitted on the driver', function(t) {
     baseDir: __dirname,
     console: logger,
     server: server,
+    wsRouter: mockRouter,
   });
 
   var c = {
@@ -213,6 +237,7 @@ tap.test('container requests are emitted on the driver', function(t) {
         listener(request);
       });
     },
+    setStartOptions: _.noop,
   };
 
   var instanceId = 'some-id';
