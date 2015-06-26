@@ -48,6 +48,7 @@
     "sl-pm-install": "./bin/sl-pm-install.js"
   },
   "devDependencies": {
+    "concat-stream": "^1.4.7",
     "eslint": "^0.22.1",
     "jscs": "^1.11.3",
     "mktmpdir": "^0.1.1",
@@ -63,7 +64,6 @@
     "bl": "^0.9.4",
     "chownr": "0.0.1",
     "compression": "^1.1.0",
-    "concat-stream": "^1.4.7",
     "debug": "^2.1.3",
     "dockerode": "^2.1.2",
     "errorhandler": "^1.2.0",
@@ -78,6 +78,7 @@
     "rimraf": "^2.3.2",
     "serve-favicon": "^2.1.5",
     "strong-control-channel": "^2.0.0",
+    "strong-deploy-receivers": "^1.0.0",
     "strong-docker-build": "^1.0.0",
     "strong-fork-cicada": "^1.1.2",
     "strong-mesh-models": "^8.0.0",
