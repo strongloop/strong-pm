@@ -35,7 +35,7 @@ function reset(callback) {
     ex('git init'),
     ex('git add .'),
     ex('git commit --author="sl-pm-test <nobody@strongloop.com>" -m initial'),
-    ex(slBuild + ' --install --commit'),
+    ex('node "' + slBuild + '" --install --commit'),
   ], function(err) {
     assert.ifError(err);
     console.log('test/app built succesfully');
@@ -82,8 +82,7 @@ function pm(args, env, callback) {
     console.log('pmcli:', pmcli, args);
     cleanup = once(cleanup);
 
-    pm = cp.spawn(pmcli, args, {
-      stdio: ['ignore', process.stdout, process.stderr, 'ipc'],
+    pm = cp.fork(pmcli, args, {
       env: defaults(env, process.env),
       cwd: tmpdir,
     });
@@ -141,7 +140,7 @@ function pmWithApp(args, env, callback) {
   reset(function() {
     pm(args, env, function(pm) {
       console.log('pmurl: %s', pm.pmurl);
-      cp.exec(fmt('%s %s master', slDeploy, pm.pmurl), function(er) {
+      cp.exec(fmt('node "%s" %s master', slDeploy, pm.pmurl), function(er) {
         assert.ifError(er, 'git push succeeds when auth not required');
         callback(pm);
       });
