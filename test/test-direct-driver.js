@@ -27,7 +27,7 @@ tap.test('DirectDriver constructor API', function(t) {
 tap.test('DirectDriver instance API', function(t) {
   var driver = new Driver({
     baseDir: 'BASE',
-    console: {},
+    console: console,
     server: mockServer,
     wsRouter: mockRouter,
   });
