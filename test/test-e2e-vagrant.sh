@@ -64,7 +64,7 @@ comment "waiting for manager to deploy our app..."
 sleep 50 # dockerizing apps takes a little while
 wait_until_available $APP_URL/this/is/a/test \
   && ok "App accessible" \
-  || bailout "App not accessible, bailing out"
+  || bailout "App not accessible, bailing out ($APP_URL)"
 
 curl -s $APP_URL/env \
   | grep -F -e '"SL_PM_VAGRANT": "42"' \
