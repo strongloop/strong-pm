@@ -8,7 +8,7 @@ TMP=`mktemp -d -t sl-svc-installXXXXXX`
 CURRENT_USER=`id -un`
 comment "using tmpdir: $TMP"
 
-export SL_PM_INSTALL_IGNORE_PLATFORM=true
+export SL_INSTALL_IGNORE_PLATFORM=true
 
 # Should create an upstart job at the specified path
 assert_exit 0 $CMD --port 7777 \
@@ -23,4 +23,4 @@ assert_file $TMP/upstart.conf "logger -t strong-pm"
 assert_file $TMP/upstart.conf "--driver direct"
 assert_file $TMP/upstart.conf "$CURRENT_USER --"
 
-unset SL_PM_INSTALL_IGNORE_PLATFORM
+unset SL_INSTALL_IGNORE_PLATFORM
