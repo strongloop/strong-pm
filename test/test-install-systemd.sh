@@ -9,7 +9,7 @@ CURRENT_USER=`id -un`
 CURRENT_GROUP=`id -gn`
 comment "using tmpdir: $TMP"
 
-export SL_PM_INSTALL_IGNORE_PLATFORM=true
+export SL_INSTALL_IGNORE_PLATFORM=true
 
 # Should create a systemd service at the specified path
 assert_exit 0 $CMD --port 7777 \
@@ -42,4 +42,4 @@ assert_file $TMP/systemd-with-docker.service "--driver docker"
 assert_file $TMP/systemd-with-docker.service "User=$CURRENT_USER"
 assert_file $TMP/systemd-with-docker.service "Group=docker"
 
-unset SL_PM_INSTALL_IGNORE_PLATFORM
+unset SL_INSTALL_IGNORE_PLATFORM

@@ -9,7 +9,7 @@ CURRENT_USER=`id -un`
 CURRENT_GROUP=`id -gn`
 comment "using tmpdir: $TMP"
 
-export SL_PM_INSTALL_IGNORE_PLATFORM=true
+export SL_INSTALL_IGNORE_PLATFORM=true
 
 # should fail if given no arguments
 assert_exit 1 $CMD
@@ -115,4 +115,4 @@ assert_file $TMP/upstart-with-docker.conf "--driver docker"
 assert_file $TMP/upstart-with-docker.conf "setuid $CURRENT_USER"
 assert_file $TMP/upstart-with-docker.conf "setgid docker"
 
-unset SL_PM_INSTALL_IGNORE_PLATFORM
+unset SL_INSTALL_IGNORE_PLATFORM
