@@ -1,3 +1,9 @@
+2015-07-13, Version 4.4.0
+=========================
+
+ * service-manager: allow application port to be set (Sam Roberts)
+
+
 2015-06-16, Version 4.3.1
 =========================
 
@@ -508,10 +514,6 @@
 =========================
 
  * Use process pid when filtering for model updates (Krishna Raman)
-
-
-2015-01-29, Version 1.7.0
-=========================
 
  * fix 'pmctl log-dump --follow' option parsing (Ryan Graham)
 
