@@ -13,7 +13,7 @@ var mockServer = {
   port: _.constant(0),
 };
 var mockRouter = {
-  createChannel: _.constant({
+  acceptClient: _.constant({
     getToken: _.constant('abc'),
   }),
   path: '/test',
