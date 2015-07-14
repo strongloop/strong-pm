@@ -266,7 +266,7 @@ tap.test('server test', function(t) {
         name: 'default',
         _groups: [m.Group({name: 'default', id: 1, scale: 1})],
       }, function(err, service) {
-        tt.ifError(err);
+        tt.ifError(err, 'create svc');
         svcId = service.id;
 
         // Use setImmediate instead of nextTick so that hooks are run before
@@ -279,7 +279,7 @@ tap.test('server test', function(t) {
       m.ServiceInstance.findOne(
         {where: {serverServiceId: svcId}},
         function(err, inst) {
-          tt.ifError(err);
+          tt.ifError(err, 'find svc');
           instId = inst.id;
           debug('instance assigned. Id: %s', instId);
           callback();
@@ -360,6 +360,4 @@ tap.test('server test', function(t) {
       });
     }
   });
-
-  t.end();
 });
