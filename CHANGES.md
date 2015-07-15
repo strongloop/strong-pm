@@ -1,3 +1,9 @@
+2015-07-15, Version 1.7.4
+=========================
+
+ * pull passwd-user dependency in to repo (Ryan Graham)
+
+
 2015-03-02, Version 1.7.3
 =========================
 
