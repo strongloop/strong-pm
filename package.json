@@ -77,7 +77,6 @@
     "mkdirp": "^0.5.0",
     "npm-path": "^1.0.1",
     "osenv": "^0.1.0",
-    "passwd-user": "^1.0.0",
     "posix-getopt": "^1.0.0",
     "serve-favicon": "^2.1.5",
     "strong-control-channel": "^1",
