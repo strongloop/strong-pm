@@ -13,9 +13,13 @@ var mockServer = {
   port: _.constant(0),
 };
 var mockRouter = {
-  createChannel: _.constant({
-    getToken: _.constant('abc'),
-  }),
+  acceptClient: function(onRequest) {
+    this.onRequest = onRequest;
+    return {
+      getToken: _.constant('abc'),
+      on: function() {},
+    };
+  },
   path: '/test',
 };
 
@@ -214,7 +218,7 @@ testPassThru('deployInstance', [{/*req*/}, {/*res*/}]);
 
 testPassThru('updateInstanceEnv', [{/*env*/}]);
 
-tap.test('container requests are emitted on the driver', function(t) {
+tap.test('channel requests are emitted on the driver', function(t) {
   var server = mockServer;
   var logger = {};
   var request = {cmd: 'some-cmd'};
@@ -231,11 +235,11 @@ tap.test('container requests are emitted on the driver', function(t) {
     on: function(event, listener) {
       t.equal(event, 'request');
       debug('on: %j %s', event, listener);
-
-      process.nextTick(function() {
-        debug('call');
-        listener(request);
-      });
+      this.listener = listener;
+    },
+    emit: function(event, req, callback) {
+      t.equal(event, 'request');
+      this.listener.call(this, req, callback);
     },
     setStartOptions: _.noop,
   };
@@ -247,7 +251,14 @@ tap.test('container requests are emitted on the driver', function(t) {
     return c;
   }
 
-  t.plan(3);
+  t.plan(5);
+
+  t.type(mockRouter.onRequest, 'function');
+
+  process.nextTick(function() {
+    debug('call');
+    mockRouter.onRequest(request);
+  });
 
   d.on('request', function(_id, _request) {
     debug('on request: %j %j', _id, _request);
