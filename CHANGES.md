@@ -1,3 +1,9 @@
+2015-07-15, Version 4.4.1
+=========================
+
+ * pull passwd-user dependency in to repo (Ryan Graham)
+
+
 2015-07-13, Version 4.4.0
 =========================
 
@@ -514,6 +520,10 @@
 =========================
 
  * Use process pid when filtering for model updates (Krishna Raman)
+
+
+2015-01-29, Version 1.7.0
+=========================
 
  * fix 'pmctl log-dump --follow' option parsing (Ryan Graham)
 
