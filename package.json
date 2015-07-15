@@ -75,7 +75,6 @@
     "minkelite": "^1.0.0",
     "mkdirp": "^0.5.0",
     "osenv": "^0.1.0",
-    "passwd-user": "^1.0.0",
     "posix-getopt": "^1.0.0",
     "rimraf": "^2.3.2",
     "serve-favicon": "^2.1.5",
