@@ -36,9 +36,8 @@
   "license": "Artistic-2.0 OR LicenseRef-LICENSE.md",
   "main": "index.js",
   "scripts": {
-    "pretest": "eslint ./ && jscs ./",
-    "lint": "eslint ./ && jscs ./",
-    "test": "tap --bail --timeout=1000 --save=failed.txt ./test/test-*"
+    "pretest": "eslint --ignore-path .gitignore . && jscs .",
+    "test": "tap --bail --timeout=1000 ./test/test-*"
   },
   "bin": {
     "sl-pm": "./bin/sl-pm.js",
@@ -48,7 +47,7 @@
     "sl-pm-install": "./bin/sl-pm-install.js"
   },
   "devDependencies": {
-    "eslint": "^0.22.1",
+    "eslint": "^0.24.0",
     "jscs": "^1.11.3",
     "mktmpdir": "^0.1.1",
     "request": "^2.45.0",

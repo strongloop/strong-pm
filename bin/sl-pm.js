@@ -14,6 +14,8 @@ var home = require('userhome');
 var mkdirp = require('mkdirp').sync;
 var path = require('path');
 var fs = require('fs');
+var versionApi = require('strong-mesh-models/package.json').apiVersion;
+var versionPm = require('../package.json').version;
 
 var DRIVERS = {
   direct: require('../lib/drivers/direct'),
@@ -40,12 +42,14 @@ var parser = new Parser([
     'd:(driver)',
     'l:(listen)',
     'N:(no-control)', // unused. left for backwards compat.
+    'P:(base-port)',
   ].join(''),
   argv);
 
 var base = home('.strong-pm');
 var listen = 8701;
 var driver = DRIVERS.direct;
+var basePort = Number(process.env.STRONGLOOP_BASEPORT) || 3000;
 
 var option;
 while ((option = parser.getopt()) !== undefined) {
@@ -71,6 +75,9 @@ while ((option = parser.getopt()) !== undefined) {
       listen = option.optarg;
       break;
     case 'N':
+      break;
+    case 'P':
+      basePort = option.optarg;
       break;
     default:
       console.error('Invalid usage (near option \'%s\'), try `%s --help`.',
@@ -98,14 +105,21 @@ process.chdir(base);
 var app = new Server({
   // Choose driver based on cli options/env once we have alternate drivers.
   Driver: driver,
-  cmdName: $0,
   baseDir: base,
+  basePort: basePort,
+  cmdName: $0,
   listenPort: listen,
 });
 
 app.on('listening', function(listenAddr) {
-  console.log('%s: listen on %s, work base is `%s`, driver is `%s`',
-    $0, listenAddr.port, base, app.getDriverInfo().type);
+  console.log('%s: StrongLoop PM v%s (API v%s) on port `%s`',
+    $0,
+    versionPm,
+    versionApi,
+    listenAddr.port);
+
+  console.log('%s: Applications on port `%d + service ID`',
+    $0, basePort);
 });
 
 app.start();
