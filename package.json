@@ -37,7 +37,7 @@
   "main": "index.js",
   "scripts": {
     "pretest": "eslint --ignore-path .gitignore . && jscs .",
-    "test": "tap --bail --timeout=1000 --save=failed.txt ./test/test-*"
+    "test": "tap --bail --timeout=1000 ./test/test-*"
   },
   "bin": {
     "sl-pm": "./bin/sl-pm.js",
