@@ -1,6 +1,0 @@
-node_modules
-test/.vagrant/
-test/SANDBOX*
-test/app-prepare/node_modules
-test/container
-test/receive-base
