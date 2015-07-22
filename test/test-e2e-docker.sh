@@ -50,8 +50,9 @@ function docker_run() {
   docker logs -t -f $SL_PM &
   # docker log will die when the container it is connected to dies
 
-  if which boot2docker > /dev/null; then
-    LOCALHOST=$(boot2docker ip 2> /dev/null)
+  if test -n "$DOCKER_HOST"; then
+    LOCALHOST=${DOCKER_HOST##*/}
+    LOCALHOST=${LOCALHOST%%:*}
   else
     LOCALHOST="127.0.0.1"
   fi
