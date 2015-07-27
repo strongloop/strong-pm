@@ -1,3 +1,121 @@
+2015-07-27, Version 5.0.0
+=========================
+
+ * test: use generic DOCKER_HOST for docker e2e tests (Ryan Graham)
+
+ * docker: provide more actionable message on docker error (Ryan Graham)
+
+ * docker: properly report error on docker startup (Ryan Graham)
+
+ * pm-install: describe invalid port when erroring (Sam Roberts)
+
+ * package: remove --save from tap options (Sam Roberts)
+
+ * Allow app base port to be configurable (Sam Roberts)
+
+ * package: eslint update (Sam Roberts)
+
+ * drivers: update to new ws control api (Sam Roberts)
+
+ * docker: error with message on docker unavailable (Sam Roberts)
+
+ * test: mocked console object must support .log() (Sam Roberts)
+
+ * test: remove extra t.end() from test-server (Sam Roberts)
+
+ * direct: remove obsolete XXX notes (Sam Roberts)
+
+ * upgrade installer to use strong-service-install@2 (Ryan Graham)
+
+ * test: make vagrant test bail more informative (Ryan Graham)
+
+ * test: partially fix windows (Bert Belder)
+
+ * test: fix failing test due to incomplete mock (Ryan Graham)
+
+ * service-manager: allow application port to be set (Sam Roberts)
+
+ * Set override trace hostname to return instanceId (Krishna Raman)
+
+ * docker: remove non-websocket ctl channel support (Ryan Graham)
+
+ * docker: make driver startup more reliable (Ryan Graham)
+
+ * server: skip 'status' after 'started' notification (Ryan Graham)
+
+ * test: update vagrant e2e tests (Ryan Graham)
+
+ * drivers: use first non-internal IP for WS urls (Ryan Graham)
+
+ * drivers: consolidate WS channel creation code (Ryan Graham)
+
+ * always use a websocket control channel (Ryan Graham)
+
+ * docker: start cluster at full size (Ryan Graham)
+
+ * docker: simplify container port bindings (Ryan Graham)
+
+ * server: pass WS router to drivers (Ryan Graham)
+
+ * cli: add --driver from CLI usage (Ryan Graham)
+
+ * fixup (Sam Roberts)
+
+ * fixup! test: passing eslint (Sam Roberts)
+
+ * ... this was removed on master, fixup (Sam Roberts)
+
+ * test: passing eslint (Sam Roberts)
+
+ * test: fix profiling license/platform variations (Sam Roberts)
+
+ * test: t.skip does not exist, fix tests (Sam Roberts)
+
+ * Default base dir in the home directory (Sam Roberts)
+
+ * test: remove duplicate test, start-stop-restart (Sam Roberts)
+
+ * test: removed unused BASE variables (Sam Roberts)
+
+ * sl-pmctl: removed help for removed pmctl utility (Sam Roberts)
+
+ * docker: use WebSocket control channel if provided (Ryan Graham)
+
+ * use router in strong-control-channel@2 (Ryan Graham)
+
+ * docker: fix ignored container exit (Ryan Graham)
+
+ * service-manager: fix error in error handler (Ryan Graham)
+
+ * docker: make internal instance an EventEmitter (Ryan Graham)
+
+ * refactor: docker: extract _proxyRequest method (Ryan Graham)
+
+ * docker: fix started message to match new format (Ryan Graham)
+
+ * docker: expose instance to Container (Ryan Graham)
+
+ * refactor: docker images aren't instance specific (Ryan Graham)
+
+ * docker: refactor instance lookup (Ryan Graham)
+
+ * docker: fix cluster size in start options (Ryan Graham)
+
+ * Bump runner and mesh-models dependency versions Fix tests to emit notifications with wid fields (Krishna Raman)
+
+ * Update eslint to 0.22 (Sam Roberts)
+
+ * test: don't rely on PATH for sl-build & sl-deploy (Ryan Graham)
+
+ * deps: use latest strong-build in tests (Ryan Graham)
+
+ * Remove local domain control socket support (Sam Roberts)
+
+ * Remove CLI code from module entry point (Sam Roberts)
+
+ * test: use tap and the cli, not async/internal apis (Sam Roberts)
+
+
 2015-06-10, Version 4.2.1
 =========================
 
@@ -480,10 +598,6 @@
 =========================
 
  * Use process pid when filtering for model updates (Krishna Raman)
-
-
-2015-01-29, Version 1.7.0
-=========================
 
  * fix 'pmctl log-dump --follow' option parsing (Ryan Graham)
 
