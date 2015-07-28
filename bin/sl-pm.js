@@ -112,14 +112,17 @@ var app = new Server({
 });
 
 app.on('listening', function(listenAddr) {
-  console.log('%s: StrongLoop PM v%s (API v%s) on port `%s`',
-    $0,
+  console.log('%s(%d): StrongLoop PM v%s (API v%s) on port `%s`',
+    $0, process.pid,
     versionPm,
     versionApi,
     listenAddr.port);
 
-  console.log('%s: Applications on port `%d + service ID`',
-    $0, basePort);
+  console.log('%s(%d): Base folder `%s`',
+    $0, process.pid, base);
+
+  console.log('%s(%d): Applications on port `%d + service ID`',
+    $0, process.pid, basePort);
 });
 
 app.start();
