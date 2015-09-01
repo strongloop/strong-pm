@@ -17,4 +17,6 @@ tap.test('pmctl log', function(t) {
       t.shutdown(pm);
     });
   });
+
+  t.end();
 });

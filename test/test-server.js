@@ -257,7 +257,7 @@ tap.test('server test', function(t) {
       checkInstance,
       end
     ], function() {
-      s.stop(tt.end.bind(t));
+      s.stop(tt.end.bind(tt));
     });
 
     function createService(callback) {
@@ -315,22 +315,22 @@ tap.test('server test', function(t) {
       m.ServiceInstance.findById(instId, function(err, _inst) {
         debug('instance: %j', _inst);
         assert.ifError(err);
-        t.equal(_inst.id, instId);
-        t.equal(_inst.executorId, 1);
-        t.equal(_inst.serverServiceId, svcId);
-        t.equal(_inst.groupId, 1);
-        t.equal(_inst.currentDeploymentId, commit.hash);
-        t.assert(_inst.startTime < new Date());
-        t.equal(s._listenPort, 1234);
-        t.equal(_inst.PMPort, s._listenPort);
+        tt.equal(_inst.id, instId);
+        tt.equal(_inst.executorId, 1);
+        tt.equal(_inst.serverServiceId, svcId);
+        tt.equal(_inst.groupId, 1);
+        tt.equal(_inst.currentDeploymentId, commit.hash);
+        tt.assert(_inst.startTime < new Date());
+        tt.equal(s._listenPort, 1234);
+        tt.equal(_inst.PMPort, s._listenPort);
 
         m.ServerService.findById(svcId, function(err, _srv) {
           debug('service: %j', _srv);
           assert.ifError(err);
-          t.equal(_srv.id, 1);
+          tt.equal(_srv.id, 1);
 
-          t.equal(_srv.deploymentInfo.hash, commit.hash);
-          t.equal(_srv.deploymentInfo.dir, commit.dir);
+          tt.equal(_srv.deploymentInfo.hash, commit.hash);
+          tt.equal(_srv.deploymentInfo.dir, commit.dir);
           callback();
         });
       });
@@ -360,4 +360,6 @@ tap.test('server test', function(t) {
       });
     }
   });
+
+  t.end();
 });
