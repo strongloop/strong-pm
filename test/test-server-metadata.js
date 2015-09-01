@@ -1,4 +1,7 @@
 process.env.STRONGLOOP_CLUSTER = 1;
+// Prevent the wsRouter from keeping node alive long enough to make tap
+// timeout.
+process.env.STRONGLOOP_CHANNEL_TIMEOUT = 1;
 
 var app = require('./helper');
 var exec = require('child_process').exec;
