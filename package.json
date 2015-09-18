@@ -33,7 +33,7 @@
     "url": "git://github.com/strongloop/strong-pm.git"
   },
   "author": "engineering@strongloop.com",
-  "license": "Artistic-2.0 OR LicenseRef-LICENSE.md",
+  "license": "Artistic-2.0",
   "main": "index.js",
   "scripts": {
     "pretest": "eslint --ignore-path .gitignore . && jscs .",
