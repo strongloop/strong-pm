@@ -11,6 +11,7 @@ var tap = require('tap');
 
 var mockServer = {
   port: _.constant(0),
+  getDriverInfo: _.constant({type: 'direct'}),
 };
 var mockRouter = {
   acceptClient: function(onRequest) {

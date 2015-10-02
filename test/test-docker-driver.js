@@ -15,6 +15,7 @@ var debugConsole = {
 
 var mockServer = {
   port: _.constant(0),
+  getDriverInfo: _.constant({type: 'docker'}),
 };
 var mockRouter = {
   acceptClient: _.constant({
