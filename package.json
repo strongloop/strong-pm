@@ -1,7 +1,7 @@
 {
   "name": "strong-pm",
   "description": "StrongLoop Process Manager",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "keywords": [
     "StrongLoop",
     "agent",
@@ -88,6 +88,6 @@
     "userhome": "^1.0.0"
   },
   "optionalDependencies": {
-    "sl-blip": "http://blip.strongloop.com/strong-pm@5.0.0"
+    "sl-blip": "http://blip.strongloop.com/strong-pm@5.0.1"
   }
 }

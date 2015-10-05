@@ -1,3 +1,31 @@
+2015-10-05, Version 5.0.1
+=========================
+
+ * always uses localhost for ws on direct driver (Ryan Graham)
+
+ * set 'url' on mesh app before emitting 'started' (Ryan Graham)
+
+ * Bring back `/explorer` (Miroslav Bajtoš)
+
+ * tracing: start runner with correct trace state (Sam Roberts)
+
+ * server: debug log only the start of notifications (Sam Roberts)
+
+ * Use strongloop conventions for licensing (Sam Roberts)
+
+ * container: current symlink is absolute (Sam Roberts)
+
+ * control: fallback to localhost control channel (Sam Roberts)
+
+ * test: use correct test instance for assertions (Ryan Graham)
+
+ * test: don't let wsRouter timeout tests (Ryan Graham)
+
+ * Use a named file minkelite.db with overwrite option. (Tetsuo Seto)
+
+ * pm: startup log of base dir and pid (Sam Roberts)
+
+
 2015-07-27, Version 5.0.0
 =========================
 
