@@ -6,12 +6,12 @@ RUN useradd -ms /bin/bash strong-pm \
 
 # Set up some semblance of an environment
 WORKDIR /home/strong-pm
-ENV HOME=/home/strong-pm PORT=3000
+ENV HOME=/home/strong-pm
 
 # Run as non-privileged user inside container
 USER strong-pm
 
 # Expose strong-pm port
-EXPOSE 8701 3000
+EXPOSE 8701 3000 3001 3002 3003
 
 ENTRYPOINT ["/usr/local/bin/sl-pm", "--base", ".", "--listen", "8701"]

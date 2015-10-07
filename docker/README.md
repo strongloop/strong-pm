@@ -60,14 +60,15 @@ yet, it will pull it automatically. This means you can cover the first
 two steps with the following command:
 
     docker run --detach --restart=no \
-      --publish 8701:8701 --publish 3000:3000 \
+      --publish 8701:8701 --publish 3001:3001 \
+      --publish 3002:3002 --publish 3003:3003 \
       --name strong-pm-container \
       strongloop/strong-pm
 
 Great! Now you've downloaded the `strongloop/strong-pm` docker image,
 started a new container in the background (`--detach`) named `my-app-pm`.
-Additionally, we've told it to publish container ports `8701` and `3000`
-as host ports `8701` and `3000`, respectively.
+Additionally, we've told it to publish container ports `8701` and `3001-3003`
+as host ports `8701` and `3001-3003`, respectively.
 
 If you don't care about your application coming back up after a server
 reboot and you just want to take it for a spin, you're done with this
