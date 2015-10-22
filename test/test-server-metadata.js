@@ -23,7 +23,7 @@ function pmctl(/*arguments..., callback*/) {
     exec(cmd, function(err, stdout) {
       console.log('# Run: %s => err: %j stdout <\n%s>', cmd, err, stdout);
       t.ifError(err);
-      if (!noEnd ) {
+      if (!noEnd) {
         t.end();
       }
     });

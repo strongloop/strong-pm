@@ -5,7 +5,6 @@
     "spaced-comment": 1,
     "space-before-blocks": 1,
     "space-before-function-paren": 1,
-    "space-in-parens": 1,
     "indent": 1,
     "new-cap": 1,
   }
