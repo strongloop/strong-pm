@@ -215,9 +215,9 @@ function testPassThru(method, args) {
 
 testPassThru('setStartOptions', [{control: 'ws://abc@127.0.0.1:0/test'}]);
 
-testPassThru('deployInstance', [{/*req*/}, {/*res*/}]);
+testPassThru('deployInstance', [{/* req */}, {/* res */}]);
 
-testPassThru('updateInstanceEnv', [{/*env*/}]);
+testPassThru('updateInstanceEnv', [{/* env */}]);
 
 tap.test('channel requests are emitted on the driver', function(t) {
   var server = mockServer;

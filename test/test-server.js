@@ -12,16 +12,16 @@ var BASE = path.resolve(__dirname, '.strong-pm');
 process.env.STRONGLOOP_MESH_DB = 'memory://';
 
 tap.test('server test', function(t) {
-//t.test('full server construction', function(tt) {
+// t.test('full server construction', function(tt) {
 //  var server = new Server({
 //    cmdName: 'pm',
 //    baseDir: BASE,
 //    listenPort: 0,
 //  });
 //  server.stop(tt.end.bind(tt));
-//});
+// });
 //
-//t.test('mocked server construction', function(tt) {
+// t.test('mocked server construction', function(tt) {
 //  var driver;
 //  function MockDriver(o) {
 //    this.options = o;
@@ -72,9 +72,9 @@ tap.test('server test', function(t) {
 //  tt.equal(serviceManager.options, s,
 //    'serviceManager options must match');
 //  s.stop(tt.end.bind(tt));
-//});
+// });
 //
-//t.test('driver methods are forwarded', function(tt) {
+// t.test('driver methods are forwarded', function(tt) {
 //  var startOptions = {};
 //  var req = {};
 //  var res = {};
@@ -168,7 +168,7 @@ tap.test('server test', function(t) {
 //  ], function() {
 //    s.stop(tt.end.bind(tt));
 //  });
-//});
+// });
 
 // XXX(sam) test below needs re-writing into a unit test against public APIs,
 // right now it depends on private methods of Driver, Container, and

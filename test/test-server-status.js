@@ -62,7 +62,7 @@ tap.test('worker status update', {
     var expect = [{id: 1, pid: 1001}];
     async.series([
       emit(fork),
-      //emit(status),
+      // emit(status),
     ], checkWorkers.bind(null, expect, emitTwo));
   }
 

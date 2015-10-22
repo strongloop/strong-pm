@@ -145,7 +145,7 @@ tap.test('metrics update', {
     async.each(['1'], checkMetric, emitNewMetrics);
     // FIXME 0 doesn't pass, because it has no Process, because the master
     // isn't forked :-(
-    //async.each(Object.keys(METRICS.processes), checkMetric, end);
+    // async.each(Object.keys(METRICS.processes), checkMetric, end);
   }
 
   function emitNewMetrics() {
@@ -159,7 +159,7 @@ tap.test('metrics update', {
   }
 
   function checkNewMetrics() {
-    m.ServiceMetric.count(/*where,*/ function(er, count) {
+    m.ServiceMetric.count(/* where, */ function(er, count) {
       assert.ifError(er);
       t.equal(count, 0, 'old should be deleted');
       end();

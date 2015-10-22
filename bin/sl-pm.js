@@ -139,7 +139,7 @@ app.start();
 stopWhenDone($0, app);
 
 
-function stopWhenDone(/*$0, app*/) {
+function stopWhenDone(/* $0, app */) {
   /*
   // XXX(sam) I can't rember why we do this, especially since we don't wait for
   // stop to complete, and just kill ourself right away.
