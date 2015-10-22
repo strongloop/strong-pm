@@ -240,7 +240,7 @@ tap.test('channel requests are emitted on the driver', function(t) {
     },
     emit: function(event, req, callback) {
       t.equal(event, 'request');
-      this.listener.call(this, req, callback);
+      this.listener(req, callback);
     },
     setStartOptions: _.noop,
   };
