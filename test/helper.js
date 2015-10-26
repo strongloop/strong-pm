@@ -136,14 +136,14 @@ exports.pushTarball = function(repo, callback) {
 exports.localDeploy = function(dirPath, repo, callback) {
   var api = 'api/Services/1/deploy';
   var cmd = [
-      'curl',
-      '-H "Content-Type: application/x-pm-deploy"',
-      '-X POST',
-      '--data \'{ "local-directory": "' +
-      dirPath +
-      '" }\'',
-      util.format('http://127.0.0.1:%d/%s', port, api),
-    ].join(' ');
+    'curl',
+    '-H "Content-Type: application/x-pm-deploy"',
+    '-X POST',
+    '--data \'{ "local-directory": "' +
+    dirPath +
+    '" }\'',
+    util.format('http://127.0.0.1:%d/%s', port, api),
+  ].join(' ');
 
   ex(cmd, function() {
     if (callback) return callback();

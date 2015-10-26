@@ -34,7 +34,8 @@ function printHelp($0, prn) {
 
 var argv = process.argv;
 var $0 = process.env.CMD ? process.env.CMD : path.basename(argv[1]);
-var parser = new Parser([
+var parser = new Parser(
+  [
     ':v(version)',
     'h(help)',
     'b:(base)',
