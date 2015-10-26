@@ -6,14 +6,16 @@
 var Container = require('../lib/drivers/direct/container');
 var tap = require('tap');
 
-var basicOpts = {
-  instanceId: '_id',
-  baseDir: '_base',
-  server: {},
-};
+function newContainer() {
+  return new Container({
+    instanceId: '_id',
+    baseDir: '_base',
+    server: {},
+  });
+}
 
 tap.test('start default', function(t) {
-  var s = new Container(basicOpts);
+  var s = newContainer();
   t.equal(s.getStartCommand(), 'sl-run --cluster=CPU');
   t.end();
 });
@@ -25,13 +27,13 @@ tap.test('start with env size', function(t) {
     delete process.env.STRONGLOOP_CLUSTER;
   });
 
-  var s = new Container(basicOpts);
+  var s = newContainer();
   t.equal(s.getStartCommand(), 'sl-run --cluster=2');
   t.end();
 });
 
 tap.test('start with option', function(t) {
-  var s = new Container(basicOpts);
+  var s = newContainer();
   t.equal(s.getStartCommand(), 'sl-run --cluster=CPU');
   s.setStartOptions({size: 3});
   t.equal(s.getStartCommand(), 'sl-run --cluster=3');
