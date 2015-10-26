@@ -70,7 +70,7 @@ exports.listen = function() {
     baseDir: base,
     listenPort: 0,
   });
-  server.on('listening', function(listenAddr){
+  server.on('listening', function(listenAddr) {
     port = listenAddr.port;
     console.log('git receive listening on  %d', port);
     process.env.STRONGLOOP_PM = 'http://127.0.0.1:' + port;

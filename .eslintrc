@@ -1,8 +1,3 @@
 {
-  "extends": "strongloop",
-  "rules": {
-    "space-before-blocks": 1,
-    "space-before-function-paren": 1,
-    "new-cap": 1,
-  }
+  "extends": "strongloop"
 }

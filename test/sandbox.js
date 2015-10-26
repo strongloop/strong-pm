@@ -17,7 +17,7 @@ function withSandbox(testFn) {
   var missingFile = path.resolve(SANDBOX, 'missing.json');
   rimraf(SANDBOX, function(e) {
     assert.ifError(e);
-    mkdirp(SANDBOX, function (e) {
+    mkdirp(SANDBOX, function(e) {
       assert.ifError(e);
       fs.writeFile(emptyFile, emptyJSON, 'utf8', function(e) {
         assert.ifError(e);
