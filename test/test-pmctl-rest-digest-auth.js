@@ -1,5 +1,5 @@
 require('tap').test('pmctl with Digest auth', {
-  todo: 'implement Digest auth support in pmctl'
+  todo: 'implement Digest auth support in pmctl',
 });
 
 // TODO: In order to use Digest auth across the board, the pmctl CLI must

@@ -1,7 +1,6 @@
 {
   "extends": "strongloop",
   "rules": {
-    "comma-dangle": 1,
     "space-before-blocks": 1,
     "space-before-function-paren": 1,
     "indent": 1,

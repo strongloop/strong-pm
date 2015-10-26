@@ -10,7 +10,7 @@ var BASE = path.resolve(__dirname, '.strong-pm');
 
 function MockCurrent() {
   this.child = {
-    pid: 59312
+    pid: 59312,
   };
 }
 util.inherits(MockCurrent, events.EventEmitter);
@@ -25,7 +25,7 @@ MockCurrent.prototype.request = function request(req, cb) {
 };
 
 tap.test('worker status update', {
-  skip: 'rewrite as unit or integration test'
+  skip: 'rewrite as unit or integration test',
 }, function(t) {
   debug('test: worker status update');
   var s = new Server({baseDir: BASE});
@@ -57,7 +57,7 @@ tap.test('worker status update', {
     debug('emit one');
     var fork = {
       cmd: 'fork',
-      id: 1, pid: 1001
+      id: 1, pid: 1001,
     };
     var expect = [{id: 1, pid: 1001}];
     async.series([
@@ -70,7 +70,7 @@ tap.test('worker status update', {
     debug('emit two');
     var fork = {
       cmd: 'fork',
-      id: 2, pid: 1002
+      id: 2, pid: 1002,
     };
     var status = {
       cmd: 'status',
@@ -90,7 +90,7 @@ tap.test('worker status update', {
       id: 1,
       pid: 1001,
       reason: 'SIGTERM',
-      suicide: false
+      suicide: false,
     };
     var status = {
       cmd: 'status',
@@ -110,7 +110,7 @@ tap.test('worker status update', {
       id: 2,
       pid: 1002,
       reason: 5,
-      suicide: false
+      suicide: false,
     };
     var status = {
       cmd: 'status',

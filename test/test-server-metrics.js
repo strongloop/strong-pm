@@ -8,7 +8,7 @@ var util = require('util');
 
 function MockCurrent() {
   this.child = {
-    pid: 59312
+    pid: 59312,
   };
 }
 util.inherits(MockCurrent, events.EventEmitter);
@@ -23,7 +23,7 @@ MockCurrent.prototype.request = function request(req, cb) {
 };
 
 tap.test('metrics update', {
-  skip: 'rewrite as unit or integration test'
+  skip: 'rewrite as unit or integration test',
 }, function(t) {
   var s = new Server();
   var m = s._meshApp.models;
@@ -42,7 +42,7 @@ tap.test('metrics update', {
       cmd: 'started',
       appName: 'test-app',
       agentVersion: '1.0.0',
-      pid: 1234
+      pid: 1234,
     }, emitOne);
   }
 
@@ -58,13 +58,13 @@ tap.test('metrics update', {
       id: 1,
       pid: 1001,
       reason: 'killed',
-      suicide: false
+      suicide: false,
     };
     async.series(
       [
         runner.emit.bind(runner, 'request', fork),
         runner.emit.bind(runner, 'request', exit),
-        runner.emit.bind(runner, 'request', fork)
+        runner.emit.bind(runner, 'request', fork),
       ],
       emitMetrics
     );
@@ -84,12 +84,12 @@ tap.test('metrics update', {
           'heap.used': 86413777,
           'cpu.user': 0.0617,
           'heap.total': 272764783,
-          'cpu.system': 0.87539
+          'cpu.system': 0.87539,
         },
         counters: {
           'http.connection.count': 0,
-          'loop.count': 64
-        }
+          'loop.count': 64,
+        },
       },
       0: {
         gauges: {
@@ -101,12 +101,12 @@ tap.test('metrics update', {
           'cpu.total': 0.76015,
           'loop.average': 0.02667,
           'loop.maximum': 1,
-          'gc.heap.used': 30269832
+          'gc.heap.used': 30269832,
         },
         counters: {
-          'loop.count': 75
+          'loop.count': 75,
         },
-        timers: {}
+        timers: {},
       },
     },
     timestamp: new Date().getTime() - 5 * 60 * 1000 + MARGIN,

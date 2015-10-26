@@ -32,7 +32,7 @@ tap.test('run with empty current services', function(t) {
   var c = new Container({
     instanceId: 'does-not-exist',
     baseDir: path.resolve(__dirname, 'direct-driver-workdir'),
-    server: {}
+    server: {},
   });
 
   t.plan(1);

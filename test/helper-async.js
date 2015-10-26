@@ -299,7 +299,7 @@ function pmctl(cmd, callback) {
       out: stdout.trim(),
       err: stderr.trim(),
       output: stdout + '\n' + stderr,
-      code: er ? er.code : 0
+      code: er ? er.code : 0,
     };
     debug('Run: %s => %s out <\n%s>\nerr <\n%s>',
           cmd, out.code, stdout, stderr);

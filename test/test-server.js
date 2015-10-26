@@ -255,7 +255,7 @@ tap.test('server test', function(t) {
       checkInstance,
       secondRun,
       checkInstance,
-      end
+      end,
     ], function() {
       s.stop(tt.end.bind(tt));
     });
