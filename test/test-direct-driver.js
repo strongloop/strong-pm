@@ -43,9 +43,9 @@ tap.test('DirectDriver instance API', function(t) {
 tap.test('start runs last services', function(t) {
   var server = mockServer;
   var instanceMetas = {
-    '11111': {data: 'some metadata'},
+    11111: {data: 'some metadata'},
     'a3f55e8c-de43-11e4-9b68-b3b7dd588a5b': {data: 'some metadata'},
-    'aaaa': {data: 'some metadata'},
+    aaaa: {data: 'some metadata'},
   };
   var instanceIds = Object.keys(instanceMetas);
   var d = new Driver({

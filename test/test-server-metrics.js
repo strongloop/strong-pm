@@ -73,9 +73,9 @@ tap.test('metrics update', {
   var MARGIN = 5 * 1000; // in seconds
   var METRICS = {
     processes: {
-      '1': {
-        'timers': {},
-        'gauges': {
+      1: {
+        timers: {},
+        gauges: {
           'loop.maximum': 1,
           'loop.average': 0.09375,
           'gc.heap.used': 63861677,
@@ -86,13 +86,13 @@ tap.test('metrics update', {
           'heap.total': 272764783,
           'cpu.system': 0.87539
         },
-        'counters': {
+        counters: {
           'http.connection.count': 0,
           'loop.count': 64
         }
       },
-      '0': {
-        'gauges': {
+      0: {
+        gauges: {
           'cpu.user': 0.05637,
           'cpu.system': 0.70378,
           'heap.total': 184060823,
@@ -103,13 +103,13 @@ tap.test('metrics update', {
           'loop.maximum': 1,
           'gc.heap.used': 30269832
         },
-        'counters': {
+        counters: {
           'loop.count': 75
         },
-        'timers': {}
+        timers: {}
       },
     },
-    'timestamp': new Date().getTime() - 5 * 60 * 1000 + MARGIN,
+    timestamp: new Date().getTime() - 5 * 60 * 1000 + MARGIN,
   };
 
   function emitMetrics() {
