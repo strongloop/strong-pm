@@ -299,7 +299,7 @@ function pmctl(cmd, callback) {
       out: stdout.trim(),
       err: stderr.trim(),
       output: stdout + '\n' + stderr,
-      code: er ? er.code : 0
+      code: er ? er.code : 0,
     };
     debug('Run: %s => %s out <\n%s>\nerr <\n%s>',
           cmd, out.code, stdout, stderr);
@@ -311,8 +311,8 @@ function checkOutput(out, pattern) {
   // undefined and '' become /(?:)/
   // RegExp's become themselves
   var match = new RegExp(pattern).test(out.output);
-  //debug('pattern match: %j', match);
-  //debug('out <\n%s>', out.output);
+  // debug('pattern match: %j', match);
+  // debug('out <\n%s>', out.output);
   return match;
 }
 

@@ -8,7 +8,7 @@ var util = require('util');
 
 function MockCurrent() {
   this.child = {
-    pid: 59312
+    pid: 59312,
   };
 }
 util.inherits(MockCurrent, events.EventEmitter);
@@ -38,40 +38,40 @@ var TRACE_RECORD = {
       {
         closed: true,
         mysql: 2.351871,
-        mongodb: 1.623075
+        mongodb: 1.623075,
       },
       {
         nodes: [
           {
             name: '/xyzzy',
-            value: 13.092878
+            value: 13.092878,
           },
           {
             name: 'MySQL',
             q: 'SELECT 1',
             start: _now,
-            value: 2.351871
+            value: 2.351871,
           },
           {
             name: 'MongoDB',
             q: 'x.find({})',
             start: _now,
-            value: 1.623075
-          }
+            value: 1.623075,
+          },
         ],
         links: [
           {
             source: 0,
             target: 1,
-            value: 2.351871
+            value: 2.351871,
           },
           {
             source: 0,
             target: 2,
-            value: 1.623075
-          }
-        ]
-      }
+            value: 1.623075,
+          },
+        ],
+      },
     ],
     [
       _10minAgo,
@@ -79,13 +79,13 @@ var TRACE_RECORD = {
       13.092878,
       0,
       {},
-      {}
-    ]
-  ]
+      {},
+    ],
+  ],
 };
 
 tap.test('Trace record', {
-  skip: 'rewrite as unit or integration test'
+  skip: 'rewrite as unit or integration test',
 }, function(t) {
   var s = new Server({
     cmdName: 'pm',
@@ -111,7 +111,7 @@ tap.test('Trace record', {
         cmd: 'started',
         appName: 'test-app',
         agentVersion: '1.0.0',
-        pid: 1234
+        pid: 1234,
       }, next);
     },
     function emitFork(next) {
@@ -123,7 +123,7 @@ tap.test('Trace record', {
         cmd: 'agent:trace',
         processId: WORKER_PID,
         workerId: 1,
-        trace: TRACE_RECORD
+        trace: TRACE_RECORD,
       };
       runner.emit('request', message, next);
     },
@@ -134,7 +134,7 @@ tap.test('Trace record', {
         assert.deepEqual(list[0].trace, TRACE_RECORD.list[0]);
         next();
       });
-    }
+    },
   ], function(err) {
     if (err) throw err;
     t.end();

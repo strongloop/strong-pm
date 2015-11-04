@@ -14,7 +14,7 @@ var cpuProfilingSupported = require('semver').gt(process.version, '0.11.0');
 var REPO = 'some-repo-name';
 var CTL = 'http://127.0.0.1:8701';
 
-function pmctl(/*arguments..., callback*/) {
+function pmctl(/* arguments..., callback */) {
   var cli = require.resolve('../bin/sl-pmctl.js');
   var args = Array.prototype.slice.call(arguments);
   return doPmctl;
@@ -23,7 +23,7 @@ function pmctl(/*arguments..., callback*/) {
     exec(cmd, function(err, stdout) {
       console.log('# Run: %s => err: %j stdout <\n%s>', cmd, err, stdout);
       t.ifError(err);
-      if (!noEnd ) {
+      if (!noEnd) {
         t.end();
       }
     });

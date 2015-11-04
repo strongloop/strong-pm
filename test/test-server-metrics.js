@@ -8,7 +8,7 @@ var util = require('util');
 
 function MockCurrent() {
   this.child = {
-    pid: 59312
+    pid: 59312,
   };
 }
 util.inherits(MockCurrent, events.EventEmitter);
@@ -23,7 +23,7 @@ MockCurrent.prototype.request = function request(req, cb) {
 };
 
 tap.test('metrics update', {
-  skip: 'rewrite as unit or integration test'
+  skip: 'rewrite as unit or integration test',
 }, function(t) {
   var s = new Server();
   var m = s._meshApp.models;
@@ -42,7 +42,7 @@ tap.test('metrics update', {
       cmd: 'started',
       appName: 'test-app',
       agentVersion: '1.0.0',
-      pid: 1234
+      pid: 1234,
     }, emitOne);
   }
 
@@ -58,13 +58,13 @@ tap.test('metrics update', {
       id: 1,
       pid: 1001,
       reason: 'killed',
-      suicide: false
+      suicide: false,
     };
     async.series(
       [
         runner.emit.bind(runner, 'request', fork),
         runner.emit.bind(runner, 'request', exit),
-        runner.emit.bind(runner, 'request', fork)
+        runner.emit.bind(runner, 'request', fork),
       ],
       emitMetrics
     );
@@ -73,9 +73,9 @@ tap.test('metrics update', {
   var MARGIN = 5 * 1000; // in seconds
   var METRICS = {
     processes: {
-      '1': {
-        'timers': {},
-        'gauges': {
+      1: {
+        timers: {},
+        gauges: {
           'loop.maximum': 1,
           'loop.average': 0.09375,
           'gc.heap.used': 63861677,
@@ -84,15 +84,15 @@ tap.test('metrics update', {
           'heap.used': 86413777,
           'cpu.user': 0.0617,
           'heap.total': 272764783,
-          'cpu.system': 0.87539
+          'cpu.system': 0.87539,
         },
-        'counters': {
+        counters: {
           'http.connection.count': 0,
-          'loop.count': 64
-        }
+          'loop.count': 64,
+        },
       },
-      '0': {
-        'gauges': {
+      0: {
+        gauges: {
           'cpu.user': 0.05637,
           'cpu.system': 0.70378,
           'heap.total': 184060823,
@@ -101,15 +101,15 @@ tap.test('metrics update', {
           'cpu.total': 0.76015,
           'loop.average': 0.02667,
           'loop.maximum': 1,
-          'gc.heap.used': 30269832
+          'gc.heap.used': 30269832,
         },
-        'counters': {
-          'loop.count': 75
+        counters: {
+          'loop.count': 75,
         },
-        'timers': {}
+        timers: {},
       },
     },
-    'timestamp': new Date().getTime() - 5 * 60 * 1000 + MARGIN,
+    timestamp: new Date().getTime() - 5 * 60 * 1000 + MARGIN,
   };
 
   function emitMetrics() {
@@ -145,7 +145,7 @@ tap.test('metrics update', {
     async.each(['1'], checkMetric, emitNewMetrics);
     // FIXME 0 doesn't pass, because it has no Process, because the master
     // isn't forked :-(
-    //async.each(Object.keys(METRICS.processes), checkMetric, end);
+    // async.each(Object.keys(METRICS.processes), checkMetric, end);
   }
 
   function emitNewMetrics() {
@@ -159,7 +159,7 @@ tap.test('metrics update', {
   }
 
   function checkNewMetrics() {
-    m.ServiceMetric.count(/*where,*/ function(er, count) {
+    m.ServiceMetric.count(/* where, */function(er, count) {
       assert.ifError(er);
       t.equal(count, 0, 'old should be deleted');
       end();

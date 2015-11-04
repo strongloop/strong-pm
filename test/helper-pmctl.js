@@ -10,7 +10,7 @@ function test(name, callback) {
   tap.test(name, {timeout: 120000}, function(t) {
     debug('start test %s', name);
     helper.pmWithApp([], {}, function(pm) {
-    debug('start test %s - has app', name);
+      debug('start test %s - has app', name);
       t = helper.queued(t);
       pm.pmctlFn = helper.pmctlWithCtl(pm.pmctlUrl);
       callback(t, pm);

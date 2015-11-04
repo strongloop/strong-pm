@@ -36,7 +36,7 @@
   "license": "Artistic-2.0",
   "main": "index.js",
   "scripts": {
-    "pretest": "eslint --ignore-path .gitignore . && jscs .",
+    "pretest": "eslint --ignore-path .gitignore .",
     "test": "tap --bail --timeout=1000 ./test/test-*"
   },
   "bin": {
@@ -47,8 +47,8 @@
     "sl-pm-install": "./bin/sl-pm-install.js"
   },
   "devDependencies": {
-    "eslint": "^0.24.0",
-    "jscs": "^1.11.3",
+    "eslint": "^1.6.0",
+    "eslint-config-strongloop": "^1.0.0",
     "mktmpdir": "^0.1.1",
     "request": "^2.45.0",
     "semver": "^4.1.0",

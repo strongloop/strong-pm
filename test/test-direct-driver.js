@@ -43,9 +43,9 @@ tap.test('DirectDriver instance API', function(t) {
 tap.test('start runs last services', function(t) {
   var server = mockServer;
   var instanceMetas = {
-    '11111': {data: 'some metadata'},
+    11111: {data: 'some metadata'},
     'a3f55e8c-de43-11e4-9b68-b3b7dd588a5b': {data: 'some metadata'},
-    'aaaa': {data: 'some metadata'},
+    aaaa: {data: 'some metadata'},
   };
   var instanceIds = Object.keys(instanceMetas);
   var d = new Driver({
@@ -82,7 +82,7 @@ tap.test('start runs last services', function(t) {
 
 tap.test('start does nothing with no last services', function(t) {
   t.plan(3);
-  mktmpdir(function (err, dir, done) {
+  mktmpdir(function(err, dir, done) {
     t.ifError(err);
     t.on('end', done);
 
@@ -215,9 +215,9 @@ function testPassThru(method, args) {
 
 testPassThru('setStartOptions', [{control: 'ws://abc@127.0.0.1:0/test'}]);
 
-testPassThru('deployInstance', [{/*req*/}, {/*res*/}]);
+testPassThru('deployInstance', [{/* req */}, {/* res */}]);
 
-testPassThru('updateInstanceEnv', [{/*env*/}]);
+testPassThru('updateInstanceEnv', [{/* env */}]);
 
 tap.test('channel requests are emitted on the driver', function(t) {
   var server = mockServer;
@@ -240,7 +240,7 @@ tap.test('channel requests are emitted on the driver', function(t) {
     },
     emit: function(event, req, callback) {
       t.equal(event, 'request');
-      this.listener.call(this, req, callback);
+      this.listener(req, callback);
     },
     setStartOptions: _.noop,
   };

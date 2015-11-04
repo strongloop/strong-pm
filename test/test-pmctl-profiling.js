@@ -21,8 +21,8 @@ helper.test('pmctl profiling', function(t, pm) {
         t.failon(pmctl('cpu-stop', '1.1.0'), /profiler not started/);
       }
     } else {
-        t.failon(pmctl('cpu-start', '1.1.0', '100'), /requires license/);
-        t.failon(pmctl('cpu-stop', '1.1.0'), /profiler not started/);
+      t.failon(pmctl('cpu-start', '1.1.0', '100'), /requires license/);
+      t.failon(pmctl('cpu-stop', '1.1.0'), /profiler not started/);
     }
 
     if (process.env.STRONGLOOP_LICENSE &&

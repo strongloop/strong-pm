@@ -102,7 +102,7 @@ tap.test('DockerDriver#start', function(t) {
   });
 
   var metas = {
-    '1': {
+    1: {
       commit: {
         hash: 'abcdef123456',
         dir: __dirname,

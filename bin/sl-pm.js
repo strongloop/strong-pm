@@ -34,7 +34,8 @@ function printHelp($0, prn) {
 
 var argv = process.argv;
 var $0 = process.env.CMD ? process.env.CMD : path.basename(argv[1]);
-var parser = new Parser([
+var parser = new Parser(
+  [
     ':v(version)',
     'h(help)',
     'b:(base)',
@@ -139,7 +140,7 @@ app.start();
 stopWhenDone($0, app);
 
 
-function stopWhenDone(/*$0, app*/) {
+function stopWhenDone(/* $0, app */) {
   /*
   // XXX(sam) I can't rember why we do this, especially since we don't wait for
   // stop to complete, and just kill ourself right away.

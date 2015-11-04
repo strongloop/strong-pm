@@ -17,13 +17,15 @@ if (!env.SL_PM_VAGRANT) {
 assert.equal(fs.realpathSync(env.PWD), process.cwd());
 
 http.createServer(onRequest)
-    .listen(process.env.PORT || 0, function() {
+    .listen(process.env.PORT || 0, onListening);
+
+function onListening() {
   console.log('pid %d listening on %s', process.pid, this.address().port);
 
   // Used to verify process existence/health
   fs.writeFileSync('app.pid', process.pid);
   fs.writeFileSync('app.port', this.address().port);
-});
+}
 
 function onRequest(req, res) {
   switch (req.url) {
