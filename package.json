@@ -1,7 +1,7 @@
 {
   "name": "strong-pm",
   "description": "StrongLoop Process Manager",
-  "version": "5.0.1",
+  "version": "6.0.0",
   "keywords": [
     "StrongLoop",
     "agent",
@@ -54,7 +54,7 @@
     "semver": "^4.1.0",
     "shelljs": "^0.3.0",
     "strong-build": "^2.0.0",
-    "strong-deploy": "^2.0.0",
+    "strong-deploy": "^4.0.0",
     "tap": "^1.2.0"
   },
   "dependencies": {
@@ -77,7 +77,7 @@
     "strong-control-channel": "^2.0.0",
     "strong-docker-build": "^1.0.0",
     "strong-fork-cicada": "^1.1.2",
-    "strong-mesh-models": "^8.0.0",
+    "strong-mesh-models": "^9.0.0",
     "strong-npm-ls": "^1.0.0",
     "strong-runner": "^5.x",
     "strong-service-install": "^2.0.0",
