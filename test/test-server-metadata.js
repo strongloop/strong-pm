@@ -208,9 +208,11 @@ tap.test('cpu-start 1.1.1', pmctl('cpu-start 1.1.1'));
 tap.test('verify cpu-start', {skip: !cpuProfilingSupported}, testCpuStart);
 tap.test('cpu-stop 1.1.1', pmctl('cpu-stop 1.1.1'));
 tap.test('verify cpu-stop', {skip: !cpuProfilingSupported}, testCpuStop);
-tap.test('objects-start 1.1.1', {skip: notLicensed}, pmctl('objects-start 1.1.1'));
+tap.test('objects-start 1.1.1', {skip: notLicensed},
+         pmctl('objects-start 1.1.1'));
 tap.test('verify objects-start', {skip: notLicensed}, testObjTrackingStart);
-tap.test('objects-stop 1.1.1', {skip: notLicensed}, pmctl('objects-stop 1.1.1'));
+tap.test('objects-stop 1.1.1', {skip: notLicensed},
+         pmctl('objects-stop 1.1.1'));
 tap.test('verify objects-stop', {skip: notLicensed}, testObjTrackingStop);
 tap.test('worker exit state', testWorkerExitState);
 tap.test('kill cluster master', killClusterMaster);
