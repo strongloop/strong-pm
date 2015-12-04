@@ -27,6 +27,9 @@ Options:
                       the specified credentials for every request sent to the
                       REST API where CREDS is given in the form of
                       `<user>:<pass>`.
+  --skip-default-install
+                      Disable 'npm install' phase of application deployments
+                      made on this PM.
 
 OS Service support:
 
