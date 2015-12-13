@@ -74,6 +74,9 @@ assert_file $TMP/deeply/nested/sl-pm/env.json '"BAR":"foo"'
 assert_file $TMP/deeply/nested/sl-pm/env.json '"MORE":"less"'
 assert_file $TMP/deeply/nested/sl-pm/env.json '"LESS":"more"'
 
+# Should NOT have set the flag for skipping default install
+assert_not_file $TMP/upstart.conf "STRONGLOOP_PM_SKIP_DEFAULT_INSTALL"
+
 # Should fail to overwrite existing file
 assert_exit 1 $CMD --port 7777 --user $CURRENT_USER \
                    --job-file $TMP/upstart.conf \
@@ -85,10 +88,14 @@ assert_exit 0 $CMD --port 7777 \
                    --user `id -un` \
                    --base $TMP/deeply/nested/sl-pm \
                    --force \
-                   --http-auth "myuser:mypass"
+                   --http-auth "myuser:mypass" \
+                   --skip-default-install
 
 # Should add auth to config, treating "myuser:mypass" as implied Basic auth
 assert_file $TMP/upstart.conf "STRONGLOOP_PM_HTTP_AUTH=basic:myuser:mypass"
+
+# Should have set the flag for skipping default install
+assert_file $TMP/upstart.conf "STRONGLOOP_PM_SKIP_DEFAULT_INSTALL=true"
 
 # Should create an upstart job at the specified path
 assert_exit 0 $CMD --port 7777 \

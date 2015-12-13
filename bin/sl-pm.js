@@ -43,6 +43,7 @@ var parser = new Parser(
     'd:(driver)',
     'l:(listen)',
     'N:(no-control)', // unused. left for backwards compat.
+    's(skip-default-install)',
     'P:(base-port)',
   ].join(''),
   argv);
@@ -76,6 +77,9 @@ while ((option = parser.getopt()) !== undefined) {
       listen = option.optarg;
       break;
     case 'N':
+      break;
+    case 's': // --skip-default-install
+      process.env.STRONGLOOP_PM_SKIP_DEFAULT_INSTALL = 'true';
       break;
     case 'P':
       basePort = option.optarg;

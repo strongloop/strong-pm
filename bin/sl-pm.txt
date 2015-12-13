@@ -10,6 +10,9 @@ Options:
   -P,--base-port PORT Applications will run at PORT + service ID (default 3000).
   --driver DRIVER     Execution backend to use for running apps. Current drivers
                       are 'direct' and 'docker' (default `direct`).
+  --skip-default-install
+                      Disable 'npm install' phase of application deployments
+                      made on this PM.
 
 The base directory is used to save deployed applications, for working
 directories, and for any other files the process manager needs to create.
