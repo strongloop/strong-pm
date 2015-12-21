@@ -1,3 +1,33 @@
+2015-12-21, Version 5.1.0
+=========================
+
+ * add --skip-default-install option (Ryan Graham)
+
+ * lint: trim/wrap long lines (Ryan Graham)
+
+ * test: autoskip tests requiring a license (Ryan Graham)
+
+ * lint: clean up function spacing and caps (Ryan Graham)
+
+ * lint: fix indentation warnings (Ryan Graham)
+
+ * lint: fix comma-dangle (Ryan Graham)
+
+ * lint: fix spaced comments (Ryan Graham)
+
+ * lint: fix extraneous whitespace in parens (Ryan Graham)
+
+ * lint: remove useless .call() usages (Ryan Graham)
+
+ * lint: fix quoted-keys (Ryan Graham)
+
+ * Update eslint to strongloop conventions (Ryan Graham)
+
+ * Refer to licenses with a link (Sam Roberts)
+
+ * docker: update image and docs (Ryan Graham)
+
+
 2015-10-05, Version 5.0.1
 =========================
 
@@ -626,6 +656,10 @@
 =========================
 
  * Use process pid when filtering for model updates (Krishna Raman)
+
+
+2015-01-29, Version 1.7.0
+=========================
 
  * fix 'pmctl log-dump --follow' option parsing (Ryan Graham)
 
