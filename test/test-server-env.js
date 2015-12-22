@@ -1,5 +1,4 @@
 process.env.STRONGLOOP_LICENSE = 'inherited';
-process.env.STRONGLOOP_MESH_DB = 'memory://';
 
 var Server = require('../lib/server');
 var mktmpdir = require('mktmpdir');
@@ -25,21 +24,20 @@ function matchEnv(tt, env, expectedEnv) {
 }
 
 test('service environment', function(t) {
-  mktmpdir(function(err, tmpdir, cleanup) {
-    t.ifError(err);
-    t.on('end', cleanup);
+  function MockDriver(o) {
+    this.options = o;
+  }
+  MockDriver.prototype.getName = _.constant('Mock');
+  MockDriver.prototype.on = function() {};
+  MockDriver.prototype.setStartOptions = function() {};
+  MockDriver.prototype.stop = function(callback) {
+    callback();
+  };
 
-    function MockDriver(o) {
-      this.options = o;
-    }
-    MockDriver.prototype.getName = _.constant('Mock');
-    MockDriver.prototype.on = function() {};
-    MockDriver.prototype.setStartOptions = function() {};
-    MockDriver.prototype.stop = function(callback) {
-      callback();
-    };
-
-    t.test('empty initial environment', function(tt) {
+  t.test('empty initial environment', function(tt) {
+    mktmpdir(function(err, tmpdir, cleanup) {
+      tt.ifError(err);
+      tt.on('end', cleanup);
       fs.writeFileSync(path.join(tmpdir, 'env.json'), '{}');
 
       var s = new Server({
@@ -69,8 +67,12 @@ test('service environment', function(t) {
         });
       });
     });
+  });
 
-    t.test('initial environment', function(tt) {
+  t.test('initial environment', function(tt) {
+    mktmpdir(function(err, tmpdir, cleanup) {
+      tt.ifError(err);
+      tt.on('end', cleanup);
       var defEnv = {FOO: 'foo', BAR: 'bar'};
       var newEnv = {BAR: 'bar'};
       fs.writeFileSync(path.join(tmpdir, 'env.json'), JSON.stringify(defEnv));
@@ -115,7 +117,7 @@ test('service environment', function(t) {
         });
       }
     });
-
-    t.end();
   });
+
+  t.end();
 });
