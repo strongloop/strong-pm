@@ -14,3 +14,4 @@ test/app-prepare/node_modules
 test/container
 test/copy.out
 test/receive-base
+intl/MSG.json

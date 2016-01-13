@@ -16,6 +16,7 @@ var home = require('userhome');
 var mkdirp = require('mkdirp').sync;
 var path = require('path');
 var fs = require('fs');
+var g = require('strong-globalize');
 var versionApi = require('strong-mesh-models/package.json').apiVersion;
 var versionPm = require('../package.json').version;
 
@@ -27,7 +28,7 @@ var DRIVERS = {
 var Server = require('../lib/server');
 
 function printHelp($0, prn) {
-  var USAGE = fs.readFileSync(require.resolve('./sl-pm.txt'), 'utf-8')
+  var USAGE = g.t('sl-pm.txt')
     .replace(/%MAIN%/g, $0)
     .trim();
 
@@ -57,6 +58,8 @@ var driver = DRIVERS.direct;
 var basePort = Number(process.env.STRONGLOOP_BASEPORT) || 3000;
 var dbDriver = 'sqlite3';
 
+g.setRootDir(path.resolve(__dirname, '..'));
+
 var option;
 while ((option = parser.getopt()) !== undefined) {
   switch (option.option) {
@@ -72,7 +75,7 @@ while ((option = parser.getopt()) !== undefined) {
       base = option.optarg;
       break;
     case 'c':
-      console.error('Warning: ignoring config file: ', option.optarg);
+      g.error('Warning: ignoring config file: %s', option.optarg);
       break;
     case 'd':
       driver = DRIVERS[option.optarg.toLowerCase()];
@@ -92,7 +95,7 @@ while ((option = parser.getopt()) !== undefined) {
       dbDriver = 'memory';
       break;
     default:
-      console.error('Invalid usage (near option \'%s\'), try `%s --help`.',
+      g.error('Invalid usage (near option \'%s\'), try `%s --help`.',
         option.optopt, $0);
       process.exit(1);
   }
@@ -101,12 +104,12 @@ while ((option = parser.getopt()) !== undefined) {
 base = path.resolve(base);
 
 if (parser.optind() !== argv.length) {
-  console.error('Invalid usage (extra arguments), try `%s --help`.', $0);
+  g.error('Invalid usage (extra arguments), try `%s --help`.', $0);
   process.exit(1);
 }
 
 if (listen == null) {
-  console.error('Listen port was not specified, try `%s --help`.', $0);
+  g.error('Listen port was not specified, try `%s --help`.', $0);
   process.exit(1);
 }
 
@@ -117,7 +120,7 @@ process.chdir(base);
 if (dbDriver === 'sqlite3') {
   checkAndUpgradeDb(base, function(err) {
     if (err) {
-      console.error('%s(%d) %s', $0, process.pid, err.message);
+      g.error('%s(%d) %s', $0, process.pid, err.message);
       return process.exit(1);
     }
     startPm();
@@ -126,7 +129,7 @@ if (dbDriver === 'sqlite3') {
   var sqliteDbPath = path.join(base, 'strong-mesh.db');
   fs.stat(sqliteDbPath, function(err) {
     if (!err) {
-      console.error(
+      g.error(
         '%s(%d) SQLite3 database found at %s. Please delete this' +
         'file if you wish to use the JSON file database.',
         $0, process.pid, sqliteDbPath
@@ -149,16 +152,16 @@ function startPm() {
   });
 
   app.on('listening', function(listenAddr) {
-    console.log('%s(%d): StrongLoop PM v%s (API v%s) on port `%s`',
+    g.log('%s(%d): StrongLoop PM v%s (API v%s) on port `%s`',
       $0, process.pid,
       versionPm,
       versionApi,
       listenAddr.port);
 
-    console.log('%s(%d): Base folder `%s`',
+    g.log('%s(%d): Base folder `%s`',
       $0, process.pid, base);
 
-    console.log('%s(%d): Applications on port `%d + service ID`',
+    g.log('%s(%d): Applications on port `%d + service ID`',
       $0, process.pid, basePort);
   });
 

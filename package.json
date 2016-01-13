@@ -78,6 +78,7 @@
     "strong-control-channel": "^2.0.0",
     "strong-docker-build": "^1.0.0",
     "strong-fork-cicada": "^1.1.2",
+    "strong-globalize": "^1.0.0",
     "strong-mesh-models": "^8.0.0",
     "strong-npm-ls": "^1.0.0",
     "strong-runner": "^5.x",
