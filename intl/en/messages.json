@@ -24,7 +24,7 @@
     "8dcdbd7c9be9b16c2e2bf5d813f904fe": "Read {0} failed with: {1}",
     "dd87c64a60d94624ab2a1dac1401b5cc": "Untar {0} failed with: {1}",
     "53e0587f34f59f6cd1bde21fb38f7af1": "Application received",
-    "a2fd91987b7b30ab56235250040de3d0": "Read {0} for sha failed: {1}",
+    "4020b9a933e1b742ddb3418219434a32": "Read {0} for {{sha}} failed: {1}",
     "ee0ab105b9b9a8a978438f290f68d5ba": "Unable to create dir: {0} ({1})",
     "59d3b13f11d74a81cda523f2f7e0e9a7": "Forbidden: Server is not accepting deployments",
     "040fb6065841fb1e5d7ad998cbd4f0e7": "Prepare failed on {0} in {1}: {2}",
