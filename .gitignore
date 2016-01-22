@@ -15,3 +15,13 @@ test/container
 test/copy.out
 test/receive-base
 intl/MSG.json
+intl/de
+intl/es
+intl/fr
+intl/it
+intl/ja
+intl/ko
+intl/pt
+intl/ru
+intl/zh-Hans
+intl/zh-Hant
