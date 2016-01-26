@@ -95,7 +95,7 @@ while ((option = parser.getopt()) !== undefined) {
       dbDriver = 'memory';
       break;
     default:
-      g.error('Invalid usage (near option \'%s\'), try `%s --help`.',
+      g.error('Invalid usage (near option \'%s\'), try `{{%s --help}}`.',
         option.optopt, $0);
       process.exit(1);
   }
@@ -104,12 +104,12 @@ while ((option = parser.getopt()) !== undefined) {
 base = path.resolve(base);
 
 if (parser.optind() !== argv.length) {
-  g.error('Invalid usage (extra arguments), try `%s --help`.', $0);
+  g.error('Invalid usage (extra arguments), try `{{%s --help}}`.', $0);
   process.exit(1);
 }
 
 if (listen == null) {
-  g.error('Listen port was not specified, try `%s --help`.', $0);
+  g.error('Listen port was not specified, try `{{%s --help}}`.', $0);
   process.exit(1);
 }
 
@@ -130,8 +130,8 @@ if (dbDriver === 'sqlite3') {
   fs.stat(sqliteDbPath, function(err) {
     if (!err) {
       g.error(
-        '%s(%d) SQLite3 database found at %s. Please delete this' +
-        'file if you wish to use the JSON file database.',
+        '%s(%d) {{SQLite3}} database found at %s. Please delete this' +
+        'file if you wish to use the {{JSON}} file database.',
         $0, process.pid, sqliteDbPath
       );
       return process.exit(1);
@@ -152,7 +152,7 @@ function startPm() {
   });
 
   app.on('listening', function(listenAddr) {
-    g.log('%s(%d): StrongLoop PM v%s (API v%s) on port `%s`',
+    g.log('%s(%d): {{StrongLoop PM}} v%s (API v%s) on port `%s`',
       $0, process.pid,
       versionPm,
       versionApi,
