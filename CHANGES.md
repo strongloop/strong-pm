@@ -1,3 +1,11 @@
+2016-02-10, Version 5.2.0
+=========================
+
+ * Revert name change of JSON db file (Krishna Raman)
+
+ * Switch to using `sqlite` as PM database (Krishna Raman)
+
+
 2015-12-21, Version 5.1.0
 =========================
 
