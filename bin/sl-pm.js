@@ -1,8 +1,6 @@
 #!/usr/bin/env node
 'use strict';
 
-var upgradeDb = require('../lib/upgrade-db');
-
 // Exit on loss of parent process, if it had established an ipc control channel.
 // We do this ASAP because we don't want child processes to leak, outliving
 // their parent. If the parent has not established an 'ipc' channel to us, this
@@ -115,6 +113,17 @@ mkdirp(base);
 process.chdir(base);
 
 if (dbDriver === 'sqlite3') {
+  try {
+    // sqlite connector is an optional dependency. If we're unable to load it
+    // throw a meaningful error here.
+    require('loopback-connector-sqlite3');
+    var upgradeDb = require('../lib/upgrade-db');
+  } catch (err) {
+    console.error('loopback-connector-sqlite3 must be installed to use the ' +
+      'sql backend. Use the --json-file-db option if you are unable to ' +
+      'install loopback-connector-sqlite3.');
+    return process.exit(1);
+  }
   checkAndUpgradeDb(base, function(err) {
     if (err) {
       console.error('%s(%d) %s', $0, process.pid, err.message);
