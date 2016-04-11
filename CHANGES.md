@@ -1,4 +1,12 @@
-2016-02-10, Version 5.2.0
+2016-04-11, Version 5.2.1
+=========================
+
+ * Make sqlite an optional PM dependency (Rick Curtis)
+
+ * docker: add variants for major node versions (Ryan Graham)
+
+
+2016-02-09, Version 5.2.0
 =========================
 
  * Revert name change of JSON db file (Krishna Raman)
@@ -664,10 +672,6 @@
 =========================
 
  * Use process pid when filtering for model updates (Krishna Raman)
-
-
-2015-01-29, Version 1.7.0
-=========================
 
  * fix 'pmctl log-dump --follow' option parsing (Ryan Graham)
 
