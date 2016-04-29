@@ -121,7 +121,8 @@ if (dbDriver === 'sqlite3') {
   } catch (err) {
     console.error('loopback-connector-sqlite3 must be installed to use the ' +
       'sql backend. Use the --json-file-db option if you are unable to ' +
-      'install loopback-connector-sqlite3.');
+      'install loopback-connector-sqlite3. Error encountered while trying ' +
+      'to upgrade: [ %s ]', err.message);
     return process.exit(1);
   }
   checkAndUpgradeDb(base, function(err) {

@@ -37,7 +37,8 @@ test('invoke sl-pm missing sqllite dep', function(t) {
     t.equals(err.code, 1);
     t.equals(stdErr, 'loopback-connector-sqlite3 must be installed to ' +
       'use the sql backend. Use the --json-file-db option if you are unable ' +
-      'to install loopback-connector-sqlite3.\n');
+      'to install loopback-connector-sqlite3. Error encountered while trying ' +
+      'to upgrade: [ Cannot find module \'loopback-connector-sqlite3\' ]\n');
 
     t.end();
   });
