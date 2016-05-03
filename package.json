@@ -69,7 +69,6 @@
     "extsprintf": "^1.2.0",
     "http-auth": "^2.2.5",
     "lodash": "^3.9.3",
-    "minkelite": "^1.0.0",
     "mkdirp": "^0.5.0",
     "posix-getopt": "^1.0.0",
     "rimraf": "^2.3.2",
@@ -88,6 +87,7 @@
     "userhome": "^1.0.0"
   },
   "optionalDependencies": {
-    "loopback-connector-sqlite3": "^1.0.0"
+    "loopback-connector-sqlite3": "^1.0.0",
+    "minkelite": "^1.0.0"
   }
 }
