@@ -137,10 +137,6 @@ A: Check to make sure `git` is installed
 
 ## License
 
-strong-pm uses a dual license model.
-
-You may use this library under the terms of the [Artistic 2.0 license][],
-or under the terms of the [StrongLoop Subscription Agreement][].
+You may use this library under the terms of the [Artistic 2.0 license][]
 
 [Artistic 2.0 license]: http://opensource.org/licenses/Artistic-2.0
-[StrongLoop Subscription Agreement]: http://strongloop.com/license

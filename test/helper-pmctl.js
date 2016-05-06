@@ -1,3 +1,8 @@
+// Copyright IBM Corp. 2015. All Rights Reserved.
+// Node module: strong-pm
+// This file is licensed under the Artistic License 2.0.
+// License text available at https://opensource.org/licenses/Artistic-2.0
+
 var debug = require('debug')('strong-pm:test:helper-pmctl');
 var tap = require('tap');
 var helper = require('./helper-async');

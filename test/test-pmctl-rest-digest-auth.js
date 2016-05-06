@@ -1,3 +1,8 @@
+// Copyright IBM Corp. 2015. All Rights Reserved.
+// Node module: strong-pm
+// This file is licensed under the Artistic License 2.0.
+// License text available at https://opensource.org/licenses/Artistic-2.0
+
 require('tap').test('pmctl with Digest auth', {
   todo: 'implement Digest auth support in pmctl',
 });
