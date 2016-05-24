@@ -1,3 +1,13 @@
+2016-05-24, Version 5.2.2
+=========================
+
+ * Make minkelite optional (Krishna Raman)
+
+ * update/insert copyright notices (Ryan Graham)
+
+ * Update pm error message when db upgrade fails. (Rick Curtis)
+
+
 2016-04-11, Version 5.2.1
 =========================
 
@@ -672,6 +682,10 @@
 =========================
 
  * Use process pid when filtering for model updates (Krishna Raman)
+
+
+2015-01-29, Version 1.7.0
+=========================
 
  * fix 'pmctl log-dump --follow' option parsing (Ryan Graham)
 
