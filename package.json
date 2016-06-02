@@ -83,7 +83,7 @@
     "strong-spawn-npm": "^1.0.0",
     "strong-tunnel": "^1.1.1",
     "strong-url-defaults": "^1.0.0",
-    "tar": "^1.0.0",
+    "tar": "^2.2.1",
     "userhome": "^1.0.0"
   },
   "optionalDependencies": {
