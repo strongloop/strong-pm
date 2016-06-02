@@ -54,7 +54,7 @@
     "semver": "^4.1.0",
     "shelljs": "^0.3.0",
     "strong-build": "^2.0.0",
-    "strong-deploy": "^2.0.0",
+    "strong-deploy": "^3.1.4",
     "tap": "^1.2.0"
   },
   "dependencies": {
