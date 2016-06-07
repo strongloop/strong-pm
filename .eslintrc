@@ -1,6 +1,3 @@
 {
   "extends": "strongloop",
-  "rules": {
-    "comma-dangle": 0
-  }
 }
