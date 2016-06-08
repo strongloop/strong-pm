@@ -39,20 +39,19 @@ function printHelp($0, prn) {
 
 var argv = process.argv;
 var $0 = process.env.CMD ? process.env.CMD : path.basename(argv[1]);
-var parser = new Parser(
-  [
-    ':v(version)',
-    'h(help)',
-    'b:(base)',
-    'c:(config)', // unused. left in so Upstart/systemd jobs don't crash
-    'd:(driver)',
-    'l:(listen)',
-    'N:(no-control)', // unused. left for backwards compat.
-    's(skip-default-install)',
-    'P:(base-port)',
-    'M(json-file-db)',
-  ].join(''),
-  argv);
+var parser = new Parser([
+  ':v(version)',
+  'h(help)',
+  'b:(base)',
+  'c:(config)', // unused. left in so Upstart/systemd jobs don't crash
+  'd:(driver)',
+  'l:(listen)',
+  'N:(no-control)', // unused. left for backwards compat.
+  's(skip-default-install)',
+  'P:(base-port)',
+  'M(json-file-db)',
+].join(''),
+argv);
 
 var base = home('.strong-pm');
 var listen = 8701;
