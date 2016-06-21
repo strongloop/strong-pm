@@ -1,3 +1,19 @@
+2016-06-21, Version 5.2.3
+=========================
+
+ * lint: update to 2.x (Sam Roberts)
+
+ * lint: clean up function spacing (Ryan Graham)
+
+ * lint: fix indentation warnings (Ryan Graham)
+
+ * lint: opt-out of comma-dangle rule (Ryan Graham)
+
+ * package: update strong-deploy to 3.x (Sam Roberts)
+
+ * package: update tar to 2.x (Sam Roberts)
+
+
 2016-05-24, Version 5.2.2
 =========================
 
