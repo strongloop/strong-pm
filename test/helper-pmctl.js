@@ -3,6 +3,8 @@
 // This file is licensed under the Artistic License 2.0.
 // License text available at https://opensource.org/licenses/Artistic-2.0
 
+'use strict';
+
 var debug = require('debug')('strong-pm:test:helper-pmctl');
 var tap = require('tap');
 var helper = require('./helper-async');

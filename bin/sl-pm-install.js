@@ -4,6 +4,8 @@
 // This file is licensed under the Artistic License 2.0.
 // License text available at https://opensource.org/licenses/Artistic-2.0
 
+'use strict';
+
 require('../lib/install')(process.argv, function(err) {
   process.exit(err ? 1 : 0);
 });

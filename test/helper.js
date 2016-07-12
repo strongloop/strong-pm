@@ -3,6 +3,8 @@
 // This file is licensed under the Artistic License 2.0.
 // License text available at https://opensource.org/licenses/Artistic-2.0
 
+'use strict';
+
 var assert = require('assert');
 var path = require('path');
 var shelljs = require('shelljs');
@@ -38,18 +40,18 @@ process.on('exit', function(code) {
   }
 });
 
-function package() {
+function pkg() {
   return require(path.resolve(shelljs.pwd(), 'package.json'));
 }
 
-exports.package = package;
+exports.package = pkg;
 
 shelljs.cd(path.resolve(__dirname, 'app'));
 
 var APPNAME = 'test-app';
 exports.APPNAME = APPNAME;
 
-assert.equal(package().name, APPNAME, 'cwd is ' + APPNAME);
+assert.equal(pkg().name, APPNAME, 'cwd is ' + APPNAME);
 
 assert(shelljs.which('sl-build'), 'sl-build should be in path');
 

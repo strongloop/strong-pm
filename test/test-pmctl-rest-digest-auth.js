@@ -3,6 +3,8 @@
 // This file is licensed under the Artistic License 2.0.
 // License text available at https://opensource.org/licenses/Artistic-2.0
 
+'use strict';
+
 require('tap').test('pmctl with Digest auth', {
   todo: 'implement Digest auth support in pmctl',
 });
