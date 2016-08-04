@@ -133,6 +133,7 @@ function testObjTrackingStop(t) {
 }
 
 function testWorkerExitState(t) {
+  t.plan(7 + 1);
   server.once('exit', function() {
     ServiceProcess.findOne({where: {workerId: 1}}, function(err, proc) {
       t.ifError(err);
@@ -142,7 +143,6 @@ function testWorkerExitState(t) {
       t.assert(proc.startTime, 'Start time should be set');
       t.assert(proc.stopTime, 'Stop time should be set');
       t.assert(proc.stopReason, 'Stop reason should be set');
-      t.end();
     });
   });
   pmctl('set-size 1 0')(t, true);
