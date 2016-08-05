@@ -26,20 +26,24 @@ assert_file $TMP/systemd.service "--driver direct"
 assert_file $TMP/systemd.service "User=$CURRENT_USER"
 assert_file $TMP/systemd.service "Group=$CURRENT_GROUP"
 
-# Should create a systemd service at the specified path
-assert_exit 0 $CMD --port 7777 \
-              --job-file $TMP/systemd-with-docker.service \
-              --user $CURRENT_USER \
-              --base $TMP/deeply/nested/sl-pm \
-              --driver docker \
-              --systemd
+if docker info; then
+  # Should create a systemd service at the specified path
+  assert_exit 0 $CMD --port 7777 \
+                --job-file $TMP/systemd-with-docker.service \
+                --user $CURRENT_USER \
+                --base $TMP/deeply/nested/sl-pm \
+                --driver docker \
+                --systemd
 
-# Simple lines that should be in the service file for this config
-assert_file $TMP/systemd-with-docker.service "ExecStart=$(node -p process.execPath)"
-assert_file $TMP/systemd-with-docker.service "WorkingDirectory=$HOME"
-assert_file $TMP/systemd-with-docker.service "Description=StrongLoop Process Manager"
-assert_file $TMP/systemd-with-docker.service "--driver docker"
-assert_file $TMP/systemd-with-docker.service "User=$CURRENT_USER"
-assert_file $TMP/systemd-with-docker.service "Group=docker"
+  # Simple lines that should be in the service file for this config
+  assert_file $TMP/systemd-with-docker.service "ExecStart=$(node -p process.execPath)"
+  assert_file $TMP/systemd-with-docker.service "WorkingDirectory=$HOME"
+  assert_file $TMP/systemd-with-docker.service "Description=StrongLoop Process Manager"
+  assert_file $TMP/systemd-with-docker.service "--driver docker"
+  assert_file $TMP/systemd-with-docker.service "User=$CURRENT_USER"
+  assert_file $TMP/systemd-with-docker.service "Group=docker"
+else
+  skip "docker not available, skipping tests that require it"
+fi
 
 unset SL_INSTALL_IGNORE_PLATFORM

@@ -4,8 +4,8 @@ set -e
 cd $(dirname "${BASH_SOURCE[0]}")
 source common.sh
 
-if ! docker info > /dev/null; then
-  skip "docker not installed or not running"
+if ! docker info > /dev/null || docker info | grep swarm > /dev/null; then
+  skip "docker not installed or not running, or swarm detected"
   exit
 fi
 
