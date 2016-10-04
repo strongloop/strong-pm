@@ -1,3 +1,17 @@
+2016-10-04, Version 5.2.4
+=========================
+
+ * test: fix race in worker exit state test (Ryan Graham)
+
+ * test: skip e2e docker tests on swarm (Ryan Graham)
+
+ * test: make install tests with docker optional (Ryan Graham)
+
+ * Add 'use strict' to top of file (Kevin Delisle)
+
+ * Update URLs in CONTRIBUTING.md (#360) (Ryan Graham)
+
+
 2016-06-21, Version 5.2.3
 =========================
 
