@@ -2,7 +2,7 @@ FROM node:latest
 
 RUN useradd -ms /bin/bash strong-pm \
     && chown -R strong-pm:strong-pm /usr/local \
-    && su strong-pm -c "npm install -g strong-pm && npm cache clear"
+    && su strong-pm -c "npm install -g strong-pm && npm cache clean"
 
 # Set up some semblance of an environment
 WORKDIR /home/strong-pm
