@@ -1,7 +1,10 @@
 {
   "name": "strong-pm",
   "description": "StrongLoop Process Manager",
-  "version": "5.2.4",
+  "version": "6.0.0",
+  "engines": {
+    "node": ">=4"
+  },
   "keywords": [
     "StrongLoop",
     "agent",
