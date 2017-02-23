@@ -1,3 +1,13 @@
+2017-02-23, Version 6.0.0
+=========================
+
+ * package: update strong-runner to 6.x (Sam Roberts)
+
+ * package: drop support for node < 4.x (Sam Roberts)
+
+ * docker: fix typo in npm cache command (Sam Roberts)
+
+
 2016-10-04, Version 5.2.4
 =========================
 
