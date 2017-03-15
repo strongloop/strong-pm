@@ -1,3 +1,9 @@
+2017-03-15, Version 6.0.1
+=========================
+
+ * Update to use strong-runner@7.x (Krishna Raman)
+
+
 2017-02-23, Version 6.0.0
 =========================
 
