@@ -10,6 +10,8 @@ console.
 
 For more details, see [http://strong-pm.io](http://strong-pm.io)
 
+**Note:** This node module is not currently under active development.  However, we encourage contributions from the community.
+
 ## Installation
 
 _Requirements: `git` needs to be installed_
