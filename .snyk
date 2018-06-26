@@ -1,0 +1,12 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.12.0
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  'npm:mime:20170907':
+    - strong-mesh-models > loopback-explorer > swagger-ui > less > mime:
+        patched: '2018-06-26T04:35:07.899Z'
+    - strong-mesh-models > loopback-explorer > express > send > mime:
+        patched: '2018-06-26T04:35:07.899Z'
+    - strong-mesh-models > loopback-explorer > express > connect > serve-static > send > mime:
+        patched: '2018-06-26T04:35:07.899Z'
