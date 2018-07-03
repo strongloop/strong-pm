@@ -1,0 +1,18 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.12.0
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  'npm:lodash:20180130':
+    - strong-service-install > lodash:
+        patched: '2018-07-03T04:26:47.753Z'
+    - strong-service-install > strong-service-systemd > lodash:
+        patched: '2018-07-03T04:26:47.753Z'
+    - strong-service-install > strong-service-upstart > lodash:
+        patched: '2018-07-03T04:26:47.753Z'
+    - strong-docker-build > lodash:
+        patched: '2018-07-03T04:26:47.753Z'
+    - strong-runner > strong-supervisor > strong-cluster-control > lodash:
+        patched: '2018-07-03T04:26:47.753Z'
+    - strong-mesh-models > lodash:
+        patched: '2018-07-03T04:26:47.753Z'
