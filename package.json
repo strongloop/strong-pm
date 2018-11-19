@@ -40,7 +40,9 @@
   "main": "index.js",
   "scripts": {
     "pretest": "eslint --ignore-path .gitignore .",
-    "test": "tap --bail --timeout=1000 ./test/test-*"
+    "test": "tap --bail --timeout=1000 ./test/test-*",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "bin": {
     "sl-pm": "./bin/sl-pm.js",
@@ -87,10 +89,12 @@
     "strong-tunnel": "^1.1.1",
     "strong-url-defaults": "^1.0.0",
     "tar": "^2.2.1",
-    "userhome": "^1.0.0"
+    "userhome": "^1.0.0",
+    "snyk": "^1.108.3"
   },
   "optionalDependencies": {
     "loopback-connector-sqlite3": "^1.0.0",
     "minkelite": "^1.0.0"
-  }
+  },
+  "snyk": true
 }
